@@ -1,0 +1,29 @@
+name: Publish Nightly Package
+
+on:
+  schedule:
+    # 05:00 AM (KST) Mon-Fri
+    - cron: "00 20 * * 0-4"
+
+  workflow_dispatch:
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        ubuntu_version: [22.04]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Build package"
+        run: |
+          export NIGHTLY_VERSION=$(date '+%y%m%d')
+          echo "NIGHTLY_VERSION=$NIGHTLY_VERSION" >> $GITHUB_ENV
+          ./ccex build
+
+      - name: "Upload artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ matrix.ubuntu_version }}_wheel"
+          path: "./dist/"

@@ -1,0 +1,85 @@
+merge_base_with = "origin/main"
+
+[[linter]]
+code = 'FLAKE8'
+include_patterns = ['**/*.py']
+exclude_patterns = [
+    'submodules/**',
+    '**/submodules/**',
+    'old/**',
+]
+command = [
+    'lintrunner_adapters',
+    'run',
+    'flake8_linter',
+    '--',
+    '--ignore=E501', # Line too long
+    '--per-file-ignores="__init__.py:F401"', # Unused import
+    '--import-order-style=pep8',
+    '@{{PATHSFILE}}'
+]
+init_command = [
+    'lintrunner_adapters',
+    'run',
+    'pip_init',
+    '--dry-run={{DRYRUN}}',
+    '--requirement=requirements-lintrunner.txt',
+]
+
+# Black + usort
+[[linter]]
+code = 'UFMT'
+include_patterns = [
+    '**/*.py',
+    '**/*.pyi',
+]
+exclude_patterns = [
+    'submodules/**',
+    '**/submodules/**',
+    'old/**',
+]
+command = [
+    'lintrunner_adapters',
+    'run',
+    'ufmt_linter',
+    '--',
+    '@{{PATHSFILE}}'
+]
+init_command = [
+    'lintrunner_adapters',
+    'run',
+    'pip_init',
+    '--dry-run={{DRYRUN}}',
+    '--no-black-binary',
+    '--requirement=requirements-lintrunner.txt',
+]
+is_formatter = true
+
+[[linter]]
+code = 'MYPY'
+include_patterns = [
+    '**/*.py',
+    '**/*.pyi',
+]
+exclude_patterns = [
+    'submodules/**',
+    '**/submodules/**',
+    'old/**',
+]
+command = [
+    'lintrunner_adapters',
+    'run',
+    'mypy_linter',
+    '--config=mypy.ini',
+    '--show-notes',
+    '--show-disable',
+    '--',
+    '@{{PATHSFILE}}',
+]
+init_command = [
+    'lintrunner_adapters',
+    'run',
+    'pip_init',
+    '--dry-run={{DRYRUN}}',
+    '--requirement=requirements-lintrunner.txt',
+]

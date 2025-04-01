@@ -1,0 +1,22 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+
+# Distribution
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environment
+.venv
+test/.venv
+infra/style/.venv
+
+# Model
+*.circle
+*.pt2
+
+# Reports for test results
+test/reports
+.coverage

@@ -1,0 +1,90 @@
+name: Check PR
+description: Checks pull requests by verifying code format, building the project, and running unit tests.
+
+on:
+  pull_request:
+    branches:
+      - main
+      - rel/*
+
+jobs:
+  check-style:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: "Run configure"
+        run: |
+          ./ccex configure
+
+      - name: "Run linters"
+        run: |
+          ./ccex format --no-apply-patches
+
+  build-and-test:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        torch-version: ["2.5", "2.6"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Get Ubuntu codename
+        id: os
+        run: |
+          CODENAME=$(lsb_release -cs)
+          echo "codename=$CODENAME" >> $GITHUB_OUTPUT
+
+      - name: Download one-compiler package
+        id: download
+        uses: ./.github/actions/download-release-asset
+        with:
+          owner: Samsung
+          repo: ONE
+          tag: 1.29.0
+          package: one-compiler-${{ steps.os.outputs.codename }}_1.29.0_amd64.deb
+
+      - name: "Install one-compiler"
+        run: |
+          dpkg -i ${{ steps.download.outputs.filename }}
+          apt-get install -f -y
+          onecc --version
+
+      - name: "Build package"
+        run: |
+          ./ccex build
+
+      - name: "Run install"
+        shell: bash
+        run: |
+          TORCH_VERSION=${{ matrix.torch-version }}
+          ./ccex install --dist --torch_ver $TORCH_VERSION
+          pt2-to-circle -h
+
+      - name: "Configure test"
+        shell: bash
+        run: |
+          TORCH_VERSION=${{ matrix.torch-version }}
+          ./ccex configure test --torch_ver $TORCH_VERSION
+
+      - name: "Show torch package versions"
+        shell: bash
+        run: |
+          pip list | grep torch
+
+      - name: "Run test"
+        shell: bash
+        run: |
+          ./ccex test
+
+      - name: "Upload artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: "wheel"
+          path: "./dist/"

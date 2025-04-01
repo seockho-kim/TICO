@@ -1,0 +1,89 @@
+#!/bin/bash
+# This script is called by `ccex`
+#
+# [EXPORTED VARIABLES]
+# - CCEX_PROJECT_PATH
+#
+# [WHAT IT DOES]
+# - Install packages for formatting
+# - Create pyhton virtual env for testing
+
+CCEX_SCRIPTS_PATH="${CCEX_PROJECT_PATH}/infra/scripts"
+CCEX_STYLE_PATH="${CCEX_PROJECT_PATH}/infra/style"
+
+function Usage()
+{
+  echo "Usage: $0 configure [COMMAND] ..."
+  echo "Command:"
+  echo "  all (default)  prepare for both format/style checkers and testing environment"
+  echo "  format         prepare for format/style checkers only"
+  echo "  test           prepare for testing environment only"
+  echo "  --help, -h     show this help message"
+}
+
+function Formatting()
+{
+  bash ${CCEX_STYLE_PATH}/install.sh "$@"
+}
+
+function Testing()
+{
+  bash ${CCEX_SCRIPTS_PATH}/test_configure.sh "$@"
+}
+
+_RUN_FORMAT=1
+_RUN_TEST=1
+
+COMMAND="$1"
+if [[ -z "${COMMAND}" ]]; then
+  COMMAND="all"
+fi
+
+case $COMMAND in
+  -h|--help )
+    Usage
+    exit 0
+    ;;
+  format )
+    _RUN_FORMAT=1
+    _RUN_TEST=0
+    shift
+    ;;
+  test )
+    _RUN_FORMAT=0
+    _RUN_TEST=1
+    shift
+    ;;
+  all )
+    _RUN_FORMAT=1
+    _RUN_TEST=1
+    shift
+    ;;
+  '--'*[a-z] )
+    # skip for options (ex. --dev)
+    ;;
+  *)
+    echo "[ERROR] Unknown parameter passed: $COMMAND";
+    Usage
+    exit 255
+    ;;
+esac
+
+if [ ${_RUN_FORMAT} -eq 1 ]; then
+  echo "Prepare format/style checkers..."
+  Formatting "$@"
+  if [ $? -ne 0 ]; then
+    echo "[ERROR] Failed to install formatters."
+    exit 255
+  fi
+fi
+
+if [ ${_RUN_TEST} -eq 1 ]; then
+  echo "Prepare testing environment..."
+  Testing "$@"
+  if [ $? -ne 0 ]; then
+    echo "[ERROR] Failed to install test dependencies."
+    exit 255
+  fi
+fi
+

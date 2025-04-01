@@ -1,0 +1,32 @@
+#!/bin/bash
+
+CCEX_COMMAND_RPATH="infra/command"
+CCEX_PROJECT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+function Usage()
+{
+  echo "Usage: $0 [COMMAND] ..."
+  echo "Command:"
+  for file in "$CCEX_COMMAND_RPATH"/*;
+  do
+    echo "  $(basename "$file")"
+  done
+}
+
+COMMAND=$1; shift
+
+if [[ -z "${COMMAND}" ]]; then
+  Usage
+  exit 255
+fi
+
+COMMAND_FILE="${CCEX_PROJECT_PATH}/${CCEX_COMMAND_RPATH}/${COMMAND}"
+
+if [[ ! -f "${COMMAND_FILE}" ]]; then
+  echo "ERROR: '${COMMAND}' is not supported"
+  exit 255
+fi
+
+export CCEX_PROJECT_PATH
+
+source "${COMMAND_FILE}" "$@"

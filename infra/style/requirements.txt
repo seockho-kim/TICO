@@ -1,0 +1,3 @@
+lintrunner==0.11.0
+lintrunner-adapters==0.11.0
+types-PyYAML

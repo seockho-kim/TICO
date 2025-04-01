@@ -1,0 +1,12 @@
+#!/bin/bash
+# This script is called by `ccex`
+#
+# [EXPORTED VARIABLES]
+# - CCEX_PROJECT_PATH
+#
+# [WHAT IT DOES]
+# - Build a package
+
+CCEX_SCRIPTS_PATH="${CCEX_PROJECT_PATH}/infra/scripts"
+
+source ${CCEX_SCRIPTS_PATH}/build.sh "$@"
