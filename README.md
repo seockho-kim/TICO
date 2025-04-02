@@ -27,7 +27,10 @@ designed for optimized on-device neural network inference.
 0. Prerequisites
 
 - Python 3.10
-- [one-compiler](https://github.com/Samsung/ONE/releases) 1.29.0
+- [one-compiler nightly](https://github.com/Samsung/TICO/issues/2)
+  - This project depends on [ONE](https://github.com/Samsung/ONE) Compiler, and it uses 
+  nightly features that are not yet available in the official release. Until one-compiler 1.30.0
+  is released, you must use a prebuilt nighlty version of ONE Compiler.
 
 We highly recommend to use a virtual env, e.g., conda.
 
