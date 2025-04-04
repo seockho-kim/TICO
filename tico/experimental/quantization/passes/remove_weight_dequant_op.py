@@ -30,11 +30,16 @@ from tico.utils.validate_args_kwargs import (
 )
 
 
-def get_data_from_buffers(exported_program: ExportedProgram, node: torch.fx.Node):
+def get_constant(exported_program: ExportedProgram, node: torch.fx.Node):
     assert isinstance(node, torch.fx.Node)
-    named_buffers = dict(exported_program.named_buffers())
-    buffer_name = exported_program.graph_signature.inputs_to_buffers[node.name]
-    return named_buffers[buffer_name]
+    if node.name in exported_program.constants:
+        return exported_program.constants[node.name]
+    elif node.name in exported_program.graph_signature.inputs_to_buffers:
+        buffer_name = exported_program.graph_signature.inputs_to_buffers[node.name]
+        named_buffer = dict(exported_program.named_buffers())
+        return named_buffer[buffer_name]
+    else:
+        raise RuntimeError("NYI constant")
 
 
 @trace_graph_diff_on_pass
@@ -103,8 +108,8 @@ class RemoveWeightDequantOp(PassBase):
 
             quant_param = QuantParam()
             if isinstance(dq_args, DequantizePerChannelArgs):
-                scales = get_data_from_buffers(exported_program, dq_args.scales)
-                zero_ps = get_data_from_buffers(exported_program, dq_args.zero_points)
+                scales = get_constant(exported_program, dq_args.scales)
+                zero_ps = get_constant(exported_program, dq_args.zero_points)
                 quant_param.scale = scales.tolist()
                 quant_param.zero_point = zero_ps.tolist()
                 quant_param.quantized_dimension = dq_args.axis
