@@ -37,9 +37,6 @@ from tico.passes.cast_aten_where_arg_type import CastATenWhereArgType
 from tico.passes.cast_mixed_type_args import CastMixedTypeArgs
 from tico.passes.const_prop_pass import ConstPropPass
 from tico.passes.convert_conv1d_to_conv2d import ConvertConv1dToConv2d
-from tico.passes.convert_index_to_resize_nearest_neighbor import (
-    ConvertIndexToResizeNearestNeighbor,
-)
 from tico.passes.convert_layout_op_to_reshape import ConvertLayoutOpToReshape
 from tico.passes.convert_repeat_to_expand_copy import ConvertRepeatToExpandCopy
 from tico.passes.convert_to_relu6 import ConvertToReLU6
@@ -60,6 +57,7 @@ from tico.passes.legalize_predefined_layout_operators import (
     LegalizePreDefinedLayoutOperators,
 )
 from tico.passes.lower_pow2_to_mul import LowerPow2ToMul
+from tico.passes.lower_to_resize_nearest_neighbor import LowerToResizeNearestNeighbor
 from tico.passes.lower_to_slice import LowerToSlice
 from tico.passes.merge_consecutive_cat import MergeConsecutiveCat
 from tico.passes.remove_nop import RemoveNop
@@ -131,7 +129,11 @@ def traced_run_decompositions(exported_program: ExportedProgram):
 
     if torch.__version__.startswith("2.5"):
         return run_decompositions_v25(exported_program)
-    elif torch.__version__.startswith("2.6") or torch.__version__.startswith("2.7"):
+    elif (
+        torch.__version__.startswith("2.6")
+        or torch.__version__.startswith("2.7")
+        or torch.__version__.startswith("2.8")
+    ):
         return run_decompositions(exported_program)
     else:
         raise RuntimeError(f"Unsupported PyTorch version: {torch.__version__}")
@@ -180,7 +182,10 @@ def convert_exported_module_to_circle(
 
     # This pass should be run before 'RestoreLinear' and after 'decompose_quantize_op'.
     # TODO run pass regardless of the orders.
-    with SuppressWarning(UserWarning, ".*quantize_per_tensor"):
+    with SuppressWarning(UserWarning, ".*quantize_per_tensor"), SuppressWarning(
+        UserWarning,
+        ".*TF32 acceleration on top of oneDNN is available for Intel GPUs.*",
+    ):
         # Warning details:
         #   ...site-packages/torch/_subclasses/functional_tensor.py:364
         #   UserWarning: At pre-dispatch tracing, we assume that any custom op marked with
@@ -215,7 +220,7 @@ def convert_exported_module_to_circle(
             ConstPropPass(),
             SegmentIndexSelectConst(),
             LegalizeCausalMaskValue(enabled=config.get("legalize_causal_mask_value")),
-            ConvertIndexToResizeNearestNeighbor(),
+            LowerToResizeNearestNeighbor(),
             LegalizePreDefinedLayoutOperators(),
             LowerPow2ToMul(),
             ConvertConv1dToConv2d(),

@@ -852,7 +852,7 @@ class ReshapeArgs:
 @dataclass
 class ResizeNearestNeighborArgs:
     """
-    # Only consider `torch.nn.functional.interpolate(x, scale_factor=2.0, mode='nearest')` case.
+    # Maps from `torch.nn.functional.interpolate(x, scale_factor=scale_factor, mode='nearest')` case.
     """
 
     input: torch.fx.Node
@@ -920,7 +920,7 @@ class SliceArgs:
     """
 
     input: torch.fx.Node
-    dim: int
+    dim: int = 0
     start: Optional[int] = None
     end: Optional[int] = None
     step: Optional[int] = 1
@@ -1076,6 +1076,18 @@ class UnSqueezeArgs:
 
     input: torch.fx.Node
     dim: int
+
+
+@enforce_type
+@dataclass
+class UpsampleNearest2DVecArgs:
+    """
+    upsample_nearest2d.vec(Tensor input, SymInt[]? output_size, float[]? scale_factors) -> Tensor
+    """
+
+    input: torch.fx.Node
+    output_size: Optional[List[int]]
+    scale_factors: Optional[List[float]]
 
 
 @enforce_type

@@ -29,6 +29,25 @@ def skip(reason):
     return __inner_skip
 
 
+def skip_if(predicate, reason):
+    def __inner_skip(orig_class):
+        setattr(orig_class, "__tag_skip", True)
+        setattr(orig_class, "__tag_skip_reason", reason)
+
+        def __init__(self, *args_, **kwargs_):
+            pass
+
+        # Ignore initialization of skipped modules
+        orig_class.__init__ = __init__
+
+        return orig_class
+
+    if predicate:
+        return __inner_skip
+    else:
+        return lambda x: x
+
+
 def test_without_pt2(orig_class):
     setattr(orig_class, "__tag_test_without_pt2", True)
     return orig_class

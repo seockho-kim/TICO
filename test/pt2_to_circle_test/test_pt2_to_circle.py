@@ -71,7 +71,12 @@ def convert_nnmodule_to_pt2(
     model: torch.nn.Module, example_inputs: tuple, pt2_model_path: str
 ):
     # Create .pt2 model
-    with torch.no_grad(), SuppressWarning(UserWarning, ".*quantize_per_tensor"):
+    with torch.no_grad(), SuppressWarning(
+        UserWarning, ".*quantize_per_tensor"
+    ), SuppressWarning(
+        UserWarning,
+        ".*TF32 acceleration on top of oneDNN is available for Intel GPUs.*",
+    ):
         # Warning details:
         #   ...site-packages/torch/_subclasses/functional_tensor.py:364
         #   UserWarning: At pre-dispatch tracing, we assume that any custom op marked with

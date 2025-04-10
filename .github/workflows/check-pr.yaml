@@ -61,7 +61,7 @@ jobs:
       image: ubuntu:22.04
     strategy:
       matrix:
-        torch-version: ["2.5", "2.6"]
+        torch-version: ["2.5", "2.6", "nightly"] # TODO: Add 2.7 when it is released
     steps:
       - name: Install dependencies
         run: |
