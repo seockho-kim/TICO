@@ -24,11 +24,11 @@ jobs:
       - name: "Check signed-off"
         run: |
           # Get commit body
-          git log origin/${GITHUB_BASE_REF}..HEAD --format=%b > commit_msg.txt
+          git log origin/"$GITHUB_BASE_REF"..HEAD --format=%b > commit_msg.txt
           sed "/^$/d" commit_msg.txt > commit_body.txt
 
           # Check string starting from "TICO-DCO-1.0-Signed-off-by:"
-          count=$(grep -c "TICO-DCO-1.0-Signed-off-by:" commit_body.txt)
+          count="$(grep -c "TICO-DCO-1.0-Signed-off-by:" commit_body.txt)"
           if [[ ! "$count" -ge "1" ]]; then
             echo "Your commit message does not contain the expected signoff information."
             echo "Please add a line like 'TICO-DCO-1.0-Signed-off-by: <NAME> <<EMAIL>>' to your commit message."
