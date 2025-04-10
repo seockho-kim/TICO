@@ -7,6 +7,38 @@ on:
       - rel/*
 
 jobs:
+  check-commit-message:
+    name: Check commit message
+    runs-on: ubuntu-22.04
+    # Skip on draft, check on draft -> ready
+    if: github.repository_owner == 'Samsung' && github.event.pull_request.draft == false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Checkout PR head commit
+          # Checkout Action use merge commit as default
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Fetch all history and branch (default: 1)
+          fetch-depth: 0
+      - name: "Check signed-off"
+        run: |
+          # Get commit body
+          git log origin/${GITHUB_BASE_REF}..HEAD --format=%b > commit_msg.txt
+          sed "/^$/d" commit_msg.txt > commit_body.txt
+
+          # Check string starting from "TICO-DCO-1.0-Signed-off-by:"
+          count=$(grep -c "TICO-DCO-1.0-Signed-off-by:" commit_body.txt)
+          if [[ ! "$count" -ge "1" ]]; then
+            echo "Your commit message does not contain the expected signoff information."
+            echo "Please add a line like 'TICO-DCO-1.0-Signed-off-by: <NAME> <<EMAIL>>' to your commit message."
+            echo "Refer to https://github.com/Samsung/TICO/wiki/TICO-Developer's-Certificate-of-Origin"
+            exit 1
+          fi
+
+          echo "TICO-DCO-1.0-Signed-off-by is OK"
+
+
   check-style:
     runs-on: ubuntu-22.04
     steps:
