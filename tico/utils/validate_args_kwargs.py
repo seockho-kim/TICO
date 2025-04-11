@@ -852,7 +852,7 @@ class ReshapeArgs:
 @dataclass
 class ResizeNearestNeighborArgs:
     """
-    # Maps from `torch.nn.functional.interpolate(x, scale_factor=scale_factor, mode='nearest')` case.
+    # Mapped from `torch.nn.functional.interpolate(x, scale_factor=scale_factor, mode='nearest')` case.
     """
 
     input: torch.fx.Node

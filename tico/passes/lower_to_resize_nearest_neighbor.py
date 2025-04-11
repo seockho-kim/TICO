@@ -35,32 +35,6 @@ class LowerToResizeNearestNeighbor(PassBase):
     This pass lowers `aten.index` and `aten.upsample_nearest2d.vec` to `circle_custom.resize_nearest_neighbor` when it is possible.
 
     Until torch 2.7, `torch.nn.functional.interpolate` is converted to `aten.index` op.
-
-        [EXAMPLE]
-        class InterpolateDouble(torch.nn.Module):
-            def __init__(self):
-                super().__init__()
-
-            def forward(self, x):
-                return torch.nn.functional.interpolate(x, scale_factor=2.0, mode="nearest")
-
-            def get_example_inputs(self):
-                return (torch.randn(1, 2, 3, 4),)
-
-        [EXPORTED GRAPH]
-        [constants]
-            _prop_tensor_constant0 = tensor([0, 0, 1, 1, 2, 2, 3, 3]
-            _prop_tensor_constant1 = tensor([[0], [0], [1], [1], [2], [2]])
-
-        [graph]
-            %_prop_tensor_constant0 : [num_users=1] = placeholder[target=_prop_tensor_constant0]
-            %_prop_tensor_constant1 : [num_users=1] = placeholder[target=_prop_tensor_constant1]
-            %x : [num_users=1] = placeholder[target=x]
-            %_to_copy : [num_users=1] = call_function[target=torch.ops.aten._to_copy.default](args = (%x,), kwargs = {dtype: torch.float32})
-            %index : [num_users=1] = call_function[target=torch.ops.aten.index.Tensor](args = (%_to_copy, [None, None, %_prop_tensor_constant1, %_prop_tensor_constant0]), kwargs = {})
-            %_to_copy_3 : [num_users=1] = call_function[target=torch.ops.aten._to_copy.default](args = (%index,), kwargs = {dtype: torch.float32})
-            return (_to_copy_3,)
-
         [BEFORE PASS]
         input - aten.index - output
 
@@ -68,6 +42,11 @@ class LowerToResizeNearestNeighbor(PassBase):
         input - aten.permute(NCHW_to_NHWC) - circle_custom.resize_nearest_neighbor - aten.permute(NHWC_to_NCHW) - output
 
     Since torch 2.8, `torch.nn.functional.interpolate` is converted to aten.upsample_nearest2d.vec` op.
+        [BEFORE PASS]
+        input - aten.upsample_nearest2d.vec - output
+
+        [AFTER PASS]
+        input - aten.permute(NCHW_to_NHWC) - circle_custom.resize_nearest_neighbor - aten.permute(NHWC_to_NCHW) - output
     """
 
     def __init__(self):
