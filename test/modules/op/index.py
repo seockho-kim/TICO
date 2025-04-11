@@ -57,9 +57,6 @@ class SimpleIndexTensorBuffer(torch.nn.Module):
         return (torch.randn(2, 3), torch.randn(2, 3))
 
 
-# Without buffer, there is `aten_clone_default` op which is converted to `CircleTranspose`.
-# But, circle-interpreter doesn't support the `CircleTranspose` whose type is int64.
-@tag.skip(reason="Not Support Operator")
 class SimpleIndexTensor(torch.nn.Module):
     def __init__(self):
         super().__init__()
@@ -87,8 +84,6 @@ class IndexTensor2x1(torch.nn.Module):
         return (torch.randn(2, 3), torch.randn(2, 3))
 
 
-# circle-interpreter doesn't support the `CircleTranspose` whose type is int64.
-@tag.skip(reason="Not Support Operator")
 class IndexTensorAxis1(torch.nn.Module):
     def __init__(self):
         super().__init__()
@@ -99,3 +94,29 @@ class IndexTensorAxis1(torch.nn.Module):
 
     def get_example_inputs(self):
         return (torch.randn(2, 3), torch.randn(2, 3))
+
+
+class IndexTensorAxis0And1(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x):
+        return x[1, [2, 3]]
+
+    def get_example_inputs(self):
+        return (torch.randn(5, 4),)
+
+
+class IndexTensorWithSlice(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x, y):
+        z = x + y
+        return z[1:, [0, 0], :, :2]
+
+    def get_example_inputs(self):
+        return (
+            torch.randn(3, 3, 6, 6),
+            torch.randn(3, 3, 6, 6),
+        )

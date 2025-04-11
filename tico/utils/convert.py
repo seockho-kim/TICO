@@ -58,7 +58,7 @@ from tico.passes.legalize_predefined_layout_operators import (
 )
 from tico.passes.lower_pow2_to_mul import LowerPow2ToMul
 from tico.passes.lower_to_resize_nearest_neighbor import LowerToResizeNearestNeighbor
-from tico.passes.lower_to_slice import LowerToSlice
+from tico.passes.lower_to_slice import passes as LowerToSlicePasses
 from tico.passes.merge_consecutive_cat import MergeConsecutiveCat
 from tico.passes.remove_nop import RemoveNop
 from tico.passes.remove_redundant_assert_nodes import RemoveRedundantAssertionNodes
@@ -224,7 +224,7 @@ def convert_exported_module_to_circle(
             LegalizePreDefinedLayoutOperators(),
             LowerPow2ToMul(),
             ConvertConv1dToConv2d(),
-            LowerToSlice(),
+            *LowerToSlicePasses(),
         ]
     )
     circle_legalize.run(exported_program)

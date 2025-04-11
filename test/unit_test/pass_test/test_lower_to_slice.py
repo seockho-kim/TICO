@@ -13,14 +13,22 @@
 # limitations under the License.
 
 import torch
-from tico.passes.lower_to_slice import LowerToSlice
+from tico.passes.const_prop_pass import ConstPropPass
+from tico.passes.fill_meta_val import FillMetaVal
+from tico.passes.lower_to_slice import LowerIndexSelectToSlice, LowerSelectCopyToSlice
+from tico.passes.remove_nop import RemoveNop
+from tico.passes.segment_index_select import SegmentIndexSelectConst
 
+from test.modules.op.index_select import (
+    SimpleIndexSelectWithConstIndex,
+    SimpleIndexSelectWithConstScalarIndex,
+)
 from test.modules.op.select import SimpleConstIndex
 from test.utils.helper import num_of_ops
 from test.utils.pass_value_test import SinglePassValueTest
 
 
-class TestLowerToSlice(SinglePassValueTest):
+class TestLowerSelectCopyToSlice(SinglePassValueTest):
     def test_pass(self):
         self.setup(SimpleConstIndex())
         self.assertEqual(
@@ -30,7 +38,7 @@ class TestLowerToSlice(SinglePassValueTest):
             num_of_ops(self.exported_program(), [torch.ops.aten.slice.Tensor]), 3
         )
 
-        self.run_value_test(LowerToSlice())
+        self.run_value_test(LowerSelectCopyToSlice())
         self.assertEqual(
             num_of_ops(self.exported_program(), [torch.ops.aten.select.int]), 0
         )
@@ -39,4 +47,56 @@ class TestLowerToSlice(SinglePassValueTest):
         )
         self.assertEqual(
             num_of_ops(self.exported_program(), [torch.ops.aten.reshape.default]), 1
+        )
+
+
+class TestLowerIndexSelectToSliceWithScalarIndex(SinglePassValueTest):
+    def test_pass(self):
+        self.setup(SimpleIndexSelectWithConstScalarIndex())
+        self.assertEqual(
+            num_of_ops(self.exported_program(), [torch.ops.aten.index_select.default]),
+            1,
+        )
+
+        self.run_pass(ConstPropPass())
+        self.run_pass(RemoveNop())
+        self.run_value_test(LowerIndexSelectToSlice())
+        self.assertEqual(
+            num_of_ops(self.exported_program(), [torch.ops.aten.index_select.default]),
+            0,
+        )
+        self.assertEqual(
+            num_of_ops(self.exported_program(), [torch.ops.aten.slice.Tensor]), 1
+        )
+        self.assertEqual(
+            num_of_ops(self.exported_program(), [torch.ops.aten.reshape.default]), 1
+        )
+
+
+class TestLowerIndexSelectToSliceWithLongIndice(SinglePassValueTest):
+    def test_pass(self):
+        self.setup(SimpleIndexSelectWithConstIndex())
+        self.assertEqual(
+            num_of_ops(self.exported_program(), [torch.ops.aten.index_select.default]),
+            1,
+        )
+
+        self.run_pass(ConstPropPass())
+        self.run_pass(RemoveNop())
+        self.run_pass(SegmentIndexSelectConst())
+        self.run_pass(FillMetaVal())
+        self.run_value_test(LowerIndexSelectToSlice())
+
+        self.assertEqual(
+            num_of_ops(self.exported_program(), [torch.ops.aten.index_select.default]),
+            0,
+        )
+        self.assertEqual(
+            num_of_ops(self.exported_program(), [torch.ops.aten.slice.Tensor]), 3
+        )
+        self.assertEqual(
+            num_of_ops(self.exported_program(), [torch.ops.aten.reshape.default]), 3
+        )
+        self.assertEqual(
+            num_of_ops(self.exported_program(), [torch.ops.aten.cat.default]), 1
         )

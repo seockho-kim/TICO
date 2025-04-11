@@ -17,37 +17,56 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import torch.fx
 import torch
+from torch._export.utils import (
+    get_buffer,
+    get_lifted_tensor_constant,
+    get_param,
+    is_buffer,
+    is_lifted_tensor_constant,
+    is_param,
+)
 from torch.export import ExportedProgram
 
 from tico.passes import ops
 
 from tico.serialize.circle_graph import extract_shape
 from tico.utils import logging
+
+from tico.utils.graph import is_single_value_tensor
 from tico.utils.passes import PassBase, PassResult
 from tico.utils.trace_decorators import trace_const_diff_on_pass
-from tico.utils.validate_args_kwargs import SelectCopyIntArgs
+from tico.utils.validate_args_kwargs import IndexSelectArgs, SelectCopyIntArgs
 
 
-@trace_const_diff_on_pass
-class LowerToSlice(PassBase):
+def passes():
     """
     This pass lowers aten.ops.select/selct_copy.int to aten.ops.slice.
     We support only when it is index in args, which is a constant tensor.
     Since the index in node'args isn't constant tensor, we can't support converting the below op list yet.
-    - torch.ops.aten.index_select.default
+
+    TODO Support below with const indices
     - torch.ops.aten.embedding.default
     - torch.ops.aten.index.Tensor
+    """
+    return [
+        LowerSelectCopyToSlice(),
+        LowerIndexSelectToSlice(),
+    ]
 
+
+@trace_const_diff_on_pass
+class LowerSelectCopyToSlice(PassBase):
+    """
     [before]
-            input (tensor, dim, *index)
+            input
                 |
-            select
+            select (tensor, dim, *index)
                 |
             output
 
     [after]
 
-            input (tensor, dim, *index)
+            input
                 |
             slice (input=tensor, dim=dim, start=index, end=index+1, step=1)
                 |
@@ -83,6 +102,101 @@ class LowerToSlice(PassBase):
 
             start = index
             end = index + 1
+            step = 1
+            slice_copy_args = (input, dim, start, end, step)
+
+            with graph.inserting_after(node):
+                # slice
+                slice_node = graph.call_function(
+                    torch.ops.aten.slice.Tensor, args=slice_copy_args
+                )
+                node_shape = extract_shape(node)
+            with graph.inserting_after(slice_node):
+                # reshape
+                reshape_args = (slice_node, list(node_shape))
+                reshape_node = graph.call_function(
+                    torch.ops.aten.reshape.default, args=reshape_args
+                )
+                node.replace_all_uses_with(reshape_node, propagate_meta=False)
+
+            modified = True
+            logger.debug(
+                f"{node.name} is replaced with {slice_node.name} and {reshape_node.name} operators"
+            )
+
+        graph.eliminate_dead_code()
+        graph.lint()
+        graph_module.recompile()
+
+        return PassResult(modified)
+
+
+@trace_const_diff_on_pass
+class LowerIndexSelectToSlice(PassBase):
+    """
+
+    [before]
+            input
+                |
+            index_select.default  (tensor, dim, *index)
+                |
+            output
+
+    [after]
+
+            input
+                |
+            slice (input=tensor, dim=dim, start=index, end=index+1, step=1)
+                |
+            reshape (input=slice_copy, size=select_shape)
+                |
+            output
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def call(self, exported_program: ExportedProgram) -> PassResult:
+        logger = logging.getLogger(__name__)
+
+        graph_module = exported_program.graph_module
+        graph = graph_module.graph
+        modified = False
+        for node in graph.nodes:
+            if not node.op == "call_function":
+                continue
+
+            if not node.target in ops.aten.index_select:
+                continue
+            args = IndexSelectArgs(*node.args, **node.kwargs)
+            input = args.input
+            dim = args.dim
+            index = args.index
+
+            input_shape = extract_shape(input)
+            if dim < 0:
+                dim = dim % len(input_shape)
+
+            if isinstance(index, torch.fx.Node):
+                if is_lifted_tensor_constant(exported_program, index):
+                    index = get_lifted_tensor_constant(exported_program, index)  # type: ignore[assignment]
+                elif is_param(exported_program, index):
+                    index = get_param(exported_program, index)  # type: ignore[assignment]
+                elif is_buffer(exported_program, index):
+                    index = get_buffer(exported_program, index)  # type: ignore[assignment]
+                else:
+                    continue
+
+            if not isinstance(index, torch.Tensor):
+                continue
+
+            if not is_single_value_tensor(index):
+                # need to be lowered by LowerIndexSelect pass
+                continue
+            index_int = index.item()  # convert scalar tensor to int
+
+            start = index_int
+            end = index_int + 1
             step = 1
             slice_copy_args = (input, dim, start, end, step)
 
