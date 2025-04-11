@@ -32,6 +32,7 @@ from tico.utils.validate_args_kwargs import (
     LinearArgs,
     MulTensorArgs,
     PermuteArgs,
+    ReshapeArgs,
 )
 
 
@@ -102,6 +103,26 @@ class InsertQuantizeOnDtypeMismatch(PassBase):
     output dtype (int16) is updated to the input dtype (uint8), which breaks the semantics.
     This problem can occur in the tools (ex: circle2circle) that automatically apply type inference.
     - To resolve the issue, we insert quantize operators not to violate circle's type inference logic.
+    - NOTE For some cases, Quantize Op is inserted before the operators.
+
+    Let's assume Reshape Op's input is int16 and output is uint8. There are two possible places to insert
+    Quantize Op.
+
+    1. Insert Quantize before Reshape.
+
+    ```
+    Predecessor (int16)-> Quantize (uint8) -> Reshape (uint8) -> ...
+    ```
+
+    2. Insert Quantize after Reshape.
+
+    ```
+    Predecessor (int16)-> Reshape (int16) -> Quantize (uint8) -> ...
+    ```
+
+    Comparing 1) and 2), the difference is that Reshape operation is conducted in uint8 or int16.
+    We go with 1), which does Reshape in uint8, for faster execution. Note that Reshape Op does not
+    change the value, so its dytpe does not affect accuracy.
     """
 
     def __init__(self):
@@ -264,7 +285,38 @@ class InsertQuantizeOnDtypeMismatch(PassBase):
                     quantize = _insert_quantize_op_before(node, inp)
 
                     quantize.meta[QPARAM_KEY] = copy.deepcopy(node.meta[QPARAM_KEY])
-                    node.meta[QPARAM_KEY] = _u8_to_i16(node.meta[QPARAM_KEY])
+                    logger.debug(
+                        f"quantize_per_tensor.default is inserted before {node.name}."
+                    )
+                elif qparam_dtype(inp) == "uint8" and qparam_dtype(node) == "int16":
+                    quantize = _insert_quantize_op_after(node)
+
+                    quantize.meta[QPARAM_KEY] = copy.deepcopy(node.meta[QPARAM_KEY])
+                    node.meta[QPARAM_KEY] = _i16_to_u8(node.meta[QPARAM_KEY])
+                    logger.debug(
+                        f"quantize_per_tensor.default is inserted after {node.name}."
+                    )
+                else:
+                    raise NotYetSupportedError("Unsupported dtype")
+            elif node.target == torch.ops.aten.reshape.default:
+                reshape_args = ReshapeArgs(*node.args, **node.kwargs)
+                inp = reshape_args.input
+
+                if QPARAM_KEY not in inp.meta:
+                    continue
+
+                if QPARAM_KEY not in node.meta:
+                    continue
+
+                if qparam_dtype(inp) == qparam_dtype(node):
+                    continue
+
+                if qparam_dtype(inp) == "int16" and qparam_dtype(node) == "uint8":
+                    # A new Quantize Op (s16 to u8) is inserted before (not after)
+                    # reshape Op to reduce tensor size ealier
+                    quantize = _insert_quantize_op_before(node, inp)
+
+                    quantize.meta[QPARAM_KEY] = copy.deepcopy(node.meta[QPARAM_KEY])
                     logger.debug(
                         f"quantize_per_tensor.default is inserted before {node.name}."
                     )
