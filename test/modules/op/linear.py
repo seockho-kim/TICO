@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import torch
+from torch.export import Dim
 
 
 class SimpleLinear(torch.nn.Module):
@@ -25,6 +26,10 @@ class SimpleLinear(torch.nn.Module):
 
     def get_example_inputs(self):
         return (torch.randn(3, 3),)
+
+    # TODO enable this after introducing onert in CI.
+    # def get_dynamic_shapes(self):
+    #     return {"arg": {0: Dim("batch")}}
 
 
 class LinearWithDictOutput(torch.nn.Module):
