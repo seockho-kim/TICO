@@ -34,6 +34,16 @@ This file includes OpArgs classes that provide arguments with type annotations.
 
 @enforce_type
 @dataclass
+class AbsArgs:
+    """
+    abs(Tensor self) -> Tensor
+    """
+
+    input: torch.fx.Node
+
+
+@enforce_type
+@dataclass
 class AddTensorArgs:
     """
     add.Tensor(Tensor self, Tensor other, *, Scalar alpha=1) -> Tensor
