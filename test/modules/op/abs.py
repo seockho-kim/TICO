@@ -24,3 +24,14 @@ class SimpleAbs(torch.nn.Module):
 
     def get_example_inputs(self):
         return (torch.randn(3, 3),)
+
+
+class SimpleAbsWithNone(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, input):
+        return torch.abs(input), None
+
+    def get_example_inputs(self):
+        return (torch.randn(3, 3),)
