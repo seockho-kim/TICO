@@ -316,12 +316,6 @@ class LegalizePreDefinedLayoutOperators(PassBase):
         ceil_mode = args.ceil_mode
         if ceil_mode:
             raise NotYetSupportedError("Only support non-ceil model.")
-        count_include_pad = args.count_include_pad
-        if not count_include_pad:
-            # NOTE count_include_pad = False can be partially supported with SAME padding in circle.
-            raise NotYetSupportedError(
-                "For the case that the count_include_pad is False is not yet supported."
-            )
         divisor_override = args.divisor_override
         if divisor_override is not None:
             raise NotYetSupportedError(
