@@ -151,6 +151,7 @@ class AvgPool2DVisitor(NodeVisitor):
                 prefix=f"{input.name}_pad_output",
                 shape=padded_input_shape,
                 dtype=input_dtype,
+                source_node=node,
             )
             pad_operator = define_pad_node(
                 self.graph, self._op_codes, [input, padding_vec], [padded_input_tensor]
