@@ -140,6 +140,10 @@ def verify_circle(circle_model_path: str, opt_circle_model_str: str):
 @print_name_on_exception
 def infer_nnmodule(model: torch.nn.Module, example_inputs: tuple):
     with torch.no_grad():
+        # Model should be frozen to compare the result with others.
+        # e.g. BatchNorm running_mean/running_var will be updated during training mode, thus changing the model behavior.
+        model.eval()
+
         _args, _kwargs = helper.get_args_kwargs(example_inputs)
         torch_result = model.forward(*_args, **_kwargs)
 
