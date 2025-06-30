@@ -896,6 +896,16 @@ class ResizeNearestNeighborArgs:
 
 @enforce_type
 @dataclass
+class RoundArgs:
+    """
+    rsqrt(Tensor self) -> Tensor
+    """
+
+    input: torch.fx.Node
+
+
+@enforce_type
+@dataclass
 class RsqrtArgs:
     """
     rsqrt(Tensor self) -> Tensor
