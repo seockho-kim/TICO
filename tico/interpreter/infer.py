@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 import torch
@@ -20,40 +20,46 @@ from circle_schema import circle
 
 from tico.interpreter.interpreter import Interpreter
 from tico.serialize.circle_mapping import np_dtype_from_circle_dtype, to_circle_dtype
+from tico.utils.installed_packages import is_dynamic_cache_available
 
 
-def preprocess_inputs(inputs: Any):
-    """
-    Preprocess user inputs for circle inference.
-
-    1. None inputs are ignored.
-    2. A list/tuple input is flatten when a torch module is exported.
-      e.g. inputs = (torch.Tensor, [2,3,4]) -> inputs = (torch.Tensor, 2, 3, 4)
-    """
-    l = []
-    for value in inputs:
-        if value == None:
+def flatten_and_convert(inputs: Sequence) -> tuple:
+    result = []  # type: ignore[var-annotated]
+    for item in inputs:
+        if item is None:
             continue
-        if isinstance(value, (tuple, list)):
-            for val in value:
-                l.append(val)
-        else:
-            l.append(value)
-    # Check if it is a list of a list.
-    if any(isinstance(item, (tuple, list)) for item in l):
-        l = preprocess_inputs(l)
-    return tuple(l)
+
+        # 1. recursion on list and tuple
+        if isinstance(item, (list, tuple)):
+            result.extend(flatten_and_convert(item))
+            continue
+
+        # 2. handle DynamicCache
+        if is_dynamic_cache_available():
+            from transformers.cache_utils import DynamicCache
+
+            if isinstance(item, DynamicCache):
+                # NOTE The tensor order is: key_in → key_out → value_in → value_out
+                #
+                # Refer to https://github.com/huggingface/transformers/blob/3457e8e73e4f5532cc69059682b1ba4484d7e7e8/src/transformers/cache_utils.py#L557
+                # ```py
+                # self.key_cache[layer_idx] = torch.cat([self.key_cache[layer_idx], key_states], dim=-2)
+                # self.value_cache[layer_idx] = torch.cat([self.value_cache[layer_idx], value_states], dim=-2)
+                # ```
+                result.extend(item.key_cache)
+                result.extend(item.value_cache)
+                continue
+
+        # 3. Convert to tensors
+        result.append(item if isinstance(item, torch.Tensor) else torch.tensor(item))
+
+    return tuple(result)
 
 
 def infer(circle_binary: bytes, *args: Any, **kwargs: Any) -> Any:
     # When converting a model, it is assumed that the order of keyword arguments is maintained.
-    user_inputs = args + tuple(kwargs.values())
-    user_inputs = preprocess_inputs(user_inputs)
-    # Cast them to torch.Tensor to make it simple.
-    user_inputs = tuple(
-        torch.tensor(user_input) if type(user_input) != torch.Tensor else user_input
-        for user_input in user_inputs
-    )
+    raw_inputs = args + tuple(kwargs.values())
+    user_inputs = flatten_and_convert(raw_inputs)
 
     # Get input spec from circle binary.
     model = circle.Model.Model.GetRootAsModel(circle_binary, 0)
