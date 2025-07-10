@@ -85,22 +85,5 @@ def use_onert(orig_class):
     return orig_class
 
 
-def init_args(*args, **kwargs):
-    def __inner_init_args(orig_class):
-        orig_init = orig_class.__init__
-        # Make copy of original __init__, so we can call it without recursion
-
-        def __init__(self, *args_, **kwargs_):
-            args_ = (*args, *args_)
-            kwargs_ = {**kwargs, **kwargs_}
-
-            orig_init(self, *args_, **kwargs_)  # Call the original __init__
-
-        orig_class.__init__ = __init__
-        return orig_class
-
-    return __inner_init_args
-
-
 def is_tagged(cls, tag: str):
     return hasattr(cls, f"__tag_{tag}")

@@ -18,8 +18,10 @@ import os
 import unittest
 from copy import deepcopy
 from pathlib import Path
+from typing import Optional
 
 import torch
+from tico.config.base import CompileConfigBase
 
 from test.pt2_to_circle_test.test_pt2_to_circle import (
     convert_nnmodule_to_circle,
@@ -31,7 +33,6 @@ from test.pt2_to_circle_test.test_pt2_to_circle import (
     verify_circle,
 )
 from test.utils.base_builders import TestDictBuilderBase, TestRunnerBase
-
 from test.utils.tag import is_tagged
 
 
@@ -85,11 +86,21 @@ class NNModuleTest(TestRunnerBase):
 
             return wrapper
 
-    def _run(self, without_pt2=False, dynamic: bool = False, without_inference=False):
+    def _run(
+        self,
+        without_pt2=False,
+        dynamic: bool = False,
+        without_inference=False,
+    ):
         dynamic_shapes = None
         if dynamic:
             assert hasattr(self.nnmodule, "get_dynamic_shapes")
             dynamic_shapes = self.nnmodule.get_dynamic_shapes()  # type: ignore[operator]
+
+        compile_config: Optional[CompileConfigBase] = None
+        if hasattr(self.nnmodule, "get_compile_config"):
+            get_compile_config = getattr(self.nnmodule, "get_compile_config")
+            compile_config = get_compile_config()
 
         test_prefix = self.test_dir / self.test_name.replace(
             "test.modules.", ""
@@ -115,6 +126,7 @@ class NNModuleTest(TestRunnerBase):
                 deepcopy(self.example_inputs),
                 circle_model_path,
                 dynamic_shapes=dynamic_shapes,
+                config=compile_config,
             )
         else:
             # torch.nn.Module --> ExportedProgram ----------------------------------------> circle
@@ -124,7 +136,11 @@ class NNModuleTest(TestRunnerBase):
                 pt2_model_path,
                 dynamic_shapes=dynamic_shapes,
             )
-            convert_pt2_to_circle(pt2_model_path, circle_model_path)
+            convert_pt2_to_circle(
+                pt2_model_path,
+                circle_model_path,
+                config=compile_config,
+            )
 
         verify_circle(circle_model_path, opt_circle_model_path)
 

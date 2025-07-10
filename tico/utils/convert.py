@@ -182,8 +182,13 @@ def check_training_ops(exported_program: ExportedProgram):
 
 def convert_exported_module_to_circle(
     exported_program: ExportedProgram,
-    config: CompileConfigBase = get_default_config(),
+    config: Optional[CompileConfigBase] = None,
 ) -> bytes:
+    if not config:
+        config = get_default_config()
+
+    assert isinstance(config, CompileConfigBase)
+
     logger = logging.getLogger(__name__)
     logger.debug("Input ExportedProgram (must be core aten)")
     logger.debug(exported_program)

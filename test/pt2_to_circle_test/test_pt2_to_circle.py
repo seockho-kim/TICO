@@ -16,15 +16,14 @@ import os
 import subprocess
 from functools import wraps
 from pathlib import Path
-from typing import Any, List, TYPE_CHECKING
+from typing import Any, List, Optional
 
-if TYPE_CHECKING:
-    import numpy as np
 import numpy as np
+
 import tico.pt2_to_circle
-import tico.utils
-import tico.utils.model
+
 import torch
+from tico.config.base import CompileConfigBase
 from tico.utils.convert import convert_exported_module_to_circle
 from tico.utils.utils import SuppressWarning
 from torch.export import export
@@ -86,8 +85,12 @@ def convert_nnmodule_to_pt2(
 
 
 @print_name_on_exception
-def convert_pt2_to_circle(pt2_model_path: str, circle_model_path: str):
-    tico.pt2_to_circle.convert(pt2_model_path, circle_model_path)
+def convert_pt2_to_circle(
+    pt2_model_path: str,
+    circle_model_path: str,
+    config: Optional[CompileConfigBase] = None,
+):
+    tico.pt2_to_circle.convert(pt2_model_path, circle_model_path, config=config)
 
 
 @print_name_on_exception
@@ -95,14 +98,15 @@ def convert_nnmodule_to_circle(
     nnmodule: torch.nn.Module,
     example_inputs: tuple,
     circle_model_path: str,
-    dynamic_shapes: dict | None = None,
+    dynamic_shapes: Optional[dict] = None,
+    config: Optional[CompileConfigBase] = None,
 ):
     with torch.no_grad():
         _args, _kwargs = helper.get_args_kwargs(example_inputs)
         exported_program = export(
             nnmodule.eval(), args=_args, kwargs=_kwargs, dynamic_shapes=dynamic_shapes
         )
-    circle_program = convert_exported_module_to_circle(exported_program)
+    circle_program = convert_exported_module_to_circle(exported_program, config)
     circle_binary = circle_program
     with open(circle_model_path, "wb") as f:
         f.write(circle_binary)
