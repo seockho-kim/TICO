@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import torch.fx
 import torch
+from torch._export.utils import is_lifted_tensor_constant
 from torch.export import ExportedProgram
 
 from tico.passes import ops
@@ -52,6 +53,7 @@ class LegalizeCausalMaskValue(PassBase):
         graph_module = exported_program.graph_module
         graph = graph_module.graph
         modified = False
+
         for node in graph.nodes:
             if not is_target_node(node, ops.aten.add):
                 continue
@@ -60,20 +62,18 @@ class LegalizeCausalMaskValue(PassBase):
             input = args.input
             other = args.other
 
-            if (
-                isinstance(input, torch.fx.Node)
-                and input.name
-                in exported_program.graph_signature.lifted_tensor_constants
+            if isinstance(input, torch.fx.Node) and is_lifted_tensor_constant(
+                exported_program, input
             ):
                 mask_node = input
-            elif (
-                isinstance(other, torch.fx.Node)
-                and other.name
-                in exported_program.graph_signature.lifted_tensor_constants
+            elif isinstance(other, torch.fx.Node) and is_lifted_tensor_constant(
+                exported_program, other
             ):
                 mask_node = other
             else:
                 continue
+
+            assert isinstance(mask_node, torch.fx.Node)
 
             mask_node_name = (
                 exported_program.graph_signature.inputs_to_lifted_tensor_constants[
@@ -90,6 +90,7 @@ class LegalizeCausalMaskValue(PassBase):
             if torch.all(
                 torch.logical_or(mask_data == 0, mask_data < fp32_minus_inf_rounded)
             ):
+                # Replace the value from -inf to -120
                 exported_program.constants[mask_node_name] = torch.where(
                     mask_data < fp32_minus_inf_rounded,
                     torch.tensor(new_mask, dtype=mask_data.dtype),
