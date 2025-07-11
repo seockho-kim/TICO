@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import torch
+from tico.config.v1 import CompileConfigV1
 
 from test.utils import tag
 
@@ -171,3 +172,29 @@ class AddWithCausalMaskFolded(torch.nn.Module):
 
     def get_example_inputs(self):
         return (torch.ones(3, 3, dtype=torch.float32),)
+
+
+@tag.with_golden
+class AddWithCausalMaskLegalized(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x):
+        min_dtype = torch.finfo(torch.float32).min
+        causal_mask = torch.tensor(
+            [[min_dtype, 0.0, 0.0], [min_dtype, 0.0, 0.0], [min_dtype, 0.0, 0.0]]
+        )
+
+        return causal_mask + x
+
+    def get_example_inputs(self):
+        return (torch.ones(3, 3, dtype=torch.float32),)
+
+    def get_compile_config(self):
+        return CompileConfigV1(legalize_causal_mask_value=True)
+
+    def get_golden_outputs(self):
+        # By 'legalize_causal_mask_value', min_dtype -> -120
+        return (
+            torch.tensor([[-119.0, 1.0, 1.0], [-119.0, 1.0, 1.0], [-119.0, 1.0, 1.0]]),
+        )

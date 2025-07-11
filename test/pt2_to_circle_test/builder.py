@@ -46,6 +46,7 @@ class NNModuleTest(TestRunnerBase):
         self.test_without_inference: bool = is_tagged(
             self.nnmodule, "test_without_inference"
         )
+        self.with_golden: bool = is_tagged(self.nnmodule, "with_golden")
 
         # Set tolerance
         self.tolerance = {}
@@ -82,6 +83,7 @@ class NNModuleTest(TestRunnerBase):
                     without_pt2=self.test_without_pt2,
                     dynamic=dynamic,
                     without_inference=self.test_without_inference,
+                    with_golden=self.with_golden,
                 )
 
             return wrapper
@@ -91,6 +93,7 @@ class NNModuleTest(TestRunnerBase):
         without_pt2=False,
         dynamic: bool = False,
         without_inference=False,
+        with_golden=False,
     ):
         dynamic_shapes = None
         if dynamic:
@@ -158,7 +161,15 @@ class NNModuleTest(TestRunnerBase):
             circle_result = infer_circle(
                 circle_model_path, deepcopy(self.example_inputs), "circle-interpreter"
             )
-        validate_result(torch_result, circle_result, **self.tolerance)
+        if with_golden:
+            assert hasattr(self.nnmodule, "get_golden_outputs")
+
+            get_golden_outputs = self.nnmodule.get_golden_outputs  # type: ignore[operator]
+            validate_result(get_golden_outputs(), circle_result, **self.tolerance)  # type: ignore[operator]
+        else:
+            # trim None outputs
+            torch_result = [res for res in torch_result if res is not None]
+            validate_result(torch_result, circle_result, **self.tolerance)
 
 
 class NormalTestDictBuilder(TestDictBuilderBase):

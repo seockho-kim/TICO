@@ -149,7 +149,7 @@ def infer_nnmodule(model: torch.nn.Module, example_inputs: tuple):
         model.eval()
 
         _args, _kwargs = helper.get_args_kwargs(example_inputs)
-        torch_result = model.forward(*_args, **_kwargs)
+        expected_result = model.forward(*_args, **_kwargs)
 
         # Let's flatten torch output result.
         # The output of torch module can be a dictionary or a multi-dimensional tuple of tensors.
@@ -158,9 +158,9 @@ def infer_nnmodule(model: torch.nn.Module, example_inputs: tuple):
         # Q. Why use `pytree.tree_flatten`?
         # torch dynamo flattens torch input/output using pytree.tree_unflatten/flatten.
         # (See torch._dynamo.eval_frame.rewrite_signature)
-        torch_result, _ = pytree.tree_flatten(torch_result)
+        expected_result, _ = pytree.tree_flatten(expected_result)
 
-        return torch_result
+        return expected_result
 
 
 @print_name_on_exception
@@ -196,38 +196,35 @@ def infer_circle(
 
 @print_name_on_exception
 def validate_result(
-    torch_result: List[torch.Tensor | int | float | None],
+    expected_result: List[torch.Tensor | int | float],
     circle_result: List[np.ndarray],
     rtol: float = 1e-5,
     atol: float = 1e-5,
 ):
-    # trim None outputs from torch_result
-    torch_result = [res for res in torch_result if res is not None]
-
     np.testing.assert_equal(
-        actual=len(torch_result),
+        actual=len(expected_result),
         desired=len(circle_result),
-        err_msg=f"Number of outputs mismatches.\ntorch result: #{len(torch_result)}, circle result: #{len(circle_result)}",
+        err_msg=f"Number of outputs mismatches.\nexpected result: #{len(expected_result)}, circle result: #{len(circle_result)}",
     )
-    for torch_res, circle_res in zip(torch_result, circle_result):
-        if isinstance(torch_res, torch.Tensor):
+    for expected_res, circle_res in zip(expected_result, circle_result):
+        if isinstance(expected_res, torch.Tensor):
             np.testing.assert_equal(
-                actual=torch_res.shape,
+                actual=expected_res.shape,
                 desired=circle_res.shape,
-                err_msg=f"Shape mismatches.\ntorch result: {torch_res.shape}\ncircle result: {circle_res.shape}",
+                err_msg=f"Shape mismatches.\nexpected result: {expected_res.shape}\ncircle result: {circle_res.shape}",
             )
         np.testing.assert_allclose(
-            actual=torch_res,
-            desired=circle_res,
+            actual=circle_res,
+            desired=expected_res,
             rtol=rtol,
             atol=atol,
-            err_msg=f"Value mismatches.\ntorch result: {torch_res}\ncircle result: {circle_res}",
+            err_msg=f"Value mismatches.\nexpected result: {expected_res}\ncircle result: {circle_res}",
         )
-        if isinstance(torch_res, torch.Tensor):
+        if isinstance(expected_res, torch.Tensor):
             assert (
-                torch_res.dtype == torch.from_numpy(circle_res).dtype
-            ), f"Type mismatches.\ntorch result: {torch_res.dtype}\ncircle result: {circle_res.dtype}"
-        elif isinstance(torch_res, (int, float)):
-            assert type(torch_res) == type(
+                expected_res.dtype == torch.from_numpy(circle_res).dtype
+            ), f"Type mismatches.\nexpected result: {expected_res.dtype}\ncircle result: {circle_res.dtype}"
+        elif isinstance(expected_res, (int, float)):
+            assert type(expected_res) == type(
                 torch.from_numpy(circle_res).item()
-            ), f"Type mismatches.\ntorch result: {type(torch_res)}\ncircle result: {circle_res.dtype}"
+            ), f"Type mismatches.\nexpected result: {type(expected_res)}\ncircle result: {circle_res.dtype}"

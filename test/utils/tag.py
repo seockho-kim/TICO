@@ -85,5 +85,18 @@ def use_onert(orig_class):
     return orig_class
 
 
+def with_golden(orig_class):
+    """
+    Decorator to mark a test class so that it should be compared against with_golden outputs.
+    'get_golden_outputs' must return a list of tensors which will be compared against the output of the model under test.
+    """
+    setattr(orig_class, "__tag_with_golden", True)
+
+    assert hasattr(
+        orig_class, "get_golden_outputs"
+    ), f"{orig_class} with_golden test must implement get_golden_outputs()"
+    return orig_class
+
+
 def is_tagged(cls, tag: str):
     return hasattr(cls, f"__tag_{tag}")
