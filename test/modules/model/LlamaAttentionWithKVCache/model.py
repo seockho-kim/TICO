@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import torch
+from tico.utils.pytree_utils import register_dynamic_cache
 from transformers.cache_utils import DynamicCache
 from transformers.models.llama.modeling_llama import LlamaAttention, LlamaConfig
 
@@ -43,13 +44,13 @@ class LlamaAttentionWithKVCache(torch.nn.Module):
         # This attention_mask will become a causal_mask of shape: (batch_size, 1, query_length, key_value_length)
         prev_seq_len = 4
         past_key_values = DynamicCache()
+        register_dynamic_cache()
 
         past_key_values.update(
             torch.randn(1, num_heads, prev_seq_len, head_dim),
             torch.randn(1, num_heads, prev_seq_len, head_dim),
             0,
         )
-
         return (
             hidden_states,
             position_embeddings,
