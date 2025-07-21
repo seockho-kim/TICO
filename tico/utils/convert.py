@@ -296,6 +296,7 @@ def convert(
     mod: torch.nn.Module,
     args: Tuple[Any, ...],
     kwargs: Optional[Dict[str, Any]] = None,
+    dynamic_shapes: Optional[dict] = None,
     strict: bool = True,
     config: CompileConfigBase = get_default_config(),
 ) -> CircleModel:
@@ -306,7 +307,9 @@ def convert(
         )
 
     with torch.no_grad():
-        exported_program = export(mod, args, kwargs, strict=strict)
+        exported_program = export(
+            mod, args, kwargs, dynamic_shapes=dynamic_shapes, strict=strict
+        )
 
     circle_binary = convert_exported_module_to_circle(exported_program, config=config)
 
