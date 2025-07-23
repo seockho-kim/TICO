@@ -18,12 +18,7 @@ from typing import Dict
 import flatbuffers
 import torch
 from circle_schema import circle
-from torch.export.exported_program import (
-    ConstantArgument,
-    ExportedProgram,
-    InputKind,
-    TensorArgument,
-)
+from torch.export.exported_program import ConstantArgument, ExportedProgram, InputKind
 
 from tico.serialize.circle_mapping import to_circle_dtype
 from tico.serialize.operators import *
@@ -39,147 +34,38 @@ multiple_output_ops = [
     torch.ops.aten.max.dim,
 ]
 
-# Build circle model from ExportedProgram
-# Return raw bytes of circle model
-def build_circle(edge_program: ExportedProgram) -> bytes:
-    logger = logging.getLogger(__name__)
 
-    builder = flatbuffers.Builder()
+def _initialize_model() -> tuple[CircleModel, CircleSubgraph]:
+    """Initialize a new Circle model and subgraph.
 
-    # Init Model
+    Returns:
+        Tuple containing the model and subgraph
+    """
     model = CircleModel()
-
-    # Add empty buffer at the front (convention)
-    model.add_buffer(circle.Buffer.BufferT())
-
-    # Create an empty subgraph (assume a single subgraph)
+    model.add_buffer(circle.Buffer.BufferT())  # Add empty buffer at the front
     graph = CircleSubgraph(model)
+    return model, graph
+
+
+def build_circle(ep: ExportedProgram) -> bytes:
+    """Convert ExportedProgram to Circle format.
+
+    Args:
+        ep: The exported PyTorch program to convert
+
+    Returns:
+        bytes: Raw bytes of the Circle model
+    """
+    logger = logging.getLogger(__name__)
+    builder = flatbuffers.Builder()
+    model, graph = _initialize_model()
 
     # Export tensors
-    logger.debug("---------------Export tensors--------------")
-    buf_name_to_data = {name: buf for name, buf in edge_program.named_buffers()}
-    for node in edge_program.graph.nodes:
-        if node.op == "call_function":
-            if node.target in multiple_output_ops:
-                continue
-            node_val = node.meta["val"]
-            if node_val.layout != torch.strided:
-                raise RuntimeError(
-                    f"Only support dense tensors (node layout: {node_val.layout})"
-                )
-            graph.add_tensor_from_node(node)
-            logger.debug(f"call_function: {node.name} tensor exported.")
-
-        # placeholder: function input (including parameters, buffers, constant tensors)
-        elif node.op == "placeholder":
-            # placeholder invariants
-            assert node.args is None or len(node.args) == 0  # Not support default param
-
-            # parameters
-            if node.name in edge_program.graph_signature.inputs_to_parameters:
-                param_name = edge_program.graph_signature.inputs_to_parameters[
-                    node.name
-                ]
-                param_data = edge_program.state_dict[param_name]
-
-                assert isinstance(
-                    param_data, torch.Tensor
-                ), "Expect parameters to be a tensor"
-                param_value = param_data.cpu().detach().numpy()
-
-                graph.add_tensor_from_node(node, param_value)
-                logger.debug(f"placeholder(param): {node.name} tensor exported.")
-            elif node.name in edge_program.graph_signature.inputs_to_buffers:
-                buffer_name = edge_program.graph_signature.inputs_to_buffers[node.name]
-                assert buffer_name in buf_name_to_data
-                buffer_data = buf_name_to_data[buffer_name]
-                assert isinstance(
-                    buffer_data, torch.Tensor
-                ), "Expect buffers to be a tensor"
-                buffer_value = buffer_data.cpu().detach().numpy()
-
-                graph.add_tensor_from_node(node, buffer_value)
-                logger.debug(f"placeholder(buffer): {node.name} tensor exported.")
-            elif (
-                node.name
-                in edge_program.graph_signature.inputs_to_lifted_tensor_constants
-            ):
-                ctensor_name = (
-                    edge_program.graph_signature.inputs_to_lifted_tensor_constants[
-                        node.name
-                    ]
-                )
-                ctensor_data = edge_program.constants[ctensor_name]
-
-                assert isinstance(
-                    ctensor_data, torch.Tensor
-                ), "Expect constant tensor to be a tensor"
-                ctensor_value = ctensor_data.cpu().detach().numpy()
-
-                graph.add_tensor_from_node(node, ctensor_value)
-                logger.debug(
-                    f"placeholder(constant tensor): {node.name} tensor exported."
-                )
-            else:
-                user_inputs = [
-                    specs
-                    for specs in edge_program.graph_signature.input_specs
-                    if specs.kind == InputKind.USER_INPUT
-                ]
-                constant_inputs = [
-                    specs
-                    for specs in user_inputs
-                    if isinstance(specs.arg, ConstantArgument)
-                ]
-                name_to_value = {
-                    specs.arg.name: specs.arg.value for specs in constant_inputs
-                }
-                # NoneType ConstantArgument is ignored.
-                if node.name in name_to_value and name_to_value[node.name] == None:
-                    continue
-                graph.add_tensor_from_node(node)
-                logger.debug(f"placeholder: {node.name} tensor exported.")
-
-        # get_attr: retrieve parameter
-        elif node.op == "get_attr":
-            # node.name: Place where fetched attribute is saved
-            # node.target: Attribute in the module
-            attr_tensor = getattr(node.graph.owning_module, node.target)
-            assert isinstance(attr_tensor, torch.Tensor)
-
-            graph.add_tensor_from_scratch(
-                prefix=node.name,
-                shape=list(attr_tensor.shape),
-                dtype=to_circle_dtype(attr_tensor.dtype),
-                source_node=node,
-            )
-
-            logger.debug(f"get_attr: {node.name} tensor exported.")
-
-        # output: function output
-        elif node.op == "output":
-            # output node itself does not need a buffer
-            # argument of output node is assumed to be exported beforehand
-            for output in node.args[0]:
-                if isinstance(output, torch.fx.Node):
-                    assert graph.has_tensor(output.name)
-            continue
-
-        # call_method: call method
-        elif node.op == "call_method":
-            raise AssertionError("Not yet implemented")
-
-        # call_module: call 'forward' of module
-        elif node.op == "call_module":
-            raise AssertionError("Not yet implemented")
-
-        else:
-            # Add more if fx.Node is extended
-            raise AssertionError(f"Unknown fx.Node op {node.op}")
+    _export_tensors(graph, ep)
 
     # Register inputs
     logger.debug("---------------Register inputs--------------")
-    for in_spec in edge_program.graph_signature.input_specs:
+    for in_spec in ep.graph_signature.input_specs:
         if in_spec.kind != InputKind.USER_INPUT:
             continue
         # NoneType ConstantArgument is ignored.
@@ -191,7 +77,7 @@ def build_circle(edge_program: ExportedProgram) -> bytes:
 
     # Register outputs
     logger.debug("---------------Register outputs--------------")
-    for user_output in edge_program.graph_signature.user_outputs:
+    for user_output in ep.graph_signature.user_outputs:
         if user_output == None:
             logger.debug(f"Ignore 'None' output")
             continue
@@ -203,7 +89,7 @@ def build_circle(edge_program: ExportedProgram) -> bytes:
     logger.debug("---------------Export operators--------------")
     op_codes: Dict[OpCode, int] = {}
     visitors = get_node_visitors(op_codes, graph)
-    for node in edge_program.graph.nodes:
+    for node in ep.graph.nodes:
         if node.op != "call_function":
             continue
 
@@ -227,10 +113,8 @@ def build_circle(edge_program: ExportedProgram) -> bytes:
         code for code, _ in sorted(op_codes.items(), key=lambda x: x[1])
     ]
 
-    # Description
+    # Final model settings
     model.description = "circle"
-
-    # Set version
     model.version = 0
 
     # Finish model
@@ -238,3 +122,212 @@ def build_circle(edge_program: ExportedProgram) -> bytes:
     buf = builder.Output()
 
     return bytes(buf)
+
+
+def _export_tensors(graph: CircleSubgraph, ep: ExportedProgram) -> None:
+    """Export all tensors from the exported program to the circle graph.
+
+    Args:
+        graph: The CircleSubgraph to add tensors to
+        ep: The exported PyTorch program
+    """
+    logger = logging.getLogger(__name__)
+    logger.debug("---------------Export tensors--------------")
+    buf_name_to_data = {name: buf for name, buf in ep.named_buffers()}
+
+    for node in ep.graph.nodes:
+        if node.op == "call_function":
+            if node.target in multiple_output_ops:
+                continue
+            node_val = node.meta["val"]
+            if node_val.layout != torch.strided:
+                raise RuntimeError(
+                    f"Only support dense tensors (node layout: {node_val.layout})"
+                )
+            graph.add_tensor_from_node(node)
+            logger.debug(f"call_function: {node.name} tensor exported.")
+
+        elif node.op == "placeholder":
+            _handle_placeholder_node(graph, node, ep, buf_name_to_data)
+
+        elif node.op == "get_attr":
+            _handle_get_attr_node(graph, node)
+
+        elif node.op == "output":
+            for output in node.args[0]:
+                if isinstance(output, torch.fx.Node):
+                    assert graph.has_tensor(output.name)
+            continue
+
+        elif node.op == "call_method":
+            raise AssertionError("Not yet implemented")
+
+        elif node.op == "call_module":
+            raise AssertionError("Not yet implemented")
+
+        else:
+            raise AssertionError(f"Unknown fx.Node op {node.op}")
+
+
+def _handle_placeholder_node(
+    graph: CircleSubgraph,
+    node: torch.fx.Node,
+    ep: ExportedProgram,
+    buf_name_to_data: dict,
+) -> None:
+    """Handle a placeholder node during tensor export."""
+    # placeholder invariants
+    assert node.args is None or len(node.args) == 0  # Not support default param
+
+    if node.name in ep.graph_signature.inputs_to_parameters:
+        _handle_parameter_node(graph, node, ep)
+    elif node.name in ep.graph_signature.inputs_to_buffers:
+        _handle_buffer_node(graph, node, ep, buf_name_to_data)
+    elif node.name in ep.graph_signature.inputs_to_lifted_tensor_constants:
+        _handle_constant_tensor_node(graph, node, ep)
+    else:
+        _handle_user_input_node(graph, node, ep)
+
+
+def _handle_parameter_node(
+    graph: CircleSubgraph,
+    node: torch.fx.Node,
+    ep: ExportedProgram,
+) -> None:
+    """Handle a parameter placeholder node by exporting its tensor data.
+
+    Args:
+        graph: CircleSubgraph to add tensor to
+        node: The parameter node to process
+        ep: ExportedProgram containing parameter data
+    """
+    param_name = ep.graph_signature.inputs_to_parameters[node.name]
+    param_data = ep.state_dict[param_name]
+
+    if not isinstance(param_data, torch.Tensor):
+        raise ValueError(f"Parameter {param_name} is not a tensor")
+
+    tensor_value = param_data.cpu().detach().numpy()
+    graph.add_tensor_from_node(node, tensor_value)
+
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Exported parameter tensor: {node.name}")
+
+
+def _handle_buffer_node(
+    graph: CircleSubgraph,
+    node: torch.fx.Node,
+    ep: ExportedProgram,
+    buf_name_to_data: dict,
+) -> None:
+    """Handle a buffer placeholder node by exporting its tensor data.
+
+    Args:
+        graph: CircleSubgraph to add tensor to
+        node: The buffer node to process
+        ep: ExportedProgram containing buffer info
+        buf_name_to_data: Mapping of buffer names to data
+    """
+    buffer_name = ep.graph_signature.inputs_to_buffers[node.name]
+
+    if buffer_name not in buf_name_to_data:
+        raise ValueError(f"Buffer {buffer_name} not found in buffer data")
+
+    buffer_data = buf_name_to_data[buffer_name]
+
+    if not isinstance(buffer_data, torch.Tensor):
+        raise ValueError(f"Buffer {buffer_name} is not a tensor")
+
+    tensor_value = buffer_data.cpu().detach().numpy()
+    graph.add_tensor_from_node(node, tensor_value)
+
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Exported buffer tensor: {node.name}")
+
+
+def _handle_constant_tensor_node(
+    graph: CircleSubgraph,
+    node: torch.fx.Node,
+    ep: ExportedProgram,
+) -> None:
+    """Handle a constant tensor placeholder node by exporting its tensor data.
+
+    Args:
+        graph: CircleSubgraph to add tensor to
+        node: The constant tensor node to process
+        ep: ExportedProgram containing constant data
+    """
+    ctensor_name = ep.graph_signature.inputs_to_lifted_tensor_constants[node.name]
+
+    if ctensor_name not in ep.constants:
+        raise ValueError(f"Constant tensor {ctensor_name} not found")
+
+    ctensor_data = ep.constants[ctensor_name]
+
+    if not isinstance(ctensor_data, torch.Tensor):
+        raise ValueError(f"Constant tensor {ctensor_name} is not a tensor")
+
+    tensor_value = ctensor_data.cpu().detach().numpy()
+    graph.add_tensor_from_node(node, tensor_value)
+
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Exported constant tensor: {node.name}")
+
+
+def _handle_user_input_node(
+    graph: CircleSubgraph,
+    node: torch.fx.Node,
+    ep: ExportedProgram,
+) -> None:
+    """Handle a user input placeholder node by exporting its tensor data.
+
+    Args:
+        graph: CircleSubgraph to add tensor to
+        node: The user input node to process
+        ep: ExportedProgram containing input specs
+    """
+    user_inputs = [
+        specs
+        for specs in ep.graph_signature.input_specs
+        if specs.kind == InputKind.USER_INPUT
+    ]
+    constant_inputs = [
+        specs for specs in user_inputs if isinstance(specs.arg, ConstantArgument)
+    ]
+    name_to_value = {specs.arg.name: specs.arg.value for specs in constant_inputs}
+
+    # Skip NoneType ConstantArgument
+    if node.name in name_to_value and name_to_value[node.name] is None:
+        return
+
+    graph.add_tensor_from_node(node)
+
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Exported user input tensor: {node.name}")
+
+
+def _handle_get_attr_node(
+    graph: CircleSubgraph,
+    node: torch.fx.Node,
+) -> None:
+    """Handle a get_attr node by exporting its tensor data.
+
+    Args:
+        graph: CircleSubgraph to add tensor to
+        node: The get_attr node to process
+    """
+    assert isinstance(node.target, str)
+    attr_tensor = getattr(node.graph.owning_module, node.target)
+
+    if not isinstance(attr_tensor, torch.Tensor):
+        raise ValueError(f"Attribute {node.target} is not a tensor")
+
+    graph.add_tensor_from_scratch(
+        prefix=node.name,
+        shape=list(attr_tensor.shape),
+        dtype=to_circle_dtype(attr_tensor.dtype),
+        source_node=node,
+    )
+
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Exported attribute tensor: {node.name}")
