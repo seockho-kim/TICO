@@ -45,6 +45,7 @@ class SimpleIndexSelectWithConstScalarIndex(torch.nn.Module):
         self.register_buffer("idx", torch.tensor([3]))
 
     def forward(self, input_):
+        assert isinstance(self.idx, torch.Tensor)
         result = torch.index_select(input_, 2, self.idx)
         return result
 
@@ -58,6 +59,7 @@ class SimpleIndexSelectWithConstIndex(torch.nn.Module):
         self.register_buffer("idx", torch.tensor([3, 1, 2]))
 
     def forward(self, x, y):
+        assert isinstance(self.idx, torch.Tensor)
         result = torch.index_select(x, 2, self.idx) + y
         return result
 

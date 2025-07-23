@@ -31,6 +31,8 @@ class FakeQuantizePerChannel(torch.nn.Module):
         qmin = 0
         qmax = 255
 
+        assert isinstance(self.s, torch.Tensor)
+        assert isinstance(self.zp, torch.Tensor)
         return torch.fake_quantize_per_channel_affine(
             input, self.s, self.zp, axis, qmin, qmax
         )
