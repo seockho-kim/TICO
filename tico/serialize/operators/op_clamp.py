@@ -21,12 +21,9 @@ import torch
 from circle_schema import circle
 
 from tico.passes import ops
+from tico.serialize.circle_graph import CircleSubgraph
 
-from tico.serialize.circle_graph import (
-    CircleSubgraph,
-    extract_circle_dtype,
-    extract_shape,
-)
+from tico.serialize.circle_mapping import extract_circle_dtype, extract_shape
 from tico.serialize.operators.hashable_opcode import OpCode
 from tico.serialize.operators.node_visitor import NodeVisitor, register_node_visitor
 from tico.serialize.operators.utils import create_builtin_operator, get_op_index

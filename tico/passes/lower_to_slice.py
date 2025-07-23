@@ -28,7 +28,7 @@ from torch._export.utils import (
 from torch.export import ExportedProgram
 
 from tico.passes import ops
-from tico.serialize.circle_graph import extract_shape
+from tico.serialize.circle_mapping import extract_shape
 from tico.utils import logging
 from tico.utils.graph import create_node, is_single_value_tensor
 from tico.utils.passes import PassBase, PassResult

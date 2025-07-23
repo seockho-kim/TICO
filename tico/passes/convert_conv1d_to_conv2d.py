@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 import torch
 from torch.export import ExportedProgram
 
-from tico.serialize.circle_graph import extract_shape
+from tico.serialize.circle_mapping import extract_shape
 from tico.utils import logging
 from tico.utils.errors import NotYetSupportedError
 from tico.utils.graph import create_node
