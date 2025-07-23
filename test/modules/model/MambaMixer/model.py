@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import torch
-from transformers import AutoTokenizer, MambaConfig, MambaForCausalLM
+from transformers import MambaConfig, MambaForCausalLM
 
 
 class MambaMixer(torch.nn.Module):

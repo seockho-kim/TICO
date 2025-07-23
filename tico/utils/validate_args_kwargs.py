@@ -16,10 +16,8 @@ from dataclasses import dataclass, field
 from typing import List, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    import torch._ops
     import torch.fx
 import torch
-import torch.fx.node
 
 from tico.utils.utils import enforce_type
 
@@ -137,7 +135,7 @@ class AvgPool2dArgs:
             assert len(self.padding) == 2, len(self.padding)
         if self.divisor_override is not None:
             assert isinstance(self.divisor_override, int), type(self.divisor_override)
-            assert self.divisor_override != 0, f"Divisor must be not zero."
+            assert self.divisor_override != 0, "Divisor must be not zero."
 
 
 @enforce_type

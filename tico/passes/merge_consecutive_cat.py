@@ -51,7 +51,7 @@ class MergeConsecutiveCat(PassBase):
                 if not prev_cat.op == "call_function":
                     continue
 
-                if not prev_cat.target in ops.aten.cat:
+                if prev_cat.target not in ops.aten.cat:
                     continue
 
                 prev_args = CatArgs(*prev_cat.args, **prev_cat.kwargs)  # type: ignore[arg-type]

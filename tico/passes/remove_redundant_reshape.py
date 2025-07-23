@@ -262,7 +262,7 @@ class RemoveRedundantReshapePattern3(PassBase):
                 continue
 
             # add
-            if not add.target in ops.aten.add:
+            if add.target not in ops.aten.add:
                 continue
             add_args = AddTensorArgs(*add.args, **add.kwargs)  # type: ignore[arg-type]
             reshape_2, reshape_3 = add_args.input, add_args.other
@@ -272,7 +272,7 @@ class RemoveRedundantReshapePattern3(PassBase):
             # reshape_2
             if not reshape_2.op == "call_function":
                 continue
-            if not reshape_2.target in ops.aten.reshape:
+            if reshape_2.target not in ops.aten.reshape:
                 continue
             reshape_2_args = ReshapeArgs(*reshape_2.args, **reshape_2.kwargs)  # type: ignore[arg-type]
             reshape_2_input = reshape_2_args.input
@@ -280,7 +280,7 @@ class RemoveRedundantReshapePattern3(PassBase):
             # reshape_3
             if not reshape_3.op == "call_function":
                 continue
-            if not reshape_3.target in ops.aten.reshape:
+            if reshape_3.target not in ops.aten.reshape:
                 continue
             reshape_3_args = ReshapeArgs(*reshape_3.args, **reshape_3.kwargs)  # type: ignore[arg-type]
             reshape_3_input = reshape_3_args.input

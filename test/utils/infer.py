@@ -12,13 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 from typing import Any, Tuple
 
 import test.utils.helper as helper
 import tico.utils
 import tico.utils.model
-import torch
 from tico.interpreter.infer import flatten_and_convert
 
 

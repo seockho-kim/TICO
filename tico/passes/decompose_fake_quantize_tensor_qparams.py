@@ -26,10 +26,8 @@ from torch._export.utils import (
 )
 
 # To import torch.ops.quantized_decomposed related operator
-from torch.ao.quantization.fx._decomposed import quantized_decomposed_lib
 from torch.export import ExportedProgram
 
-from tico.utils import logging
 from tico.utils.graph import create_node
 from tico.utils.passes import PassBase, PassResult
 from tico.utils.trace_decorators import (

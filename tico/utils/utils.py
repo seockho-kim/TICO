@@ -21,7 +21,6 @@ from typing import List
 
 import torch
 from circle_schema import circle
-from packaging.version import Version
 from torch._guards import detect_fake_mode
 from torch.export import ExportedProgram
 from torch.utils import _pytree as pytree

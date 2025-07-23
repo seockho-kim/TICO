@@ -31,7 +31,7 @@ def main() -> None:
         "-m",
         "--module_name",
         required=True,
-        help=f"To dump all models in a module, provide a module name.\
+        help="To dump all models in a module, provide a module name.\
                 Or you can dump a single class in the module.\
                 (e.g. test.modules.op.add, test.modules.op.mean.SimpleMeanKeepDim)",
     )

@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional
-
-import torch
 
 from tico.serialize.circle_graph import CircleSubgraph
 from tico.utils.graph import get_module_name_chain

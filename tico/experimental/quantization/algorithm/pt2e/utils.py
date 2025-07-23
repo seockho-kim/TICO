@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 import torch
 from torch.ao.quantization.quantizer import QuantizationSpec
 from torch.ao.quantization.quantizer.utils import _get_module_name_filter
-from torch.utils import _pytree as pytree
 
 from tico.experimental.quantization.algorithm.pt2e.annotation.config import (
     QuantizationConfig,

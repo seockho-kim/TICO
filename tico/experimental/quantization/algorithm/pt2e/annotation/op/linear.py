@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Callable, List, Optional, TYPE_CHECKING
+from typing import Callable, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     import torch.fx

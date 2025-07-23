@@ -16,9 +16,6 @@ import unittest
 
 import torch
 from circle_schema import circle
-from tico.serialize.operators import (  # DO NOT REMOVE! (required to build _node_visitor_dict)
-    op_mm,
-)
 
 from test.modules.op.mm import SimpleMatmul
 from test.unit_test.serialize_test.operator.fixture import SingleOpGraphFixture

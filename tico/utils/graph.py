@@ -24,7 +24,7 @@ import torch
 from torch.export import ExportedProgram
 from torch.export.exported_program import InputKind, InputSpec, TensorArgument
 
-from tico.utils.utils import get_fake_mode, set_new_meta_val
+from tico.utils.utils import get_fake_mode
 
 
 def is_torch_param(node: torch.fx.Node, ep: ExportedProgram):

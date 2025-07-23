@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import torch
-from torch.export import Dim
 from torch.nn import functional as F
 
 from test.utils.tag import test_without_inference

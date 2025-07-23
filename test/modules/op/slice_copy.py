@@ -95,7 +95,7 @@ class SimpleSliceOperatorWithOutOfBound(torch.nn.Module):
         return (torch.randn(5, 5, 5),)
 
 
-@tag.test_negative(expected_err=f"end(2) must be greater than start (3)")
+@tag.test_negative(expected_err="end(2) must be greater than start (3)")
 class SimpleSliceCopyWithInvalidArgs(torch.nn.Module):
     def __init__(self):
         super().__init__()

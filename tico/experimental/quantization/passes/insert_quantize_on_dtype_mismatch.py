@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 import copy
 
 from collections import defaultdict
-from typing import Any, Callable
+from typing import Any
 
 import torch
 from torch.export import ExportedProgram

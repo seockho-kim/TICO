@@ -21,12 +21,7 @@ if TYPE_CHECKING:
     import torch.fx
     from torch.ao.quantization.qconfig import _ObserverOrFakeQuantizeConstructor
 import torch
-from torch.ao.quantization.observer import (
-    MinMaxObserver,
-    MovingAverageMinMaxObserver,
-    MovingAveragePerChannelMinMaxObserver,
-    PerChannelMinMaxObserver,
-)
+from torch.ao.quantization.observer import MinMaxObserver, PerChannelMinMaxObserver
 from torch.ao.quantization.quantizer import QuantizationSpec, Quantizer
 from torch.ao.quantization.quantizer.utils import _get_module_name_filter
 

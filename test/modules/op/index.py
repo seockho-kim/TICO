@@ -14,8 +14,6 @@
 
 import torch
 
-from test.utils import tag
-
 
 class SimpleAtenIndexTensorAxis1(torch.nn.Module):
     def __init__(self):

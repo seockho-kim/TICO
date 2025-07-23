@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 import torch
 
 # To import torch.ops.quantized_decomposed related operator
-from torch.ao.quantization.fx._decomposed import quantized_decomposed_lib
 from torch.export import ExportedProgram
 
 from tico.utils import logging

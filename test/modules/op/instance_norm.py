@@ -14,8 +14,6 @@
 
 import torch
 
-from test.utils.tag import skip
-
 
 class SimpleInstanceNorm(torch.nn.Module):
     def __init__(self):

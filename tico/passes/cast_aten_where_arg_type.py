@@ -176,7 +176,7 @@ class CastATenWhereArgType(PassBase):
             node_dtype = extract_torch_dtype(node)
             assert (
                 node_dtype == node_dtype_ori
-            ), f"Type casting doesn't change node's dtype."
+            ), "Type casting doesn't change node's dtype."
 
             logger.debug(
                 f"{to_cast.name}'s dtype was casted from {buf_data.dtype} to {dtype_to_cast}"

@@ -166,7 +166,7 @@ def evaluate(
         )
     if not isinstance(backend, BACKEND):
         raise RuntimeError(
-            f"Invalid backend. Please use tico.quantization.evaluate.BACKEND enum class"
+            "Invalid backend. Please use tico.quantization.evaluate.BACKEND enum class"
         )
     # Make it a list for simpler logic.
     if input_data is not None:

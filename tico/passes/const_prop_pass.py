@@ -301,7 +301,7 @@ class ConstPropPass(PassBase):
         graph.eliminate_dead_code()
         graph_module.recompile()
 
-        logger.debug(f"Constant nodes are propagated")
+        logger.debug("Constant nodes are propagated")
         # Constant folding can be done with only one time run. Let's set `modified` to False.
         modified = False
         return PassResult(modified)

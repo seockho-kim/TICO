@@ -25,13 +25,13 @@ def main() -> None:
         "-m",
         "--module_name",
         required=True,
-        help=f"provide a model name.",
+        help="provide a model name.",
     )
     parser.add_argument(
         "-o",
         "--output",
         required=True,
-        help=f"provide an output .pt2 model name.",
+        help="provide an output .pt2 model name.",
     )
 
     args = parser.parse_args()

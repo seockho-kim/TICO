@@ -14,8 +14,6 @@
 
 import torch
 
-from test.utils.tag import test_negative
-
 
 class SimpleClampMinOnly(torch.nn.Module):
     def __init__(self):

@@ -178,7 +178,7 @@ class CastMixedTypeArgs(PassBase):
             node_dtype = extract_torch_dtype(node)
             assert (
                 node_dtype == node_dtype_ori
-            ), f"Type casting doesn't change node's dtype."
+            ), "Type casting doesn't change node's dtype."
 
         graph.eliminate_dead_code()
         graph.lint()

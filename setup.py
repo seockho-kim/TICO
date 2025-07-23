@@ -1,6 +1,7 @@
 """setup.py for TICO"""
 
-import os, re
+import os
+import re
 
 from setuptools import find_packages, setup
 from version import VERSION

@@ -79,7 +79,7 @@ def build_circle(ep: ExportedProgram) -> bytes:
     logger.debug("---------------Register outputs--------------")
     for user_output in ep.graph_signature.user_outputs:
         if user_output == None:
-            logger.debug(f"Ignore 'None' output")
+            logger.debug("Ignore 'None' output")
             continue
 
         graph.add_output(user_output)

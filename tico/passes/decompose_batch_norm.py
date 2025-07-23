@@ -96,9 +96,9 @@ class DecomposeBatchNorm(PassBase):
             eps = args.eps
 
             if not running_mean:
-                raise NotYetSupportedError(f"running_mean=None is not supported yet")
+                raise NotYetSupportedError("running_mean=None is not supported yet")
             if not running_var:
-                raise NotYetSupportedError(f"running_var=None is not supported yet")
+                raise NotYetSupportedError("running_var=None is not supported yet")
 
             """
             Only support the cases generated from torch.nn.BatchNorm2d module,

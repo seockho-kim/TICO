@@ -19,8 +19,7 @@ from typing import Optional, Tuple, Union
 
 import torch
 from transformers import AutoModelForImageTextToText
-from transformers.modeling_attn_mask_utils import _prepare_4d_attention_mask
-from transformers.modeling_outputs import BaseModelOutput, ModelOutput
+from transformers.modeling_outputs import BaseModelOutput
 
 
 def Idefics3VisionTransformer_forward(

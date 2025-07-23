@@ -157,7 +157,7 @@ def check_unsupported_target(exported_program: ExportedProgram):
     for n in exported_program.graph.nodes:
         if n.op != "call_function":
             continue
-        if not n.target in supported_target:
+        if n.target not in supported_target:
             unsupported.append(n)
 
     if unsupported:

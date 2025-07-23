@@ -15,8 +15,6 @@
 from enum import IntEnum
 from typing import NamedTuple, Optional, Sequence, Tuple, Union
 
-import torch
-
 from tico.utils.errors import InvalidArgumentError
 
 

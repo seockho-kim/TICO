@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import torch
-from transformers import GPT2Config, GPT2LMHeadModel, GPT2Tokenizer
+from transformers import GPT2Config, GPT2LMHeadModel
 
 
 class GPT2(torch.nn.Module):
