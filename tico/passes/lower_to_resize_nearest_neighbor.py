@@ -67,7 +67,7 @@ class LowerToResizeNearestNeighbor(PassBase):
             return None
         # indices = [None, None, H index, W index]
         N, C, H, W = indices
-        if N != None or C != None:
+        if N is not None or C is not None:
             return None
         if not isinstance(H, torch.fx.Node):
             return None

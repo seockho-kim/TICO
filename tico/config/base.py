@@ -31,7 +31,7 @@ class CompileConfigBase:
         config = cls()
         for key in config_dict:
             if key in config.to_dict():
-                assert type(config.get(key)) == bool
+                assert isinstance(config.get(key), bool)
                 config.set(key, config_dict[key])
 
         return config

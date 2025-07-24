@@ -130,7 +130,7 @@ def enforce_type(callable):
 
                     return True
 
-                if typing.get_origin(type_hint) == dict:
+                if typing.get_origin(type_hint) is dict:
                     if not isinstance(value, typing.get_origin(type_hint)):
                         return False
 

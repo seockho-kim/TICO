@@ -124,7 +124,7 @@ class CastMixedTypeArgs(PassBase):
             if rhs_val.dtype == type_to_promote:
                 ori_type = lhs_val.dtype
                 arg_to_promote = lhs
-            assert arg_to_promote != None
+            assert arg_to_promote is not None
 
             if isinstance(arg_to_promote, torch.fx.Node):
                 with graph.inserting_after(arg_to_promote):

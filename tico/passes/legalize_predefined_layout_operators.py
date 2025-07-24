@@ -292,7 +292,7 @@ class LegalizePreDefinedLayoutOperators(PassBase):
         running_var = args.running_var
         use_input_stats = args.use_input_stats
 
-        if not (use_input_stats == True):
+        if not use_input_stats:
             raise NotYetSupportedError("Only support use_input_stats is True.")
         if not isinstance(running_mean, NoneType):
             raise NotYetSupportedError("Only support running_mean=None")

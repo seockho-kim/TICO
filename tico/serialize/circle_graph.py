@@ -323,7 +323,7 @@ class CircleSubgraph(circle.SubGraph.SubGraphT):
         self, node: Union[torch.fx.Node, circle.Tensor.TensorT, ConstData]
     ) -> int:
         # return -1 if node is None. This is for generating CircleOutputExclude
-        if node == None:
+        if node is None:
             return -1
 
         if hasattr(node, "name") and node.name in self.name_to_tid:

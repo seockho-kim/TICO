@@ -53,7 +53,7 @@ class ValRange:
         if isinstance(val, torch.Tensor):
             self.max = torch.max(val).item()
             self.min = torch.min(val).item()
-        elif type(val) == list:
+        elif isinstance(val, list):
             self.max = max(val)
             self.min = min(val)
         else:

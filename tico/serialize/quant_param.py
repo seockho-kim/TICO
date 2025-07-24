@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from dataclasses import dataclass
+from typing import List, Optional
+
+import torch
+
 """
 This is a key for torch.fx.Node's meta dict to save QuantParam
 
 QuantParam can be retrieved as node.meta[QPARAM_KEY]
 """
 QPARAM_KEY = "_quantization_parameters_"
-
-from dataclasses import dataclass
-from typing import List, Optional
-
-import torch
 
 
 @dataclass
