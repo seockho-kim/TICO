@@ -206,7 +206,6 @@ class LegalizePreDefinedLayoutOperators(PassBase):
 
         args = ConvTranspose2DArgs(*node.args, **node.kwargs)  # type: ignore[arg-type]
         input = args.input
-        padding = args.padding
         groups = args.groups
         dilation = args.dilation
 
@@ -288,7 +287,6 @@ class LegalizePreDefinedLayoutOperators(PassBase):
         input = args.input
         weight = args.weight
         bias = args.bias
-        eps = args.eps
 
         running_mean = args.running_mean
         running_var = args.running_var
@@ -350,10 +348,6 @@ class LegalizePreDefinedLayoutOperators(PassBase):
         # max_pool2d_with_indices(Tensor self, int[2] kernel_size, int[2] stride=[], int[2] padding=0, int[2] dilation=1, bool ceil_mode=False) -> (Tensor, Tensor)
         args = MaxPool2dWithIndicesArgs(*node.args, **node.kwargs)  # type: ignore[arg-type]
         input_ = args.input
-        kernel_size = args.kernel_size
-        stride = args.stride
-        padding = args.padding
-        dilation = args.dilation
         ceil_mode = args.ceil_mode
         if ceil_mode:
             raise NotYetSupportedError("Only support non-ceil model.")
@@ -402,9 +396,6 @@ class LegalizePreDefinedLayoutOperators(PassBase):
         # avg_pool2d(Tensor self, int[2] kernel_size, int[2] stride=[], int[2] padding=0, bool ceil_mode=False, bool count_include_pad=True, int? divisor_override=None) -> (Tensor)
         args = AvgPool2dArgs(*node.args, **node.kwargs)  # type: ignore[arg-type]
         input_ = args.input
-        kernel_size = args.kernel_size
-        stride = args.stride
-        padding = args.padding
         ceil_mode = args.ceil_mode
         if ceil_mode:
             raise NotYetSupportedError("Only support non-ceil model.")

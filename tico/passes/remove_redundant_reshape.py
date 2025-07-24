@@ -90,7 +90,7 @@ class RemoveRedundantReshapePattern1(PassBase):
             if len(permute.users) != 1:
                 continue
             permute_args = PermuteArgs(*permute.args, **permute.kwargs)  # type: ignore[arg-type]
-            permute_input, permute_dims = permute_args.input, permute_args.dims
+            permute_dims = permute_args.dims
             # (1xAxBxC) - `aten.permute` - (1xAxCxB)
             if permute_dims != [0, 1, 3, 2]:
                 continue
@@ -172,7 +172,7 @@ class RemoveRedundantReshapePattern2(PassBase):
             if len(permute.users) != 1:
                 continue
             permute_args = PermuteArgs(*permute.args, **permute.kwargs)  # type: ignore[arg-type]
-            permute_input, permute_dims = permute_args.input, permute_args.dims
+            permute_dims = permute_args.dims
             # (1xAxBxC) - `aten.permute` - (Bx1xAxC)
             if permute_dims != [2, 0, 1, 3]:
                 continue

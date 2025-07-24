@@ -76,9 +76,7 @@ class TransposeConvVisitor(NodeVisitor):
         bias = args.bias
         stride = args.stride
         padding = args.padding
-        output_padding = args.output_padding
         groups = args.groups
-        dilation = args.dilation
 
         assert groups == 1, "Only support group 1"
 

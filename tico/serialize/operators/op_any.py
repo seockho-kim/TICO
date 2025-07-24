@@ -99,8 +99,6 @@ class AnyVisitor(NodeVisitor):
         keepdim = args.keepdim
 
         input_shape = list(extract_shape(input))
-        output_shape = list(extract_shape(node))
-
         dim_i32 = None
         if dim is None:
             dims = tuple(i for i in range(0, len(input_shape)))

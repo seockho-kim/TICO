@@ -22,7 +22,6 @@ import torch
 from torch.export import ExportedProgram
 
 from tico.serialize.circle_mapping import extract_shape
-from tico.utils import logging
 from tico.utils.graph import create_node
 from tico.utils.passes import PassBase, PassResult
 from tico.utils.trace_decorators import trace_graph_diff_on_pass
@@ -126,8 +125,6 @@ class DecomposeGroupNorm(PassBase):
         )
 
     def call(self, exported_program: ExportedProgram) -> PassResult:
-        logger = logging.getLogger(__name__)
-
         gm = exported_program.graph_module
         graph: torch.fx.Graph = gm.graph
         modified = False

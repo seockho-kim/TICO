@@ -21,7 +21,6 @@ import torch
 # To import torch.ops.quantized_decomposed related operator
 from torch.export import ExportedProgram
 
-from tico.utils import logging
 from tico.utils.graph import create_node
 from tico.utils.passes import PassBase, PassResult
 from tico.utils.trace_decorators import trace_graph_diff_on_pass
@@ -65,7 +64,6 @@ class DecomposeFakeQuantize(PassBase):
         super().__init__()
 
     def call(self, exported_program: ExportedProgram) -> PassResult:
-        logger = logging.getLogger(__name__)
         modified = False
 
         gm = exported_program.graph_module

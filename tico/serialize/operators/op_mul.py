@@ -66,10 +66,7 @@ class MulTensorVisitor(BaseMulVisitor):
         self,
         node: torch.fx.Node,
     ) -> circle.Operator.OperatorT:
-        args = MulTensorArgs(*node.args, **node.kwargs)  # type: ignore[arg-type]
-        input = args.input
-        other = args.other
-
+        _ = MulTensorArgs(*node.args, **node.kwargs)  # type: ignore[arg-type]
         operator = super().define_node(
             node,
         )
@@ -88,10 +85,7 @@ class MulScalarVisitor(BaseMulVisitor):
         self,
         node: torch.fx.Node,
     ) -> circle.Operator.OperatorT:
-        args = MulScalarArgs(*node.args, **node.kwargs)  # type: ignore[arg-type]
-        input = args.input
-        other = args.other
-
+        _ = MulScalarArgs(*node.args, **node.kwargs)  # type: ignore[arg-type]
         operator = super().define_node(
             node,
         )

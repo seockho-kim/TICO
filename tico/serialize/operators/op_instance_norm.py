@@ -73,12 +73,6 @@ class InstanceNormVisitor(NodeVisitor):
         eps = args.eps
 
         # Ignore training-related args
-        running_mean = args.running_mean
-        running_var = args.running_var
-        use_input_stats = args.use_input_stats
-        momentum = args.momentum
-        cudnn_enabled = args.cudnn_enabled
-
         input_shape = list(extract_shape(input))
         assert len(input_shape) == 4, len(input_shape)
 
