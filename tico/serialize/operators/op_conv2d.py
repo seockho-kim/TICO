@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 import torch
 from circle_schema import circle
 
-from tico.serialize.circle_mapping import extract_circle_dtype, extract_shape
+from tico.serialize.circle_mapping import extract_circle_dtype, extract_circle_shape
 from tico.serialize.operators.hashable_opcode import OpCode
 from tico.serialize.operators.node_visitor import NodeVisitor, register_node_visitor
 from tico.serialize.operators.utils import create_builtin_operator, get_op_index
@@ -111,12 +111,16 @@ class Conv2dVisitor(NodeVisitor):
 
         assert groups == 1, "Only support group 1 conv2d"
 
-        input_shape = list(extract_shape(input_))
-        output_shape = list(extract_shape(node))
-        weight_shape = list(extract_shape(weight))
+        input_shape, input_shape_signature = extract_circle_shape(input_)
+        output_shape, _ = extract_circle_shape(node)
+        weight_shape, _ = extract_circle_shape(weight)
         assert len(input_shape) == 4, len(input_shape)
         assert len(output_shape) == 4, len(output_shape)
         assert len(weight_shape) == 4, len(weight_shape)
+
+        if input_shape_signature is not None:
+            # TODO: support dynamic shapes
+            raise NotImplementedError("Dynamic shape is not supported yet")
 
         pad_decision = identify_padding(padding, input_shape, output_shape, stride)
 
@@ -143,6 +147,7 @@ class Conv2dVisitor(NodeVisitor):
             pad_output = self.graph.add_tensor_from_scratch(
                 prefix=f"{node.name}_input_pad_output",
                 shape=pad_output_shape,
+                shape_signature=None,
                 dtype=extract_circle_dtype(input_),
                 qparam=input_qparam,
                 source_node=node,

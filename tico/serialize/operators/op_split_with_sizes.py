@@ -58,12 +58,14 @@ class SplitWithSizesVisitor(NodeVisitor):
         inputs = [input, split_sizes_i32, axis_i32]
 
         """
-        `split_with_sizes` has multiple output tensors and they are represented as `getitem`.
-        Therefore, unlike other ops, node itself doesn't become a circle tensor. Instead, each `getitem` will be
+        `split_with_sizes` has multiple output tensors along with `getitem`.
+        Unlike other ops, node itself doesn't become a circle tensor. Instead, each `getitem` will be
         a circle tensor.
-        Further, torch module having `split_with_sizes` may somtimes return selected outputs. At that time, `getitem`
-        nodes are generated only for the ouptut selected. Since one-compiler assumes that `CircleSplitV` always has 
-        all the outputs, let's add unused output tensors to compensate this restriction.
+        
+        torch module having `split_with_sizes` may return selected outputs by using `getitem`.
+        However, one-compiler assumes that `CircleSplitV` always have all outputs.
+        
+        So, let's add unused output tensors to compensate this restriction.
         """
         outputs: List[Union[circle.Tensor.TensorT, torch.fx.node.Node]] = []
         sorted_users = sorted(node.users.keys(), key=lambda x: x.args[1])  # type: ignore[arg-type, return-value]
@@ -80,11 +82,17 @@ class SplitWithSizesVisitor(NodeVisitor):
                 fake_tensor = node_val[idx]
                 assert isinstance(fake_tensor, FakeTensor)
                 shape = list(fake_tensor.size())
+
+                if any(isinstance(s, torch.SymInt) for s in shape):
+                    # TODO: support dynamic shape
+                    raise NotImplementedError("Dynamic shape is not supported yet.")
+
                 dtype = to_circle_dtype(fake_tensor.dtype)
                 tensor = self.graph.add_tensor_from_scratch(
-                    f"{node.name}_unused_{idx}",
-                    shape,
-                    dtype,
+                    prefix=f"{node.name}_unused_{idx}",
+                    shape=shape,
+                    shape_signature=None,  # TODO: support dynamic shape
+                    dtype=dtype,
                     source_node=node,
                 )
                 outputs.append(tensor)

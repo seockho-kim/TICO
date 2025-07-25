@@ -24,7 +24,7 @@ from torch._subclasses.fake_tensor import FakeTensor
 
 from tico.serialize.circle_mapping import (
     extract_circle_dtype,
-    extract_shape,
+    extract_circle_shape,
     str_to_circle_dtype,
     to_circle_dtype,
 )
@@ -151,15 +151,7 @@ class CircleSubgraph(circle.SubGraph.SubGraphT):
         self.name_to_node[tensor.name] = node
         assert node.meta.get("val") is not None
         tensor.type = extract_circle_dtype(node)
-        tensor.shape = list(extract_shape(node))
-
-        # Handle dynamic shape
-        if any(isinstance(s, torch.SymInt) for s in tensor.shape):
-            tensor.shapeSignature = tensor.shape.copy()
-            for idx, s in enumerate(tensor.shape):
-                if isinstance(s, torch.SymInt):
-                    tensor.shape[idx] = 1
-                    tensor.shapeSignature[idx] = -1
+        tensor.shape, tensor.shapeSignature = extract_circle_shape(node)
 
         if QPARAM_KEY in node.meta:
             tensor.quantization = to_circle_qparam(node.meta[QPARAM_KEY])
@@ -208,6 +200,7 @@ class CircleSubgraph(circle.SubGraph.SubGraphT):
         self,
         prefix: str,
         shape: List[int],
+        shape_signature: Optional[List[int]],
         dtype: int,
         qparam: Optional[QuantParam] = None,
         source_node: Optional[torch.fx.Node] = None,
@@ -230,6 +223,8 @@ class CircleSubgraph(circle.SubGraph.SubGraphT):
             A name prefix used to generate a unique tensor name.
         shape : List[int]
             The shape of the tensor.
+        shape_signature : Optional[List[int]]
+            The shape signature of the tensor to express Dynamic Shape. Defaults to `None` for Static Shape.
         dtype : int
             The Circle-compatible dtype of the tensor. Use `to_circle_dtype()` to convert.
         qparam : Optional[QuantParam]
@@ -250,14 +245,8 @@ class CircleSubgraph(circle.SubGraph.SubGraphT):
         if source_node is not None:
             self.name_to_node[tensor.name] = source_node
         tensor.shape = shape
-
-        # Handle dynamic shape
-        if any(isinstance(s, torch.SymInt) for s in tensor.shape):
-            tensor.shapeSignature = tensor.shape.copy()
-            for idx, s in enumerate(tensor.shape):
-                if isinstance(s, torch.SymInt):
-                    tensor.shape[idx] = 1
-                    tensor.shapeSignature[idx] = -1
+        if shape_signature is not None:
+            tensor.shapeSignature = shape_signature
 
         if qparam is not None:
             tensor.quantization = to_circle_qparam(qparam)

@@ -23,7 +23,7 @@ from circle_schema import circle
 from tico.serialize.circle_graph import CircleSubgraph
 from tico.serialize.circle_mapping import (
     extract_circle_dtype,
-    extract_shape,
+    extract_circle_shape,
     extract_torch_dtype,
 )
 from tico.serialize.operators.hashable_opcode import OpCode
@@ -62,11 +62,12 @@ class Log1pVisitor(NodeVisitor):
         args = Log1pArgs(*node.args, **node.kwargs)  # type: ignore[arg-type]
         input = args.input
 
-        input_shape = list(extract_shape(input))
+        input_shape, input_shape_signature = extract_circle_shape(input)
         dst_dtype_circle = extract_circle_dtype(input)
         add_tensor: circle.Tensor.TensorT = self.graph.add_tensor_from_scratch(
             prefix=f"{input.name}_add",
             shape=input_shape,
+            shape_signature=input_shape_signature,
             dtype=dst_dtype_circle,
             source_node=node,
         )

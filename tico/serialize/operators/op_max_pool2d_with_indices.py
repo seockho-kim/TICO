@@ -22,7 +22,11 @@ import torch
 from circle_schema import circle
 
 from tico.serialize.circle_graph import CircleSubgraph
-from tico.serialize.circle_mapping import extract_circle_dtype, extract_shape
+from tico.serialize.circle_mapping import (
+    extract_circle_dtype,
+    extract_circle_shape,
+    extract_shape,
+)
 from tico.serialize.operators.hashable_opcode import OpCode
 from tico.serialize.operators.node_visitor import NodeVisitor, register_node_visitor
 from tico.serialize.operators.utils import (
@@ -88,7 +92,12 @@ class MaxPool2DWithIndicesVisitor(NodeVisitor):
                 ],
                 dtype=torch.int32,
             )
-            input_shape = list(extract_shape(input))
+            input_shape, input_shape_signature = extract_circle_shape(input)
+
+            if input_shape_signature is not None:
+                # TODO: support dynamic shape
+                raise NotImplementedError("Padding with dynamic shape is not supported")
+
             input_dtype: int = extract_circle_dtype(input)
             padded_input_shape = [
                 input_shape[0],
@@ -105,6 +114,7 @@ class MaxPool2DWithIndicesVisitor(NodeVisitor):
             padded_input_tensor = self.graph.add_tensor_from_scratch(
                 prefix=f"{input.name}_pad_output",
                 shape=padded_input_shape,
+                shape_signature=None,
                 dtype=input_dtype,
                 qparam=input_qparam,
                 source_node=node,

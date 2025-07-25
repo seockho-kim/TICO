@@ -22,7 +22,7 @@ import torch
 from circle_schema import circle
 
 from tico.serialize.circle_graph import CircleSubgraph
-from tico.serialize.circle_mapping import extract_circle_dtype, extract_shape
+from tico.serialize.circle_mapping import extract_circle_dtype, extract_circle_shape
 from tico.serialize.operators.hashable_opcode import OpCode
 from tico.serialize.operators.node_visitor import NodeVisitor, register_node_visitor
 from tico.serialize.operators.utils import create_builtin_operator, get_op_index
@@ -57,7 +57,12 @@ class AvgPool2DVisitor(NodeVisitor):
             return True
 
     def has_same_padding(self, args: AvgPool2dArgs) -> bool:
-        input_shape = list(extract_shape(args.input))
+        input_shape, input_shape_signature = extract_circle_shape(args.input)
+
+        if input_shape_signature is not None:
+            # TODO: support dynamic shapes
+            raise NotImplementedError("Dynamic shape is not supported yet")
+
         kernel_size = args.kernel_size
         stride = args.stride
         assert stride
@@ -137,7 +142,11 @@ class AvgPool2DVisitor(NodeVisitor):
                 ],
                 dtype=torch.int32,
             )
-            input_shape = list(extract_shape(input))
+            input_shape, input_shape_signature = extract_circle_shape(input)
+
+            if input_shape_signature is not None:
+                raise RuntimeError("Dynamic shape is not supported yet.")
+
             input_dtype: int = extract_circle_dtype(input)
             padded_input_shape = [
                 input_shape[0],
@@ -151,6 +160,7 @@ class AvgPool2DVisitor(NodeVisitor):
             padded_input_tensor = self.graph.add_tensor_from_scratch(
                 prefix=f"{input.name}_pad_output",
                 shape=padded_input_shape,
+                shape_signature=None,
                 dtype=input_dtype,
                 source_node=node,
             )

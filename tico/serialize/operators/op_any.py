@@ -22,6 +22,7 @@ from circle_schema import circle
 from tico.serialize.circle_graph import CircleSubgraph
 from tico.serialize.circle_mapping import (
     circle_legalize_dtype_to,
+    extract_circle_shape,
     extract_shape,
     extract_torch_dtype,
 )
@@ -99,17 +100,10 @@ class AnyVisitor(NodeVisitor):
         keepdim = args.keepdim
 
         input_shape = list(extract_shape(input))
-        dim_i32 = None
         if dim is None:
-            dims = tuple(i for i in range(0, len(input_shape)))
-            dim_i32 = tuple(
-                circle_legalize_dtype_to(dim, dtype=torch.int32) for dim in dims
-            )
-        if isinstance(dim, int):
-            dim_i32 = circle_legalize_dtype_to(dim, dtype=torch.int32)
-        if isinstance(dim, tuple):
-            dim_i32 = tuple(circle_legalize_dtype_to(d, dtype=torch.int32) for d in dim)
-        assert dim_i32 is not None
+            dim = tuple(i for i in range(0, len(input_shape)))
+
+        dim_i32 = circle_legalize_dtype_to(dim, dtype=torch.int32)
 
         inputs = [
             input,
@@ -123,9 +117,11 @@ class AnyVisitor(NodeVisitor):
         if dtype_torch in [torch.int32, torch.int64, torch.float32, torch.float64]:
             dst_dtype_circle = circle.TensorType.TensorType.BOOL
             dst_dtype_torch = torch.bool
+            dst_shape, dst_shape_signature = extract_circle_shape(input)
             ne_tensor: circle.Tensor.TensorT = self.graph.add_tensor_from_scratch(
                 prefix=f"{input.name}_ne",
-                shape=input_shape,
+                shape=dst_shape,
+                shape_signature=dst_shape_signature,
                 dtype=dst_dtype_circle,
                 source_node=input,
             )

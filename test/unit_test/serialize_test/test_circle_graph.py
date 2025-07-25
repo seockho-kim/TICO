@@ -32,8 +32,12 @@ class CircleGraphTest(unittest.TestCase):
     def test_duplicate_names(self):
         mod = CircleModel()
         g = CircleSubgraph(mod)
-        g.add_tensor_from_scratch(prefix="name", shape=[1, 2, 3], dtype=0)
-        g.add_tensor_from_scratch(prefix="name", shape=[1, 2, 3], dtype=0)
+        g.add_tensor_from_scratch(
+            prefix="name", shape=[1, 2, 3], shape_signature=None, dtype=0
+        )
+        g.add_tensor_from_scratch(
+            prefix="name", shape=[1, 2, 3], shape_signature=None, dtype=0
+        )
 
         self.assertTrue(g.has_tensor("name"))
         # This result depends on the naming rule of _gen_unique_name_with_prefix

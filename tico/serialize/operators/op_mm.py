@@ -129,6 +129,7 @@ class MatmulDefaultVisitor(NodeVisitor):
         trs_output = self.graph.add_tensor_from_scratch(
             prefix=f"{rhs_name}_transposed_output",
             shape=rhs_shape_transpose,
+            shape_signature=None,
             dtype=rhs_type,
             source_node=node,
         )

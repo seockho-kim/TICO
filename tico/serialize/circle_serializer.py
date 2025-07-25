@@ -20,7 +20,7 @@ import torch
 from circle_schema import circle
 from torch.export.exported_program import ConstantArgument, ExportedProgram, InputKind
 
-from tico.serialize.circle_mapping import to_circle_dtype
+from tico.serialize.circle_mapping import to_circle_dtype, to_circle_shape
 from tico.serialize.operators import *
 from tico.serialize.circle_graph import CircleModel, CircleSubgraph
 from tico.serialize.operators.hashable_opcode import OpCode
@@ -322,9 +322,12 @@ def _handle_get_attr_node(
     if not isinstance(attr_tensor, torch.Tensor):
         raise ValueError(f"Attribute {node.target} is not a tensor")
 
+    attr_shape, attr_shape_signature = to_circle_shape(attr_tensor.shape)
+
     graph.add_tensor_from_scratch(
         prefix=node.name,
-        shape=list(attr_tensor.shape),
+        shape=attr_shape,
+        shape_signature=attr_shape_signature,
         dtype=to_circle_dtype(attr_tensor.dtype),
         source_node=node,
     )

@@ -56,6 +56,7 @@ class ViewVisitor(NodeVisitor):
         if isinstance(size, int):
             raise Exception("scalar size conversion is not supported yet.")
 
+        # TODO: support dynamic shape
         size_i32 = circle_legalize_dtype_to(size, dtype=torch.int32)
         inputs = [input, size_i32]
         outputs = [node]
@@ -67,7 +68,7 @@ class ViewVisitor(NodeVisitor):
             circle.BuiltinOptions.BuiltinOptions.ReshapeOptions
         )
         option = circle.ReshapeOptions.ReshapeOptionsT()
-        option.newShape = size_i32
+        option.newShape = size_i32.tolist()
 
         operator.builtinOptions = option
 

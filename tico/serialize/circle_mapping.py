@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Tuple, TYPE_CHECKING, Union
+from typing import List, Optional, Tuple, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     import torch.fx
@@ -128,6 +128,24 @@ def extract_shape(node: torch.fx.Node) -> torch.Size:
     return val_shape
 
 
+def extract_circle_shape(node: torch.fx.Node) -> Tuple[List[int], Optional[List[int]]]:
+    return to_circle_shape(extract_shape(node))
+
+
+def to_circle_shape(torch_shape: torch.Size) -> Tuple[List[int], Optional[List[int]]]:
+    shape: List[int] = list(torch_shape)
+    shapeSignature: Optional[List[int]] = None
+
+    if any(isinstance(s, torch.SymInt) for s in shape):
+        shapeSignature = shape.copy()
+        for idx, s in enumerate(shape):
+            if isinstance(s, torch.SymInt):
+                shape[idx] = 1
+                shapeSignature[idx] = -1
+
+    return shape, shapeSignature
+
+
 # Return stride of node
 def extract_stride(node: torch.fx.Node) -> Tuple[int, ...]:
     assert node.meta is not None
@@ -157,7 +175,8 @@ def check_if_i32_range(axis: Union[list, int]):
     return all(INT32_MIN <= val <= INT32_MAX for val in values)
 
 
-def circle_legalize_dtype_to(values, *, dtype: torch.dtype):
+# TODO: Revisit this dtype legalization function as it breaks SRP
+def circle_legalize_dtype_to(values, *, dtype: torch.dtype) -> torch.Tensor:
     """
     Legalize data types from `torch.int64` to `torch.int32`.
 

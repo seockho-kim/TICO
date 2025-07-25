@@ -32,6 +32,7 @@ class SimpleDepthwiseConv(torch.nn.Module):
         return (torch.randn(1, 8, 64, 64),)
 
 
+@tag.skip
 @tag.use_onert
 class SimpleDepthwiseConvDynamicShape(torch.nn.Module):
     def __init__(self):

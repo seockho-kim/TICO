@@ -57,6 +57,7 @@ class CumsumVisitor(NodeVisitor):
         if input_dtype == torch.int32:
             input_tensor: circle.Tensor.TensorT = self.graph.get_tensor(input)
             input_shape: List[int] = input_tensor.shape
+            input_shape_signature: List[int] = input_tensor.shapeSignature
             cast_op_index = get_op_index(
                 circle.BuiltinOperator.BuiltinOperator.CAST, self._op_codes
             )
@@ -66,6 +67,7 @@ class CumsumVisitor(NodeVisitor):
                 prefix=cast_name,
                 dtype=cast_dtype,
                 shape=input_shape,
+                shape_signature=input_shape_signature,
                 source_node=node,
             )
             cast_operator = create_builtin_operator(

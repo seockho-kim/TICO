@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict, List, TYPE_CHECKING, Union
+from typing import Dict, List, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     import torch._ops
@@ -52,7 +52,15 @@ class CopyVisitor(NodeVisitor):
     def __init__(self, op_codes: Dict[OpCode, int], graph: CircleSubgraph):
         super().__init__(op_codes, graph)
 
-    def check_to_do_broadcast(self, dst: List[int], src: List[int]) -> bool:
+    def check_to_do_broadcast(
+        self,
+        dst: List[int],
+        dst_sig: Optional[List[int]],
+        src: List[int],
+        src_sig: Optional[List[int]],
+    ) -> bool:
+        assert dst_sig is None
+        assert src_sig is None
         return dst != src
 
     def define_broadcast_to_node(
@@ -102,6 +110,12 @@ class CopyVisitor(NodeVisitor):
         # To connect 'dst' to Reshape node in the graph, 'dst' must be converted to Shape op.
         dst_tensor: circle.Tensor.TensorT = self.graph.get_tensor(dst)
         dst_shape: List[int] = dst_tensor.shape
+        dst_shape_signature: List[int] = dst_tensor.shapeSignature
+
+        if dst_shape_signature is not None:
+            # TODO: support dynamic shape
+            raise NotYetSupportedError("Dynamic shape is not supported yet.")
+
         dst_shape_tensor = torch.as_tensor(dst_shape, dtype=torch.int32)
 
         dst_shape_shape = [len(dst_shape)]
@@ -110,6 +124,7 @@ class CopyVisitor(NodeVisitor):
         shape_output = self.graph.add_tensor_from_scratch(
             prefix=f"{dst_name}_shape_output",
             shape=dst_shape_shape,
+            shape_signature=None,
             dtype=circle.TensorType.TensorType.INT32,
             source_node=node,
         )
@@ -119,9 +134,16 @@ class CopyVisitor(NodeVisitor):
 
         src_tensor: circle.Tensor.TensorT = self.graph.get_tensor(src)
         src_shape: List[int] = src_tensor.shape
+        src_shape_signature: List[int] = src_tensor.shapeSignature
+
+        if src_shape_signature is not None:
+            # TODO: support dynamic shape
+            raise NotYetSupportedError("Dynamic shape is not supported yet.")
 
         # The src tensor must be broadcastable with the dst tensor.
-        do_broadcast = self.check_to_do_broadcast(dst_shape, src_shape)
+        do_broadcast = self.check_to_do_broadcast(
+            dst_shape, dst_shape_signature, src_shape, src_shape_signature
+        )
         if do_broadcast:
             # create braodcastTo output tensor
             src_name: str = src.name
@@ -131,6 +153,7 @@ class CopyVisitor(NodeVisitor):
                 self.graph.add_tensor_from_scratch(
                     prefix=f"{src_name}_broadcast_to_output",
                     shape=dst_shape,
+                    shape_signature=dst_shape_signature,
                     dtype=src_type,
                     source_node=node,
                 )

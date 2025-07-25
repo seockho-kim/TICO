@@ -66,7 +66,7 @@ class ReshapeVisitor(NodeVisitor):
             circle.BuiltinOptions.BuiltinOptions.ReshapeOptions
         )
         option = circle.ReshapeOptions.ReshapeOptionsT()
-        option.newShape = size_i32
+        option.newShape = size_i32.tolist()
 
         operator.builtinOptions = option
 

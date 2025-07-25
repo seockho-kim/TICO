@@ -23,7 +23,7 @@ from circle_schema import circle
 from tico.passes import ops
 from tico.serialize.circle_graph import CircleSubgraph
 
-from tico.serialize.circle_mapping import extract_circle_dtype, extract_shape
+from tico.serialize.circle_mapping import extract_circle_dtype, extract_circle_shape
 from tico.serialize.operators.hashable_opcode import OpCode
 from tico.serialize.operators.node_visitor import NodeVisitor, register_node_visitor
 from tico.serialize.operators.utils import create_builtin_operator, get_op_index
@@ -101,12 +101,13 @@ class ClampVisitor(NodeVisitor):
             return self.define_minimum_node([input, max_val], [node])
 
         elif min_val is not None and max_val is not None:
-            input_shape = extract_shape(input)
+            input_shape, input_shape_signature = extract_circle_shape(input)
             input_dtype = extract_circle_dtype(input)
             minimum_tensor = self.graph.add_tensor_from_scratch(
                 prefix=f"{input.name}_min",
                 dtype=input_dtype,
-                shape=list(input_shape),
+                shape=input_shape,
+                shape_signature=input_shape_signature,
                 source_node=node,
             )
             minimum_opertor = self.define_minimum_node(
