@@ -27,6 +27,7 @@ from tico.serialize.circle_mapping import (
     extract_circle_shape,
     str_to_circle_dtype,
     to_circle_dtype,
+    to_circle_shape,
 )
 from tico.serialize.pack import pack_buffer
 from tico.serialize.quant_param import QPARAM_KEY, QuantParam
@@ -186,7 +187,7 @@ class CircleSubgraph(circle.SubGraph.SubGraphT):
         torch_t = torch.as_tensor(data=data)
         torch_t_shape = list(torch_t.size())
         tensor.type = to_circle_dtype(torch_dtype=torch_t.dtype)
-        tensor.shape = torch_t_shape
+        tensor.shape, tensor.shapeSignature = to_circle_shape(torch_t_shape)
 
         buffer = circle.Buffer.BufferT()
         buffer.data = torch_t.flatten().cpu().numpy().view(np.uint8)  # type: ignore[assignment]

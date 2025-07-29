@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List, Optional, Tuple, TYPE_CHECKING, Union
+from typing import List, Optional, Sequence, Tuple, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     import torch.fx
@@ -132,18 +132,36 @@ def extract_circle_shape(node: torch.fx.Node) -> Tuple[List[int], Optional[List[
     return to_circle_shape(extract_shape(node))
 
 
-def to_circle_shape(torch_shape: torch.Size) -> Tuple[List[int], Optional[List[int]]]:
-    shape: List[int] = list(torch_shape)
-    shape_signature: Optional[List[int]] = None
+def to_circle_shape(
+    torch_shape: Union[
+        torch.Size, Sequence[int | torch.SymInt]
+    ],  # Sequence[int | torch.SymInt] is added for type covariance
+) -> Tuple[List[int], Optional[List[int]]]:
 
-    if any(isinstance(s, torch.SymInt) for s in shape):
-        shape_signature = shape.copy()
-        for idx, s in enumerate(shape):
+    if any(isinstance(s, torch.SymInt) for s in torch_shape):
+        # Follow dynamic shape spec
+        shape = []
+        shape_signature = []
+        for s in torch_shape:
             if isinstance(s, torch.SymInt):
-                shape[idx] = 1
-                shape_signature[idx] = -1
-
-    return shape, shape_signature
+                shape.append(1)
+                shape_signature.append(-1)
+            elif isinstance(s, int):
+                shape.append(s)
+                shape_signature.append(s)
+            else:
+                raise RuntimeError(f"Unsupported shape {torch_shape}")
+        return shape, shape_signature
+    else:
+        # Follow static shape spec
+        shape = []
+        shape_signature = None
+        for s in torch_shape:
+            if isinstance(s, int):
+                shape.append(s)
+            else:
+                assert False, "Cannot reach here"
+        return shape, shape_signature
 
 
 def validate_circle_shape(shape: List[int], shape_signature: Optional[List[int]]):

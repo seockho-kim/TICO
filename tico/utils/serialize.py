@@ -47,4 +47,9 @@ def validate_tensor_shapes(
     Let's validate all tensors' shapes against their shape signatures.
     """
     for tensor in graph.tensors:
-        validate_circle_shape(tensor.shape, tensor.shapeSignature)
+        try:
+            validate_circle_shape(tensor.shape, tensor.shapeSignature)
+        except Exception as e:
+            raise ValueError(
+                f"Tensor {tensor.name} has invalid shape ({tensor.shape}), shape_signature ({tensor.shapeSignature})"
+            ) from e

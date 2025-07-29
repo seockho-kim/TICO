@@ -13,6 +13,9 @@
 # limitations under the License.
 
 import torch
+from torch.export import Dim
+
+from test.utils.tag import skip, use_onert
 
 
 class SimpleConvTranspose(torch.nn.Module):
@@ -25,6 +28,29 @@ class SimpleConvTranspose(torch.nn.Module):
 
     def get_example_inputs(self):
         return (torch.randn(1, 16, 50, 100),)
+
+
+@skip(
+    reason="luci-interpreter does not support dynamic shape yet && onert does not support TransposeConv yet"
+)
+@use_onert
+class SimpleConvTransposeDynamicShape(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.tconv2d = torch.nn.ConvTranspose2d(16, 33, 3, stride=2)
+
+    def forward(self, input):
+        return self.tconv2d(input)
+
+    def get_example_inputs(self):
+        return (torch.randn(4, 16, 50, 100),)
+
+    def get_dynamic_shapes(self):
+        batch = Dim("batch", min=1, max=128)
+        dynamic_shapes = {
+            "input": {0: batch},
+        }
+        return dynamic_shapes
 
 
 class ConvTSamePad(torch.nn.Module):
