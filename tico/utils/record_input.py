@@ -59,10 +59,21 @@ class RecordingInput:
         self.condition = condition
         self.input_to_remove = input_to_remove
         self.sig = inspect.signature(self.forward_org)
+
+        for param in self.sig.parameters.values():
+            if param.kind == inspect.Parameter.KEYWORD_ONLY:
+                raise ValueError(f"Keyword-only parameter not supported: {param.name}")
+            if param.kind == inspect.Parameter.VAR_POSITIONAL:
+                raise ValueError(
+                    f"Var positional parameter not supported: {param.name}"
+                )
+
+        # NOTE: the name `kwargs` is removed since `kwargs` is a dict, not arg itself.
+        # args in kwargs are kept via sig.bind(*args, **kwargs) in capture_and_forward.
         self.args_names = [
             name
-            for name in self.sig.parameters.keys()
-            if name not in ("self", "kwargs")
+            for name, param in self.sig.parameters.items()
+            if param.kind != inspect.Parameter.VAR_KEYWORD and name != "self"
         ]
         self.captured_input = None
 
