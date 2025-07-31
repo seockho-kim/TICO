@@ -50,7 +50,7 @@ class NonRedundantToCopyNet(torch.nn.Module):
         return x + y
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 5, 4), torch.randn(1, 3, 5, 4))
+        return (torch.randn(1, 3, 5, 4), torch.randn(1, 3, 5, 4)), {}
 
 
 class NonRedundantToCopyTest(SinglePassValueTest):

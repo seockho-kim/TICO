@@ -14,10 +14,12 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 from test.utils import tag
 
 
-class SimpleSliceCopy(torch.nn.Module):
+class SimpleSliceCopy(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -27,10 +29,10 @@ class SimpleSliceCopy(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(5, 5),)
+        return (torch.randn(5, 5),), {}
 
 
-class SimpleSliceCopyWithMinus(torch.nn.Module):
+class SimpleSliceCopyWithMinus(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -40,10 +42,10 @@ class SimpleSliceCopyWithMinus(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(5, 5, 5, 5),)
+        return (torch.randn(5, 5, 5, 5),), {}
 
 
-class SimpleSliceCopyWithOutOfBound(torch.nn.Module):
+class SimpleSliceCopyWithOutOfBound(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -53,10 +55,10 @@ class SimpleSliceCopyWithOutOfBound(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(5, 5, 5),)
+        return (torch.randn(5, 5, 5),), {}
 
 
-class SimpleSliceOperator(torch.nn.Module):
+class SimpleSliceOperator(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -66,10 +68,10 @@ class SimpleSliceOperator(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(5, 5),)
+        return (torch.randn(5, 5),), {}
 
 
-class SimpleSliceOperatorWithMinus(torch.nn.Module):
+class SimpleSliceOperatorWithMinus(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -79,10 +81,10 @@ class SimpleSliceOperatorWithMinus(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(5, 5, 5, 5),)
+        return (torch.randn(5, 5, 5, 5),), {}
 
 
-class SimpleSliceOperatorWithOutOfBound(torch.nn.Module):
+class SimpleSliceOperatorWithOutOfBound(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -92,11 +94,11 @@ class SimpleSliceOperatorWithOutOfBound(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(5, 5, 5),)
+        return (torch.randn(5, 5, 5),), {}
 
 
 @tag.test_negative(expected_err="end(2) must be greater than start (3)")
-class SimpleSliceCopyWithInvalidArgs(torch.nn.Module):
+class SimpleSliceCopyWithInvalidArgs(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -106,4 +108,4 @@ class SimpleSliceCopyWithInvalidArgs(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(5, 5, 5),)
+        return (torch.randn(5, 5, 5),), {}

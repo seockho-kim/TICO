@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleSplitWithSizes(torch.nn.Module):
+
+class SimpleSplitWithSizes(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -27,10 +29,10 @@ class SimpleSplitWithSizes(torch.nn.Module):
         return (
             torch.randn(3, 4),
             (1, 2),
-        )
+        ), {}
 
 
-class SimpleSplitWithSizesWithDim1(torch.nn.Module):
+class SimpleSplitWithSizesWithDim1(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -43,10 +45,10 @@ class SimpleSplitWithSizesWithDim1(torch.nn.Module):
             torch.randn(3, 7, 3),
             (2, 4, 1),
             1,
-        )
+        ), {}
 
 
-class SimpleSplitWithSizesCopy(torch.nn.Module):
+class SimpleSplitWithSizesCopy(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -58,10 +60,10 @@ class SimpleSplitWithSizesCopy(torch.nn.Module):
         return (
             torch.randn(3, 4),
             (1, 2),
-        )
+        ), {}
 
 
-class SimpleSplitWithSizesCopyWithDim1(torch.nn.Module):
+class SimpleSplitWithSizesCopyWithDim1(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -74,4 +76,4 @@ class SimpleSplitWithSizesCopyWithDim1(torch.nn.Module):
             torch.randn(3, 7, 3),
             (2, 4, 1),
             1,
-        )
+        ), {}

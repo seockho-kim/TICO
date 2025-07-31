@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleMaxDim(torch.nn.Module):
+
+class SimpleMaxDim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleMaxDim(torch.nn.Module):
         return max[0]  # max: tuple (max, max_indices)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
-class MaxDimKeepDim(torch.nn.Module):
+class MaxDimKeepDim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,4 +38,4 @@ class MaxDimKeepDim(torch.nn.Module):
         return max[0]  # max: tuple (max, max_indices)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}

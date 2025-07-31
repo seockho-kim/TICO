@@ -32,10 +32,12 @@ class PassTest(unittest.TestCase):
 
     def setup(self, mod: torch.nn.Module):
         assert hasattr(mod, "get_example_inputs")
-        self.inputs = mod.get_example_inputs()  # type: ignore[operator]
+        self.forward_args, self.forward_kwargs = mod.get_example_inputs()  # type: ignore[operator]
 
         with torch.no_grad():
-            self.ep = torch.export.export(mod.eval(), self.inputs)
+            self.ep = torch.export.export(
+                mod.eval(), self.forward_args, self.forward_kwargs
+            )
 
         self.initialized = True
 
@@ -70,11 +72,11 @@ class SinglePassValueTest(PassValueTest):
         assert self.initialized, "setup() must be called first"
 
         # inference before pass
-        ret_before = self.ep.module()(*self.inputs)
+        ret_before = self.ep.module()(*self.forward_args, **self.forward_kwargs)
         test_pass.call(self.ep)
 
         # inference after pass
-        ret_after = self.ep.module()(*self.inputs)
+        ret_after = self.ep.module()(*self.forward_args, **self.forward_kwargs)
 
         self.assertTrue(torch.allclose(ret_before, ret_after, atol=1e-06))
 
@@ -84,11 +86,11 @@ class MultiPassValueTest(PassValueTest):
         assert self.initialized, "setup() must be called first"
 
         # inference before pass
-        ret_before = self.ep.module()(*self.inputs)
+        ret_before = self.ep.module()(*self.forward_args, **self.forward_kwargs)
         for p in test_passes:
             p.call(self.ep)
 
         # inference after pass
-        ret_after = self.ep.module()(*self.inputs)
+        ret_after = self.ep.module()(*self.forward_args, **self.forward_kwargs)
 
         self.assertTrue(torch.equal(ret_before, ret_after))

@@ -45,7 +45,7 @@ class RedundantReshapePattern1(torch.nn.Module):
         return reshape_2
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3, 4),)
+        return (torch.randn(2, 3, 4),), {}
 
 
 class RemoveRedundantReshapePattern1Test(SinglePassValueTest):
@@ -83,7 +83,7 @@ class RedundantReshapePattern2(torch.nn.Module):
         return reshape_2
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3, 4),)
+        return (torch.randn(2, 3, 4),), {}
 
 
 class RemoveRedundantReshapePattern2Test(SinglePassValueTest):
@@ -119,7 +119,7 @@ class RedundantReshapePattern3(torch.nn.Module):
         return reshape
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3, 4), torch.randn(2, 3, 4))
+        return (torch.randn(2, 3, 4), torch.randn(2, 3, 4)), {}
 
 
 class RemoveRedundantReshapePattern3Test(SinglePassValueTest):
@@ -159,7 +159,7 @@ class RedundantReshapePattern3Broadcasted(torch.nn.Module):
         return reshape
 
     def get_example_inputs(self):
-        return (torch.randn(16, 1, 64), torch.randn(16, 64, 64))
+        return (torch.randn(16, 1, 64), torch.randn(16, 64, 64)), {}
 
 
 class RemoveRedundantReshapePattern3BroadcastedTest(SinglePassValueTest):
@@ -197,7 +197,10 @@ class RedundantReshapePattern3DifferentSoftmaxLength(torch.nn.Module):
         return reshape
 
     def get_example_inputs(self):
-        return (torch.randn(1, 1, 6), torch.randn(1, 1, 6))
+        return (
+            torch.randn(1, 1, 6),
+            torch.randn(1, 1, 6),
+        ), {}
 
 
 class RemoveRedundantReshapePattern3DifferentSoftmaxLengthTest(SinglePassValueTest):
@@ -236,7 +239,7 @@ class RedundantReshapePattern4(torch.nn.Module):
         return reshape_2
 
     def get_example_inputs(self):
-        return (torch.randn(4, 6, 8),)
+        return (torch.randn(4, 6, 8),), {}
 
 
 class RemoveRedundantReshapePattern4Test(SinglePassValueTest):
@@ -263,7 +266,7 @@ class RedundantReshapePattern5(torch.nn.Module):
         return reshape
 
     def get_example_inputs(self):
-        return (torch.randn(4, 6, 8),)
+        return (torch.randn(4, 6, 8),), {}
 
 
 class RemoveRedundantReshapePattern5Test(SinglePassValueTest):

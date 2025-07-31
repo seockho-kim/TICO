@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleInstanceNorm(torch.nn.Module):
+
+class SimpleInstanceNorm(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 20
@@ -46,10 +48,10 @@ class SimpleInstanceNorm(torch.nn.Module):
             tensor,
             weight,
             bias,
-        )
+        ), {}
 
 
-class SimpleInstanceNorm2d(torch.nn.Module):
+class SimpleInstanceNorm2d(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 20
@@ -67,4 +69,4 @@ class SimpleInstanceNorm2d(torch.nn.Module):
 
     def get_example_inputs(self):
         tensor = torch.randn(self.N, self.C, self.H, self.W)
-        return (tensor,)
+        return (tensor,), {}

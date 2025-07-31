@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleLogicalNot(torch.nn.Module):
+
+class SimpleLogicalNot(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -26,4 +28,4 @@ class SimpleLogicalNot(torch.nn.Module):
     def get_example_inputs(self):
         # generate random bool tensor
         tensor = torch.randn((3, 5)) < 0.5
-        return (tensor,)
+        return (tensor,), {}

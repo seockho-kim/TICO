@@ -41,7 +41,7 @@ class BigLinear(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2048),)
+        return (torch.randn(1, 2048),), {}
 
 
 class GPTQTest(unittest.TestCase):
@@ -83,27 +83,30 @@ class GPTQTest(unittest.TestCase):
         q_m = BigLinear()
         q_m.eval()
         ori_m = q_m
+        args, kwargs = ori_m.get_example_inputs()
 
         # Apply GPTQ
         q_m = prepare(q_m, GPTQConfig())
         for _ in range(10):
-            q_m(*ori_m.get_example_inputs())
+            args, kwargs = ori_m.get_example_inputs()
+            q_m(*args, **kwargs)
         convert(q_m, inplace=True)
 
         # Apply PT2E
-        example_inputs = ori_m.get_example_inputs()
-        q_m = prepare(q_m, PT2EConfig(), args=example_inputs)
+        args, kwargs = ori_m.get_example_inputs()
+        q_m = prepare(q_m, PT2EConfig(), args=args, kwargs=kwargs)
 
         # Calibration
         for i in range(100):
-            q_m(*ori_m.get_example_inputs())
+            args, kwargs = ori_m.get_example_inputs()
+            q_m(*args, **kwargs)
 
         q_m = convert(q_m)
 
         # Export circle
         # pt2e exported model doesn't have `eval()` api.
         q_m.training = False
-        cm = tico.convert(q_m, example_inputs)
+        cm = tico.convert(q_m, args, kwargs)
 
         # Evaluate
         results = evaluate(ori_m, cm, BACKEND.TRIV24, mode="return")

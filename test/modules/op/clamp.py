@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleClampMinOnly(torch.nn.Module):
+
+class SimpleClampMinOnly(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleClampMinOnly(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(5, 3) * 20,)
+        return (torch.randn(5, 3) * 20,), {}
 
 
-class SimpleClampMaxOnly(torch.nn.Module):
+class SimpleClampMaxOnly(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SimpleClampMaxOnly(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(5, 3) * 20,)
+        return (torch.randn(5, 3) * 20,), {}
 
 
-class SimpleClampMinMaxBoth(torch.nn.Module):
+class SimpleClampMinMaxBoth(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -48,10 +50,10 @@ class SimpleClampMinMaxBoth(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(5, 3) * 20,)
+        return (torch.randn(5, 3) * 20,), {}
 
 
-class SimpleClampFrom0to6Float(torch.nn.Module):
+class SimpleClampFrom0to6Float(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -60,10 +62,10 @@ class SimpleClampFrom0to6Float(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(5, 3) * 10,)
+        return (torch.randn(5, 3) * 10,), {}
 
 
-class SimpleClampFrom0to6Int(torch.nn.Module):
+class SimpleClampFrom0to6Int(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -72,10 +74,10 @@ class SimpleClampFrom0to6Int(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(5, 3) * 10,)
+        return (torch.randn(5, 3) * 10,), {}
 
 
-class DoubleClampsFrom0to6(torch.nn.Module):
+class DoubleClampsFrom0to6(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -85,10 +87,10 @@ class DoubleClampsFrom0to6(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(5, 3) * 10,)
+        return (torch.randn(5, 3) * 10,), {}
 
 
-class DoubleClampsFrom0to6WithBigMax(torch.nn.Module):
+class DoubleClampsFrom0to6WithBigMax(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -98,10 +100,10 @@ class DoubleClampsFrom0to6WithBigMax(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(5, 3) * 10,)
+        return (torch.randn(5, 3) * 10,), {}
 
 
-class ClampIntInputFloatMinMax(torch.nn.Module):
+class ClampIntInputFloatMinMax(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -110,4 +112,4 @@ class ClampIntInputFloatMinMax(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randint(-200, 200, (5, 3)),)
+        return (torch.randint(-200, 200, (5, 3)),), {}

@@ -31,7 +31,7 @@ class SimpleIndexSelectWithConstIndex(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.rand(3, 4, 5), torch.rand(3, 4, 3))
+        return (torch.rand(3, 4, 5), torch.rand(3, 4, 3)), {}
 
 
 class TestSegmentIndexSelect(SinglePassValueTest):

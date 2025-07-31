@@ -15,8 +15,10 @@
 import torch
 from transformers import AutoConfig, AutoModelForCausalLM
 
+from test.modules.base import TestModuleBase
 
-class DeepSeek_R1_Distill_Qwen_1_5B(torch.nn.Module):
+
+class DeepSeek_R1_Distill_Qwen_1_5B(TestModuleBase):
     """
     DeepSeek-R1-Distill-Qwen-1.5B Decoder layer
     """
@@ -47,7 +49,7 @@ class DeepSeek_R1_Distill_Qwen_1_5B(torch.nn.Module):
             torch.randn(batch, seq_len, 128),
         )
 
-        return (
-            hidden_states,
-            {"position_ids": position_ids, "position_embeddings": position_embeddings},
-        )
+        return (hidden_states,), {
+            "position_ids": position_ids,
+            "position_embeddings": position_embeddings,
+        }

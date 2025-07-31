@@ -18,18 +18,27 @@ import pkgutil
 from abc import abstractmethod
 
 import torch
+from test.modules.base import TestModuleBase
 
 from test.utils.tag import is_tagged
 
 
 class TestRunnerBase:
-    def __init__(self, test_name: str, nnmodule: torch.nn.Module):
+    def __init__(self, test_name: str, nnmodule: TestModuleBase):
         self.test_name = test_name
-        assert hasattr(nnmodule, "get_example_inputs")
-        assert isinstance(nnmodule.get_example_inputs(), tuple)  # type: ignore[operator]
-
         self.nnmodule = nnmodule
-        self.example_inputs = nnmodule.get_example_inputs()  # type: ignore[operator]
+
+        assert hasattr(nnmodule, "get_example_inputs")
+
+        self.forward_args, self.forward_kwargs = nnmodule.get_example_inputs()
+        if not isinstance(self.forward_args, tuple):
+            raise ValueError(
+                f"{nnmodule} has invalid example inputs. args({type(self.forward_args)})"
+            )
+        if not isinstance(self.forward_kwargs, dict):
+            raise ValueError(
+                f"{nnmodule} has invalid example inputs. kwargs({type(self.forward_kwargs)})"
+            )
 
         # Get tags
         self.skip: bool = is_tagged(self.nnmodule, "skip")

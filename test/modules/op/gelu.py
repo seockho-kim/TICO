@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleGelu(torch.nn.Module):
+
+class SimpleGelu(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.gelu = torch.nn.GELU()
@@ -25,10 +27,10 @@ class SimpleGelu(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}
 
 
-class GeluWithApproximate(torch.nn.Module):
+class GeluWithApproximate(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.gelu = torch.nn.GELU(approximate="tanh")
@@ -38,4 +40,4 @@ class GeluWithApproximate(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}

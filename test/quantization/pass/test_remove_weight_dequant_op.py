@@ -29,20 +29,20 @@ class RemoveWeightDequantOpTest(unittest.TestCase):
     def test_pass(self):
         m: SimpleLinear | torch.nn.Module = SimpleLinear().eval()
         assert isinstance(m, SimpleLinear)
-        example_inputs = m.get_example_inputs()
+        args, kwargs = m.get_example_inputs()
 
-        q_m = prepare(m, PT2EConfig(), args=example_inputs)
+        q_m = prepare(m, PT2EConfig(), args=args, kwargs=kwargs)
 
         # Calibration
         for i in range(10):
-            cal_in = m.get_example_inputs()
-            q_m(*cal_in)
+            cal_args, cal_kwargs = m.get_example_inputs()
+            q_m(*cal_args, **cal_kwargs)
 
         # Quantization
         q_m = convert(q_m)
 
         # 5. Export module
-        ep = torch.export.export(q_m, example_inputs)
+        ep = torch.export.export(q_m, args)
         # (weight - DQ) and (bias - DQ)
         self.assertEqual(
             num_of_ops(

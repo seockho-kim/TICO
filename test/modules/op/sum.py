@@ -14,10 +14,12 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 from test.utils.tag import skip
 
 
-class SimpleSumDimMinus1(torch.nn.Module):
+class SimpleSumDimMinus1(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -26,10 +28,10 @@ class SimpleSumDimMinus1(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 5),)
+        return (torch.randn(2, 5),), {}
 
 
-class SimpleSumDimMinus1With3D(torch.nn.Module):
+class SimpleSumDimMinus1With3D(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,10 +40,10 @@ class SimpleSumDimMinus1With3D(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 5, 2),)
+        return (torch.randn(2, 5, 2),), {}
 
 
-class SimpleSumDim2Keepdim(torch.nn.Module):
+class SimpleSumDim2Keepdim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -50,14 +52,14 @@ class SimpleSumDim2Keepdim(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 5, 2),)
+        return (torch.randn(2, 5, 2),), {}
 
 
 # Sum with int type is not supported by luci-interpreter.
 # Therefore, the following test case should be skipped.
 # It will be enabled once it is supported.
 @skip(reason="Not supported yet")
-class SimpleSumDim2Int(torch.nn.Module):
+class SimpleSumDim2Int(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -66,4 +68,4 @@ class SimpleSumDim2Int(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 5, 2).to(torch.int32),)
+        return (torch.randn(2, 5, 2).to(torch.int32),), {}

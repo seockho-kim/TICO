@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleAliasCopy(torch.nn.Module):
+
+class SimpleAliasCopy(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -26,10 +28,10 @@ class SimpleAliasCopy(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}
 
 
-class SimpleAliasCopyWithConstantTensor(torch.nn.Module):
+class SimpleAliasCopyWithConstantTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -40,4 +42,4 @@ class SimpleAliasCopyWithConstantTensor(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.Tensor([1.0, 2.0, 3.0]),)
+        return (torch.Tensor([1.0, 2.0, 3.0]),), {}

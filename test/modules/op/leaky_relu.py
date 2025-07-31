@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleLeakyRelu(torch.nn.Module):
+
+class SimpleLeakyRelu(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.leaky_relu = torch.nn.LeakyReLU(0.1)
@@ -25,4 +27,4 @@ class SimpleLeakyRelu(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}

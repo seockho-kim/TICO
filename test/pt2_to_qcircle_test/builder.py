@@ -17,11 +17,12 @@ import unittest
 from pathlib import Path
 
 import tico
-import torch
 from tico.experimental.quantization import convert, prepare
 from tico.experimental.quantization.config import PT2EConfig
 from tico.experimental.quantization.evaluation.backend import BACKEND
 from tico.experimental.quantization.evaluation.evaluate import evaluate
+
+from test.modules.base import TestModuleBase
 
 from test.utils.base_builders import TestDictBuilderBase, TestRunnerBase
 
@@ -32,7 +33,7 @@ class QuantizationTest(TestRunnerBase):
     def __init__(
         self,
         test_name: str,
-        mod: torch.nn.Module,
+        mod: TestModuleBase,
         config: PT2EConfig,
         backend: BACKEND,
     ):
@@ -60,11 +61,12 @@ class QuantizationTest(TestRunnerBase):
         mod = self.nnmodule.eval()
         original_mod = mod
         calibration_data = original_mod.get_calibration_data()  # type: ignore[operator]
+        cal_args, cal_kwargs = calibration_data[0]
 
-        mod = prepare(mod, self.config, args=calibration_data[0])
+        mod = prepare(mod, self.config, args=cal_args, kwargs=cal_kwargs)
 
-        for data in calibration_data:
-            mod(*data)
+        for c_args, c_kwargs in calibration_data:
+            mod(*c_args, **c_kwargs)
 
         mod = convert(mod)
 

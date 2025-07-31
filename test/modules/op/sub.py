@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleSub(torch.nn.Module):
+
+class SimpleSub(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -23,10 +25,10 @@ class SimpleSub(torch.nn.Module):
         return torch.sub(input_, other)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (torch.randn(2, 3), torch.randn(2, 3)), {}
 
 
-class SubWithOut(torch.nn.Module):
+class SubWithOut(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SubWithOut(torch.nn.Module):
         return out
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (torch.randn(2, 3), torch.randn(2, 3)), {}
 
 
-class SubWithBuiltinFloat(torch.nn.Module):
+class SubWithBuiltinFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -48,10 +50,10 @@ class SubWithBuiltinFloat(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1), 2.0)
+        return (torch.ones(1), 2.0), {}
 
 
-class SubWithBuiltinInt(torch.nn.Module):
+class SubWithBuiltinInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -60,4 +62,4 @@ class SubWithBuiltinInt(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1).to(torch.int64), 2)
+        return (torch.ones(1).to(torch.int64), 2), {}

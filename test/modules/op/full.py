@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleFull(torch.nn.Module):
+
+class SimpleFull(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimpleFull(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
-class SimpleFullBool(torch.nn.Module):
+class SimpleFullBool(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,4 +40,4 @@ class SimpleFullBool(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}

@@ -46,25 +46,25 @@ class S16ToU8Relu(torch.nn.Module):
         return output
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}
 
 
 class FoldQuantOpsTest(unittest.TestCase):
     def test_pass(self):
         m: SimpleSub | torch.nn.Module = SimpleSub().eval()
         assert isinstance(m, SimpleSub)
-        example_inputs = m.get_example_inputs()
+        args, kwargs = m.get_example_inputs()
 
-        q_m = prepare(m, PT2EConfig(), args=example_inputs)
+        q_m = prepare(m, PT2EConfig(), args=args, kwargs=kwargs)
 
         # Calibration
         for _ in range(10):
-            cal_in = m.get_example_inputs()
-            q_m(*cal_in)
+            cal_args, cal_kwargs = m.get_example_inputs()
+            q_m(*cal_args, **cal_kwargs)
 
         q_m = convert(q_m)
 
-        ep = torch.export.export(q_m, example_inputs)
+        ep = torch.export.export(q_m, args, kwargs)
 
         # input, other, sub
         self.assertEqual(
@@ -108,8 +108,8 @@ class FoldQuantOpsTest(unittest.TestCase):
 
     def test_requantize(self):
         m = S16ToU8Relu()
-        example_inputs = m.get_example_inputs()
-        ep = torch.export.export(m, example_inputs)
+        args, kwargs = m.get_example_inputs()
+        ep = torch.export.export(m, args, kwargs)
 
         decomp = DecomposeFakeQuantize()
         decomp.call(ep)

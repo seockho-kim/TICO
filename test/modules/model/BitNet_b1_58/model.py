@@ -16,11 +16,13 @@ import torch
 from transformers import AutoConfig, AutoModelForCausalLM
 from transformers.cache_utils import DynamicCache
 
+from test.modules.base import TestModuleBase
+
 from test.utils import tag
 
 
 @tag.use_onert
-class BitNet(torch.nn.Module):
+class BitNet(TestModuleBase):
     """
     BitNet-b1.58 Decoder layer
 
@@ -85,7 +87,7 @@ class BitNet(torch.nn.Module):
         )
 
         return (
-            hidden_states,
+            (hidden_states,),
             {
                 "position_ids": position_ids,
                 "past_key_value": past_key_value,

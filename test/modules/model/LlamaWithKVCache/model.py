@@ -16,8 +16,10 @@ import torch
 from transformers import LlamaConfig, LlamaModel
 from transformers.cache_utils import DynamicCache
 
+from test.modules.base import TestModuleBase
 
-class LlamaWithKVCache(torch.nn.Module):
+
+class LlamaWithKVCache(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.config = LlamaConfig(
@@ -67,4 +69,4 @@ class LlamaWithKVCache(torch.nn.Module):
             attention_mask,
             position_ids,
             past_key_values,
-        )
+        ), {}

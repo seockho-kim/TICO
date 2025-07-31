@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleWhereWithTensor(torch.nn.Module):
+
+class SimpleWhereWithTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -31,10 +33,10 @@ class SimpleWhereWithTensor(torch.nn.Module):
             condition,
             torch.randint(0, 10, (3, 3), dtype=torch.float32),
             torch.randint(0, 10, (3, 3), dtype=torch.float32),
-        )
+        ), {}
 
 
-class SimpleWhereWithScalar(torch.nn.Module):
+class SimpleWhereWithScalar(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -50,10 +52,10 @@ class SimpleWhereWithScalar(torch.nn.Module):
             condition,
             1.0,
             0.0,
-        )
+        ), {}
 
 
-class SimpleWhereWithConstantTensor(torch.nn.Module):
+class SimpleWhereWithConstantTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
         result_true = torch.tensor([1, 2, 3], dtype=torch.int32)
@@ -71,4 +73,4 @@ class SimpleWhereWithConstantTensor(torch.nn.Module):
         condition = torch.empty(3).uniform_(0, 1)
         condition = torch.bernoulli(condition).bool()
 
-        return (condition,)
+        return (condition,), {}

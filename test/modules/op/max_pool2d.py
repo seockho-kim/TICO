@@ -15,10 +15,12 @@
 import torch
 from torch.export import Dim
 
+from test.modules.base import TestModuleBase
+
 from test.utils import tag
 
 
-class SimpleMaxPool(torch.nn.Module):
+class SimpleMaxPool(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.maxpool = torch.nn.MaxPool2d(3, stride=2)
@@ -28,11 +30,11 @@ class SimpleMaxPool(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
 @tag.use_onert
-class SimpleMaxPoolDynamicShape(torch.nn.Module):
+class SimpleMaxPoolDynamicShape(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.maxpool = torch.nn.MaxPool2d(3, stride=2)
@@ -42,7 +44,7 @@ class SimpleMaxPoolDynamicShape(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
     def get_dynamic_shapes(self):
         batch = Dim("batch", min=1, max=128)
@@ -52,7 +54,7 @@ class SimpleMaxPoolDynamicShape(torch.nn.Module):
         return dynamic_shapes
 
 
-class MaxPoolWithPadding(torch.nn.Module):
+class MaxPoolWithPadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.maxpool = torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -62,10 +64,10 @@ class MaxPoolWithPadding(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
-class MaxPoolWithSamePadding(torch.nn.Module):
+class MaxPoolWithSamePadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.maxpool = torch.nn.MaxPool2d(kernel_size=3, stride=1, padding=1)
@@ -75,10 +77,10 @@ class MaxPoolWithSamePadding(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
-class MaxPoolNoStride(torch.nn.Module):
+class MaxPoolNoStride(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.maxpool = torch.nn.MaxPool2d(3)
@@ -88,10 +90,10 @@ class MaxPoolNoStride(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
-class MaxPoolFunctionalNoStride(torch.nn.Module):
+class MaxPoolFunctionalNoStride(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -100,10 +102,10 @@ class MaxPoolFunctionalNoStride(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
-class MaxPoolNonSquareWindow(torch.nn.Module):
+class MaxPoolNonSquareWindow(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.maxpool = torch.nn.MaxPool2d((3, 2), stride=(2, 1))
@@ -113,11 +115,11 @@ class MaxPoolNonSquareWindow(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
 @tag.skip(reason="Not Support Operator")
-class MaxPoolReturningIndices(torch.nn.Module):
+class MaxPoolReturningIndices(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.maxpool = torch.nn.MaxPool2d(3, stride=2, return_indices=True)
@@ -127,4 +129,4 @@ class MaxPoolReturningIndices(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}

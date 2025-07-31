@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class Conv1dPaddingZero(torch.nn.Module):
+
+class Conv1dPaddingZero(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv1d = torch.nn.Conv1d(
@@ -26,10 +28,10 @@ class Conv1dPaddingZero(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(10, 3, 128),)
+        return (torch.randn(10, 3, 128),), {}
 
 
-class Conv1dPaddingOne(torch.nn.Module):
+class Conv1dPaddingOne(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv1d = torch.nn.Conv1d(
@@ -40,10 +42,10 @@ class Conv1dPaddingOne(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(10, 3, 128),)
+        return (torch.randn(10, 3, 128),), {}
 
 
-class Conv1dPaddingTwo(torch.nn.Module):
+class Conv1dPaddingTwo(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv1d = torch.nn.Conv1d(
@@ -54,10 +56,10 @@ class Conv1dPaddingTwo(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(10, 3, 128),)
+        return (torch.randn(10, 3, 128),), {}
 
 
-class Conv1dPaddingValid(torch.nn.Module):
+class Conv1dPaddingValid(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv1d = torch.nn.Conv1d(
@@ -68,10 +70,10 @@ class Conv1dPaddingValid(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(10, 3, 128),)
+        return (torch.randn(10, 3, 128),), {}
 
 
-class Conv1dPaddingSame(torch.nn.Module):
+class Conv1dPaddingSame(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv1d = torch.nn.Conv1d(
@@ -82,10 +84,10 @@ class Conv1dPaddingSame(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(10, 3, 128),)
+        return (torch.randn(10, 3, 128),), {}
 
 
-class Conv1dNoBias(torch.nn.Module):
+class Conv1dNoBias(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv1d = torch.nn.Conv1d(
@@ -101,10 +103,10 @@ class Conv1dNoBias(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(10, 3, 128),)
+        return (torch.randn(10, 3, 128),), {}
 
 
-class DepthwiseConv1d(torch.nn.Module):
+class DepthwiseConv1d(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv1d = torch.nn.Conv1d(
@@ -115,4 +117,4 @@ class DepthwiseConv1d(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 128, 6),)
+        return (torch.randn(1, 128, 6),), {}

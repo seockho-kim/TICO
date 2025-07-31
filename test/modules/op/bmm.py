@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleBatchMatMul(torch.nn.Module):
+
+class SimpleBatchMatMul(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,4 +26,4 @@ class SimpleBatchMatMul(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 5), torch.randn(2, 5, 3))
+        return (torch.randn(2, 4, 5), torch.randn(2, 5, 3)), {}

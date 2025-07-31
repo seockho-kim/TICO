@@ -15,10 +15,12 @@
 import torch
 from torch.export import Dim
 
+from test.modules.base import TestModuleBase
+
 from test.utils import tag
 
 
-class SimpleRepeat(torch.nn.Module):
+class SimpleRepeat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -28,11 +30,11 @@ class SimpleRepeat(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 4),)
+        return (torch.randn(1, 4),), {}
 
 
 @tag.use_onert
-class SimpleRepeatDynamicShape(torch.nn.Module):
+class SimpleRepeatDynamicShape(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -42,7 +44,7 @@ class SimpleRepeatDynamicShape(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 4),)
+        return (torch.randn(1, 4),), {}
 
     def get_dynamic_shapes(self):
         dim = Dim("dim", min=1, max=128)
@@ -52,7 +54,7 @@ class SimpleRepeatDynamicShape(torch.nn.Module):
         return dynamic_shapes
 
 
-class SimpleRepeat2(torch.nn.Module):
+class SimpleRepeat2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -62,10 +64,10 @@ class SimpleRepeat2(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 3),)
+        return (torch.randn(1, 3),), {}
 
 
-class RepeatTwiceH(torch.nn.Module):
+class RepeatTwiceH(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -74,10 +76,10 @@ class RepeatTwiceH(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 3),)
+        return (torch.randn(1, 2, 3, 3),), {}
 
 
-class RepeatTwiceHW(torch.nn.Module):
+class RepeatTwiceHW(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -86,10 +88,10 @@ class RepeatTwiceHW(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 3),)
+        return (torch.randn(1, 2, 3, 3),), {}
 
 
-class RepeatThreetimesHW(torch.nn.Module):
+class RepeatThreetimesHW(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -98,10 +100,10 @@ class RepeatThreetimesHW(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 3),)
+        return (torch.randn(1, 2, 3, 3),), {}
 
 
-class RepeatTwiceHThreeTimesW(torch.nn.Module):
+class RepeatTwiceHThreeTimesW(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -110,11 +112,11 @@ class RepeatTwiceHThreeTimesW(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 3),)
+        return (torch.randn(1, 2, 3, 3),), {}
 
 
 @tag.skip(reason="Not Support Operator")
-class RepeatLongerRepeats(torch.nn.Module):
+class RepeatLongerRepeats(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -124,4 +126,4 @@ class RepeatLongerRepeats(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 2, 3),)
+        return (torch.randn(1, 2, 3),), {}

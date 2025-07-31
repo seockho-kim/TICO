@@ -15,8 +15,10 @@
 import torch
 from torchvision.models.inception import inception_v3, Inception_V3_Weights
 
+from test.modules.base import TestModuleBase
 
-class InceptionV3(torch.nn.Module):
+
+class InceptionV3(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model = inception_v3(
@@ -28,4 +30,4 @@ class InceptionV3(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 3, 299, 299),)
+        return (torch.randn(1, 3, 299, 299),), {}

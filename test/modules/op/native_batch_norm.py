@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleBatchNorm2D(torch.nn.Module):
+
+class SimpleBatchNorm2D(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.num_features = 4
@@ -27,10 +29,10 @@ class SimpleBatchNorm2D(torch.nn.Module):
 
     def get_example_inputs(self):
         tensor = torch.randn(2, self.num_features, 3, 3)
-        return (tensor,)
+        return (tensor,), {}
 
 
-class BatchNorm2DWithNoAffine(torch.nn.Module):
+class BatchNorm2DWithNoAffine(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.num_features = 4
@@ -42,10 +44,10 @@ class BatchNorm2DWithNoAffine(torch.nn.Module):
 
     def get_example_inputs(self):
         tensor = torch.randn(2, self.num_features, 3, 3)
-        return (tensor,)
+        return (tensor,), {}
 
 
-class NativeBatchNormLegitNoTraining(torch.nn.Module):
+class NativeBatchNormLegitNoTraining(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.num_features = 4
@@ -67,4 +69,4 @@ class NativeBatchNormLegitNoTraining(torch.nn.Module):
 
     def get_example_inputs(self):
         tensor = torch.randn(2, self.num_features, 3, 3)
-        return (tensor,)
+        return (tensor,), {}

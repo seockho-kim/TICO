@@ -36,25 +36,25 @@ class LinearPermuteModule(torch.nn.Module):
         return torch.permute(z, (1, 0))
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
 class PropagateQParamForwardTest(unittest.TestCase):
     def test_pass(self):
         m: LinearPermuteModule | torch.nn.Module = LinearPermuteModule().eval()
         assert isinstance(m, LinearPermuteModule)
-        example_inputs = m.get_example_inputs()
+        args, kwargs = m.get_example_inputs()
 
-        q_m = prepare(m, PT2EConfig(), args=example_inputs)
+        q_m = prepare(m, PT2EConfig(), args=args, kwargs=kwargs)
 
         # Calibration
         for i in range(10):
-            cal_in = m.get_example_inputs()
-            q_m(*cal_in)
+            cal_args, cal_kwargs = m.get_example_inputs()
+            q_m(*cal_args, **cal_kwargs)
 
         q_m = convert(q_m)
 
-        ep = torch.export.export(q_m, example_inputs)
+        ep = torch.export.export(q_m, args, kwargs)
 
         FoldQuantOps().call(ep)
         # Before pass
@@ -89,13 +89,13 @@ class SingleOpPropagateQParamForwardTest(unittest.TestCase):
 
     def setup(self, mod: torch.nn.Module, target_op, scale=1.0, zp=0, dtype="uint8"):
         assert hasattr(mod, "get_example_inputs")
-        self.inputs = mod.get_example_inputs()  # type: ignore[operator]
+        self.args, self.kwargs = mod.get_example_inputs()  # type: ignore[operator]
         self.scale = scale
         self.zp = zp
         self.dtype = dtype
 
         with torch.no_grad():
-            self.ep = torch.export.export(mod.eval(), self.inputs)
+            self.ep = torch.export.export(mod.eval(), self.args, self.kwargs)
 
         # This is necessary for testing Reshape on torch 2.5
         ConvertLayoutOpToReshape().call(self.ep)
@@ -154,7 +154,7 @@ class PermuteModule(torch.nn.Module):
         return torch.permute(x, (1, 0))
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
 class PermuteTest(SingleOpPropagateQParamForwardTest):
@@ -175,7 +175,7 @@ class ReshapeModule(torch.nn.Module):
         return torch.ops.aten.reshape.default(x, (3, 2))
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
 class ReshapeTest(SingleOpPropagateQParamForwardTest):
@@ -196,7 +196,7 @@ class SliceModule(torch.nn.Module):
         return x[:, 1]
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
 @unittest.skipUnless(
@@ -221,7 +221,7 @@ class NegModule(torch.nn.Module):
         return -x
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
 class NegTest(SingleOpPropagateQParamForwardTest):
@@ -239,7 +239,7 @@ class CatModule(torch.nn.Module):
         return torch.cat([x, y])
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (torch.randn(2, 3), torch.randn(2, 3)), {}
 
 
 class CatTest(SingleOpPropagateQParamForwardTest):

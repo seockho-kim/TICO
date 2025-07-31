@@ -14,11 +14,13 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 from test.utils import tag
 
 
 @tag.skip(reason="Not Support Operator")
-class ToWithMemoryFormat(torch.nn.Module):
+class ToWithMemoryFormat(TestModuleBase):
     """
     TODO
     Not supported operators: aten._to_copy.default
@@ -34,10 +36,10 @@ class ToWithMemoryFormat(torch.nn.Module):
         )
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 5, 4),)
+        return (torch.randn(1, 3, 5, 4),), {}
 
 
-class RedundantDtypeToCopy(torch.nn.Module):
+class RedundantDtypeToCopy(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -46,10 +48,10 @@ class RedundantDtypeToCopy(torch.nn.Module):
         return x + y
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 5, 4), torch.randn(1, 3, 5, 4))
+        return (torch.randn(1, 3, 5, 4), torch.randn(1, 3, 5, 4)), {}
 
 
-class RedundantDeviceToCopy(torch.nn.Module):
+class RedundantDeviceToCopy(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -58,10 +60,10 @@ class RedundantDeviceToCopy(torch.nn.Module):
         return x + y
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 5, 4), torch.randn(1, 3, 5, 4))
+        return (torch.randn(1, 3, 5, 4), torch.randn(1, 3, 5, 4)), {}
 
 
-class ToWithIntegerType(torch.nn.Module):
+class ToWithIntegerType(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -70,10 +72,10 @@ class ToWithIntegerType(torch.nn.Module):
         return y
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3),)
+        return (torch.randn(1, 3),), {}
 
 
-class ToWithIntegerPlusFloat(torch.nn.Module):
+class ToWithIntegerPlusFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -82,4 +84,4 @@ class ToWithIntegerPlusFloat(torch.nn.Module):
         return y  # float
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3),)
+        return (torch.randn(1, 3),), {}

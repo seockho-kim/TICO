@@ -15,8 +15,10 @@
 import torch
 from torchvision.models.efficientnet import efficientnet_v2_s
 
+from test.modules.base import TestModuleBase
 
-class EfficientNet(torch.nn.Module):
+
+class EfficientNet(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model = efficientnet_v2_s(pretrained=True).to("cpu")
@@ -28,4 +30,4 @@ class EfficientNet(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 3, 16, 16),)
+        return (torch.randn(1, 3, 16, 16),), {}

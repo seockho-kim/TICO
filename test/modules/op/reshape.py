@@ -14,10 +14,12 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 # Note. tests that call `aten.reshape` or `torch.reshape` are exporeted to aten graph that has `aten.view` instead of `aten.reshape`.
 
 
-class ReshapeChannelLastTensor(torch.nn.Module):
+class ReshapeChannelLastTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -26,10 +28,10 @@ class ReshapeChannelLastTensor(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 16, 8, 8).to(memory_format=torch.channels_last),)
+        return (torch.randn(1, 16, 8, 8).to(memory_format=torch.channels_last),), {}
 
 
-class SimpleReshapeFirstDimMinus(torch.nn.Module):
+class SimpleReshapeFirstDimMinus(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,10 +40,10 @@ class SimpleReshapeFirstDimMinus(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 5),)
+        return (torch.randn(2, 4, 5),), {}
 
 
-class SimpleReshapeLastDimMinus(torch.nn.Module):
+class SimpleReshapeLastDimMinus(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -50,10 +52,10 @@ class SimpleReshapeLastDimMinus(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 5),)
+        return (torch.randn(2, 4, 5),), {}
 
 
-class ReshapeTorchAPI(torch.nn.Module):
+class ReshapeTorchAPI(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -62,4 +64,4 @@ class ReshapeTorchAPI(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 5),)
+        return (torch.randn(2, 4, 5),), {}

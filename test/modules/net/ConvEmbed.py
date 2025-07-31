@@ -15,8 +15,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class ConvEmbed(torch.nn.Module):
+
+class ConvEmbed(TestModuleBase):
     def __init__(
         self,
         patch_size=7,
@@ -42,4 +44,4 @@ class ConvEmbed(torch.nn.Module):
 
     def get_example_inputs(self):
         H = W = 768
-        return (torch.randn(1, 3, H, W), (H, W))
+        return (torch.randn(1, 3, H, W), (H, W)), {}

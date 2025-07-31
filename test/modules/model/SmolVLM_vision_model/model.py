@@ -21,6 +21,8 @@ import torch
 from transformers import AutoModelForImageTextToText
 from transformers.modeling_outputs import BaseModelOutput
 
+from test.modules.base import TestModuleBase
+
 
 def Idefics3VisionTransformer_forward(
     self,
@@ -141,7 +143,7 @@ def Idefics3VisionEmbeddings_forward(
     return embeddings
 
 
-class SmolVLM_vision_model(torch.nn.Module):
+class SmolVLM_vision_model(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.rtol = 1e-2
@@ -161,4 +163,4 @@ class SmolVLM_vision_model(torch.nn.Module):
 
     def get_example_inputs(self):
         pixel_values = torch.randn(26, 3, 512, 512)
-        return (pixel_values,)
+        return (pixel_values,), {}

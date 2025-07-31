@@ -17,8 +17,10 @@ from tico.utils.pytree_utils import register_dynamic_cache
 from transformers.cache_utils import DynamicCache
 from transformers.models.llama.modeling_llama import LlamaAttention, LlamaConfig
 
+from test.modules.base import TestModuleBase
 
-class LlamaAttentionWithKVCache(torch.nn.Module):
+
+class LlamaAttentionWithKVCache(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.config = LlamaConfig(use_cache=True)
@@ -56,4 +58,4 @@ class LlamaAttentionWithKVCache(torch.nn.Module):
             position_embeddings,
             attention_mask,
             past_key_values,
-        )
+        ), {}

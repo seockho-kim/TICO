@@ -12,15 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any, Tuple
+from typing import Any
 
-import test.utils.helper as helper
 import tico.utils
 import tico.utils.model
 from tico.interpreter.infer import flatten_and_convert
 
 
-def infer_with_circle_interpreter(circle_path: str, example_inputs: Tuple) -> Any:
+def infer_with_circle_interpreter(
+    circle_path: str,
+    forward_args: tuple,
+    forward_kwargs: dict,
+) -> Any:
     """
     Run inference on a .circle model using the 'circle-interpreter' engine.
 
@@ -28,8 +31,10 @@ def infer_with_circle_interpreter(circle_path: str, example_inputs: Tuple) -> An
     -----------
     circle_path
         Path to the .circle file to execute.
-    example_inputs
-        Tuple of input tensors or values to feed into the model.
+    forward_args
+        Tuple of arguments for the model's forward function.
+    forward_kwargs
+        Dictionary of keyword arguments for the model's forward function.
 
     Returns
     --------
@@ -37,8 +42,7 @@ def infer_with_circle_interpreter(circle_path: str, example_inputs: Tuple) -> An
         The output produced by the 'circle-interpreter'
     """
     circle_model = tico.utils.model.CircleModel.load(circle_path)
-    _args, _kwargs = helper.get_args_kwargs(example_inputs)
-    circle_result = circle_model(*_args, **_kwargs)
+    circle_result = circle_model(*forward_args, **forward_kwargs)
 
     if not isinstance(circle_result, list):
         circle_result = [circle_result]
@@ -46,7 +50,11 @@ def infer_with_circle_interpreter(circle_path: str, example_inputs: Tuple) -> An
     return circle_result
 
 
-def infer_with_onert(circle_path: str, example_inputs: Tuple) -> Any:
+def infer_with_onert(
+    circle_path: str,
+    forward_args: tuple,
+    forward_kwargs: dict,
+) -> Any:
     """
     Run inference on a .circle model using the 'onert' package.
 
@@ -54,8 +62,10 @@ def infer_with_onert(circle_path: str, example_inputs: Tuple) -> Any:
     -----------
     circle_path
         Path to the .circle file to execute.
-    example_inputs
-        Tuple of input tensors or values to feed into the model.
+    forward_args
+        Tuple of arguments for the model's forward function.
+    forward_kwargs
+        Dictionary of keyword arguments for the model's forward function.
 
     Returns
     --------
@@ -67,8 +77,8 @@ def infer_with_onert(circle_path: str, example_inputs: Tuple) -> Any:
     except ImportError:
         raise RuntimeError("The 'onert' package is required to run this funciton.")
 
-    _args, _kwargs = helper.get_args_kwargs(example_inputs)
-    inputs = _args + tuple(_kwargs.values())
+    # TODO properly flatten kwargs to tuple
+    inputs = forward_args + tuple(forward_kwargs.values())
     inputs = flatten_and_convert(inputs)
 
     session_float = infer.session(circle_path)

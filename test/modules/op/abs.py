@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleAbs(torch.nn.Module):
+
+class SimpleAbs(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -23,10 +25,10 @@ class SimpleAbs(torch.nn.Module):
         return torch.abs(input)
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}
 
 
-class SimpleAbsWithNone(torch.nn.Module):
+class SimpleAbsWithNone(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -34,4 +36,4 @@ class SimpleAbsWithNone(torch.nn.Module):
         return torch.abs(input), None
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}

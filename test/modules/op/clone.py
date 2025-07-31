@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleClone(torch.nn.Module):
+
+class SimpleClone(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -26,10 +28,10 @@ class SimpleClone(torch.nn.Module):
         return ret
 
     def get_example_inputs(self):
-        return (torch.randn(3, 5, 4),)
+        return (torch.randn(3, 5, 4),), {}
 
 
-class SimpleCloneWithMemoryFormat(torch.nn.Module):
+class SimpleCloneWithMemoryFormat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -40,10 +42,10 @@ class SimpleCloneWithMemoryFormat(torch.nn.Module):
         return dst
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 5, 4),)
+        return (torch.randn(1, 3, 5, 4),), {}
 
 
-class SimpleCloneWithMemoryFormatContiguous(torch.nn.Module):
+class SimpleCloneWithMemoryFormatContiguous(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -54,10 +56,10 @@ class SimpleCloneWithMemoryFormatContiguous(torch.nn.Module):
         return dst
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 5, 4),)
+        return (torch.randn(1, 3, 5, 4),), {}
 
 
-class SimpleCloneWithMemoryFormatChannelsLast(torch.nn.Module):
+class SimpleCloneWithMemoryFormatChannelsLast(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -68,7 +70,7 @@ class SimpleCloneWithMemoryFormatChannelsLast(torch.nn.Module):
         return dst
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 5, 4).to(memory_format=torch.channels_last),)
+        return (torch.randn(1, 3, 5, 4).to(memory_format=torch.channels_last),), {}
 
 
 # TODO Add negative test

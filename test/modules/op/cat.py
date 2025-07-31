@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleCatWithDim(torch.nn.Module):
+
+class SimpleCatWithDim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleCatWithDim(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return ((torch.zeros(3, 3), torch.ones(3, 3)),)
+        return ((torch.zeros(3, 3), torch.ones(3, 3)),), {}
 
 
-class SimpleCatDefault(torch.nn.Module):
+class SimpleCatDefault(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SimpleCatDefault(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return ((torch.zeros(3), torch.ones(2)),)
+        return ((torch.zeros(3), torch.ones(2)),), {}
 
 
-class SimpleCatThreeTensors(torch.nn.Module):
+class SimpleCatThreeTensors(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -54,4 +56,4 @@ class SimpleCatThreeTensors(torch.nn.Module):
                 torch.ones(3, 3, 1),
                 torch.ones(3, 3, 1),
             ),
-        )
+        ), {}

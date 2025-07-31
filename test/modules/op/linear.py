@@ -15,10 +15,12 @@
 import torch
 from torch.nn import functional as F
 
+from test.modules.base import TestModuleBase
+
 from test.utils.tag import test_without_inference
 
 
-class SimpleLinear(torch.nn.Module):
+class SimpleLinear(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.linear = torch.nn.Linear(3, 3)
@@ -27,14 +29,14 @@ class SimpleLinear(torch.nn.Module):
         return self.linear(arg)
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}
 
     # TODO enable this after introducing onert in CI.
     # def get_dynamic_shapes(self):
     #     return {"arg": {0: Dim("batch")}}
 
 
-class LinearWithDictOutput(torch.nn.Module):
+class LinearWithDictOutput(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.linear1 = torch.nn.Linear(10, 5)
@@ -44,10 +46,10 @@ class LinearWithDictOutput(torch.nn.Module):
         return {"x": x, "x_minus_1": x - 1}
 
     def get_example_inputs(self):
-        return (torch.randn(2, 10),)
+        return (torch.randn(2, 10),), {}
 
 
-class LinearWithTreeOutput(torch.nn.Module):
+class LinearWithTreeOutput(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.linear1 = torch.nn.Linear(10, 5)
@@ -57,10 +59,10 @@ class LinearWithTreeOutput(torch.nn.Module):
         return {"x": x, "x_varients": [x - 1, x + 1]}
 
     def get_example_inputs(self):
-        return (torch.randn(2, 10),)
+        return (torch.randn(2, 10),), {}
 
 
-class LinearWithUnusedInput(torch.nn.Module):
+class LinearWithUnusedInput(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.linear = torch.nn.Linear(3, 3)
@@ -69,11 +71,11 @@ class LinearWithUnusedInput(torch.nn.Module):
         return self.linear(arg)
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3), None)
+        return (torch.randn(3, 3), None), {}
 
 
 @test_without_inference
-class FQLinearWithFp32Bias(torch.nn.Module):
+class FQLinearWithFp32Bias(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.weight = torch.nn.Parameter(torch.ones(3, 3))
@@ -95,4 +97,4 @@ class FQLinearWithFp32Bias(torch.nn.Module):
         return output
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}

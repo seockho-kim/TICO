@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleGtWithScalarFloat(torch.nn.Module):
+
+class SimpleGtWithScalarFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleGtWithScalarFloat(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3), 2.0)
+        return (torch.randn(1, 3), 2.0), {}
 
 
-class SimpleGtWithScalarInt(torch.nn.Module):
+class SimpleGtWithScalarInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SimpleGtWithScalarInt(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3), 2)
+        return (torch.randn(1, 3), 2), {}
 
 
-class SimpleGtWithTensor(torch.nn.Module):
+class SimpleGtWithTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -48,10 +50,10 @@ class SimpleGtWithTensor(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (torch.randn(2, 3), torch.randn(2, 3)), {}
 
 
-class SimpleGtWithDifferentTypeTensor(torch.nn.Module):
+class SimpleGtWithDifferentTypeTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -60,4 +62,4 @@ class SimpleGtWithDifferentTypeTensor(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3).to(torch.int64))
+        return (torch.randn(2, 3), torch.randn(2, 3).to(torch.int64)), {}

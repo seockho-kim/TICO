@@ -15,8 +15,10 @@
 import torch
 import torch.nn.functional as F
 
+from test.modules.base import TestModuleBase
 
-class SimpleConstantPadNd(torch.nn.Module):
+
+class SimpleConstantPadNd(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimpleConstantPadNd(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 3),)
+        return (torch.randn(1, 2, 3, 3),), {}
 
 
-class DifferentRightBottom(torch.nn.Module):
+class DifferentRightBottom(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -37,10 +39,10 @@ class DifferentRightBottom(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 3),)
+        return (torch.randn(1, 2, 3, 3),), {}
 
 
-class ConstantPad2d(torch.nn.Module):
+class ConstantPad2d(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.pad = torch.nn.ConstantPad2d((0, 2, 0, 4), value=0)
@@ -49,10 +51,10 @@ class ConstantPad2d(torch.nn.Module):
         return self.pad(tensor)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 3),)
+        return (torch.randn(1, 2, 3, 3),), {}
 
 
-class ConstantPad2dWith3dInput(torch.nn.Module):
+class ConstantPad2dWith3dInput(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.pad = torch.nn.ConstantPad2d((0, 2, 0, 4), value=0)
@@ -61,4 +63,4 @@ class ConstantPad2dWith3dInput(torch.nn.Module):
         return self.pad(tensor)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3, 3),)
+        return (torch.randn(2, 3, 3),), {}

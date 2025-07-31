@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleArgMax(torch.nn.Module):
+
+class SimpleArgMax(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimpleArgMax(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}
 
 
-class SimpleArgMaxWithNegativeDim(torch.nn.Module):
+class SimpleArgMaxWithNegativeDim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,10 +40,10 @@ class SimpleArgMaxWithNegativeDim(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}
 
 
-class SimpleArgMaxWithRankThreeTensor(torch.nn.Module):
+class SimpleArgMaxWithRankThreeTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -51,4 +53,4 @@ class SimpleArgMaxWithRankThreeTensor(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(3, 3, 3),)
+        return (torch.randn(3, 3, 3),), {}

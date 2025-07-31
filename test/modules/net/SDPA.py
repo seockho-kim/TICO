@@ -16,8 +16,10 @@ import torch
 
 import torch.nn.functional as F
 
+from test.modules.base import TestModuleBase
 
-class SDPA(torch.nn.Module):
+
+class SDPA(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -30,10 +32,10 @@ class SDPA(torch.nn.Module):
             torch.rand(4, 4, 16, 16),
             torch.rand(4, 4, 16, 16),
             torch.rand(4, 4, 16, 16),
-        )
+        ), {}
 
 
-class SDPACausal(torch.nn.Module):
+class SDPACausal(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -46,10 +48,10 @@ class SDPACausal(torch.nn.Module):
             torch.rand(4, 4, 16, 16),
             torch.rand(4, 4, 16, 16),
             torch.rand(4, 4, 16, 16),
-        )
+        ), {}
 
 
-class SDPAMasked(torch.nn.Module):
+class SDPAMasked(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -63,4 +65,4 @@ class SDPAMasked(torch.nn.Module):
             torch.rand(4, 4, 16, 16),
             torch.rand(4, 4, 16, 16),
             torch.ones(16, 16, dtype=torch.bool).tril(diagonal=0),
-        )
+        ), {}

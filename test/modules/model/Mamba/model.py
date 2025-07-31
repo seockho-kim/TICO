@@ -15,8 +15,10 @@
 import torch
 from transformers import AutoTokenizer, MambaConfig, MambaForCausalLM
 
+from test.modules.base import TestModuleBase
 
-class Mamba(torch.nn.Module):
+
+class Mamba(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -40,4 +42,4 @@ class Mamba(torch.nn.Module):
         input_ids = tokenizer("What is your name?", return_tensors="pt")[
             "input_ids"
         ].to("cpu")
-        return (input_ids,)
+        return (input_ids,), {}

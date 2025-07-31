@@ -31,7 +31,7 @@ class Conv1dPaddingOne(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(10, 3, 128),)
+        return (torch.randn(10, 3, 128),), {}
 
 
 class ConvertConv1dPaddingOneTest(SinglePassValueTest):
@@ -54,7 +54,7 @@ class Conv1dPaddingValid(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(10, 3, 128),)
+        return (torch.randn(10, 3, 128),), {}
 
 
 class ConvertConv1dPaddingValidTest(SinglePassValueTest):
@@ -77,7 +77,7 @@ class DepthwiseConv1d(torch.nn.Module):
         return self.conv1d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 128, 6),)
+        return (torch.randn(1, 128, 6),), {}
 
 
 class ConvertDepthwiseConv1dTest(SinglePassValueTest):

@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleLogicalAnd(torch.nn.Module):
+
+class SimpleLogicalAnd(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -30,4 +32,4 @@ class SimpleLogicalAnd(torch.nn.Module):
         return (
             lhs,
             rhs,
-        )
+        ), {}

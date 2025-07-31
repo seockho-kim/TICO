@@ -26,27 +26,28 @@ from test.modules.op.add import SimpleAdd
 class ConvertTest(unittest.TestCase):
     def test_args(self):
         m = SimpleAdd()
-        tico.convert(m.eval(), m.get_example_inputs())
+        args, kwargs = m.get_example_inputs()
+        tico.convert(m.eval(), args, kwargs)
 
     def test_kwargs(self):
         m = SimpleAdd()
-        inputs = m.get_example_inputs()
-        kwargs = {"x": inputs[0], "y": inputs[1]}
+        args, _ = m.get_example_inputs()
+        kwargs = {"x": args[0], "y": args[1]}
         tico.convert(m.eval(), tuple(), kwargs)
 
     def test_args_kwargs(self):
         m = SimpleAdd()
-        inputs = m.get_example_inputs()
-        args = (inputs[0],)
-        kwargs = {"y": inputs[1]}
-        tico.convert(m.eval(), args, kwargs)
+        args, _ = m.get_example_inputs()
+        x, y = args
+        tico.convert(m.eval(), (x,), {"y": y})
 
 
 class ConvertFromExportedProgramTest(unittest.TestCase):
     def test_args(self):
         m = SimpleAdd()
+        args, kwargs = m.get_example_inputs()
         with torch.no_grad():
-            ep = export(m.eval(), m.get_example_inputs())
+            ep = export(m.eval(), args, kwargs)
 
         tico.convert_from_exported_program(ep)
 
@@ -54,8 +55,9 @@ class ConvertFromExportedProgramTest(unittest.TestCase):
 class ConvertFromPt2Test(unittest.TestCase):
     def test_args(self):
         m = SimpleAdd()
+        args, kwargs = m.get_example_inputs()
         with torch.no_grad():
-            ep = export(m.eval(), m.get_example_inputs())
+            ep = export(m.eval(), args, kwargs)
 
         file_name: str = "ConvertFromPt2Test.test_args.pt2"
         with tempfile.TemporaryDirectory() as tmp:

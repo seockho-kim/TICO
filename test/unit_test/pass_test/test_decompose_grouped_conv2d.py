@@ -34,7 +34,7 @@ class SimpleGroupedConv2dNet(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
 class DecomposeGroupedConv2dTest(SinglePassValueTest):
@@ -61,7 +61,7 @@ class SimpleGroupedConv2dWithPaddingNet(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
 class DecomposeGroupedConv2dWithPaddingTest(SinglePassValueTest):

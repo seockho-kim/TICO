@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleSqrt(torch.nn.Module):
+
+class SimpleSqrt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,4 +26,4 @@ class SimpleSqrt(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}

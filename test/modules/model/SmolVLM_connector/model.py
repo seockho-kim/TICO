@@ -15,8 +15,10 @@
 import torch
 from transformers import AutoModelForImageTextToText
 
+from test.modules.base import TestModuleBase
 
-class SmolVLM_connector(torch.nn.Module):
+
+class SmolVLM_connector(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.rtol = 1e-4
@@ -30,4 +32,4 @@ class SmolVLM_connector(torch.nn.Module):
 
     def get_example_inputs(self):
         image_hidden_states = torch.randn(26, 1024, 768)
-        return (image_hidden_states,)
+        return (image_hidden_states,), {}

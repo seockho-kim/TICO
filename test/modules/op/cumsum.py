@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleCumsumDim0(torch.nn.Module):
+
+class SimpleCumsumDim0(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleCumsumDim0(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 5), 0)
+        return (torch.randn(1, 5), 0), {}
 
 
-class SimpleCumsumInt32(torch.nn.Module):
+class SimpleCumsumInt32(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SimpleCumsumInt32(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 5).to(torch.int32), 0)
+        return (torch.randn(1, 5).to(torch.int32), 0), {}
 
 
-class SimpleCumsumInt64(torch.nn.Module):
+class SimpleCumsumInt64(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -48,10 +50,10 @@ class SimpleCumsumInt64(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 5).to(torch.int64), 0)
+        return (torch.randn(1, 5).to(torch.int64), 0), {}
 
 
-class SimpleCumsumDim1(torch.nn.Module):
+class SimpleCumsumDim1(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -60,10 +62,10 @@ class SimpleCumsumDim1(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 5), 1)
+        return (torch.randn(1, 5), 1), {}
 
 
-class SimpleCumsumDim2(torch.nn.Module):
+class SimpleCumsumDim2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -72,4 +74,4 @@ class SimpleCumsumDim2(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(4, 3, 5), 2)
+        return (torch.randn(4, 3, 5), 2), {}

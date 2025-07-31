@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleSelect(torch.nn.Module):
+
+class SimpleSelect(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -27,10 +29,10 @@ class SimpleSelect(torch.nn.Module):
         return selected_x
 
     def get_example_inputs(self):
-        return (torch.randn(4),)
+        return (torch.randn(4),), {}
 
 
-class SimpleSelect2(torch.nn.Module):
+class SimpleSelect2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -42,10 +44,10 @@ class SimpleSelect2(torch.nn.Module):
         return selected_x
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3, 4),)
+        return (torch.randn(2, 3, 4),), {}
 
 
-class SimpleConstIndex(torch.nn.Module):
+class SimpleConstIndex(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -55,4 +57,4 @@ class SimpleConstIndex(torch.nn.Module):
         return ssm_state
 
     def get_example_inputs(self):
-        return (torch.rand(1, 32, 6, 16),)
+        return (torch.rand(1, 32, 6, 16),), {}

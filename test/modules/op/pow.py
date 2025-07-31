@@ -14,10 +14,12 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 # TODO Add a test for `aten.pow.Scalar` when the operator is supported.
 
 
-class SimplePowTensorScalar(torch.nn.Module):
+class SimplePowTensorScalar(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -27,10 +29,10 @@ class SimplePowTensorScalar(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 2),)
+        return (torch.randn(2, 2),), {}
 
 
-class SimplePowIntTensorFloatScalar(torch.nn.Module):
+class SimplePowIntTensorFloatScalar(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -41,10 +43,10 @@ class SimplePowIntTensorFloatScalar(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 2),)
+        return (torch.randn(2, 2),), {}
 
 
-class Int32TensorInt64Scalar(torch.nn.Module):
+class Int32TensorInt64Scalar(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -55,10 +57,10 @@ class Int32TensorInt64Scalar(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 2),)
+        return (torch.randn(2, 2),), {}
 
 
-class SimplePowFloatTensorIntScalar(torch.nn.Module):
+class SimplePowFloatTensorIntScalar(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -69,10 +71,10 @@ class SimplePowFloatTensorIntScalar(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 2),)
+        return (torch.randn(2, 2),), {}
 
 
-class SimplePowFloatTensorIntScalar2(torch.nn.Module):
+class SimplePowFloatTensorIntScalar2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -83,10 +85,10 @@ class SimplePowFloatTensorIntScalar2(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 2),)
+        return (torch.randn(2, 2),), {}
 
 
-class SimplePowFloatTensorIntTensor(torch.nn.Module):
+class SimplePowFloatTensorIntTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
         e = torch.tensor(2, dtype=torch.int32)
@@ -98,10 +100,10 @@ class SimplePowFloatTensorIntTensor(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 2),)
+        return (torch.randn(2, 2),), {}
 
 
-class SimplePowIntTensorFloatTensor(torch.nn.Module):
+class SimplePowIntTensorFloatTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
         e = torch.tensor(2.4)
@@ -114,10 +116,10 @@ class SimplePowIntTensorFloatTensor(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 2),)
+        return (torch.randn(2, 2),), {}
 
 
-class SimplePowTensorTensor(torch.nn.Module):
+class SimplePowTensorTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -127,4 +129,4 @@ class SimplePowTensorTensor(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 2), torch.randn(2, 2))
+        return (torch.randn(2, 2), torch.randn(2, 2)), {}

@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleScatterCopyDim0(torch.nn.Module):
+
+class SimpleScatterCopyDim0(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -28,10 +30,10 @@ class SimpleScatterCopyDim0(torch.nn.Module):
         return (
             torch.zeros(8, 8),
             torch.ones(2, 8),
-        )
+        ), {}
 
 
-class SimpleScatterCopyDim1(torch.nn.Module):
+class SimpleScatterCopyDim1(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -43,10 +45,10 @@ class SimpleScatterCopyDim1(torch.nn.Module):
         return (
             torch.zeros(8, 8),
             torch.ones(8, 2),
-        )
+        ), {}
 
 
-class SimpleScatterCopyDim2(torch.nn.Module):
+class SimpleScatterCopyDim2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -59,4 +61,4 @@ class SimpleScatterCopyDim2(torch.nn.Module):
         return (
             torch.zeros(2, 3, 8),
             torch.ones(2, 3, 5),
-        )
+        ), {}

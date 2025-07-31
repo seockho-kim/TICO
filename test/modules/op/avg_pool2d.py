@@ -15,10 +15,12 @@
 import torch
 from torch.export import Dim
 
+from test.modules.base import TestModuleBase
+
 from test.utils.tag import skip, use_onert
 
 
-class SimpleAvgPool(torch.nn.Module):
+class SimpleAvgPool(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AvgPool2d(kernel_size=3, stride=2)
@@ -28,11 +30,11 @@ class SimpleAvgPool(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
 @use_onert
-class SimpleAvgPoolDynamicShape(torch.nn.Module):
+class SimpleAvgPoolDynamicShape(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AvgPool2d(kernel_size=3, stride=2)
@@ -42,7 +44,7 @@ class SimpleAvgPoolDynamicShape(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
     def get_dynamic_shapes(self):
         batch = Dim("batch", min=1, max=128)
@@ -52,7 +54,7 @@ class SimpleAvgPoolDynamicShape(torch.nn.Module):
         return dynamic_shapes
 
 
-class AdaptiveAvgPool(torch.nn.Module):
+class AdaptiveAvgPool(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AdaptiveAvgPool2d((1, 1))
@@ -62,7 +64,7 @@ class AdaptiveAvgPool(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 128, 7, 7),)
+        return (torch.randn(1, 128, 7, 7),), {}
 
     # This test should be done after applying NCHW_to_NHWC with onecc.
     # def get_calibration_data(self):
@@ -70,7 +72,7 @@ class AdaptiveAvgPool(torch.nn.Module):
     #     return calibration_data
 
 
-class AvgPoolWithPadding(torch.nn.Module):
+class AvgPoolWithPadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AvgPool2d(kernel_size=3, stride=2, padding=1)
@@ -80,10 +82,10 @@ class AvgPoolWithPadding(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
-class AvgPoolWithSamePadding(torch.nn.Module):
+class AvgPoolWithSamePadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AvgPool2d(kernel_size=3, stride=1, padding=1)
@@ -93,10 +95,10 @@ class AvgPoolWithSamePadding(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
-class AvgPoolWithoutStride(torch.nn.Module):
+class AvgPoolWithoutStride(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AvgPool2d(kernel_size=3)
@@ -106,10 +108,10 @@ class AvgPoolWithoutStride(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 17),)
+        return (torch.randn(2, 4, 8, 17),), {}
 
 
-class AvgPoolFunctionalWithoutStride(torch.nn.Module):
+class AvgPoolFunctionalWithoutStride(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -118,10 +120,10 @@ class AvgPoolFunctionalWithoutStride(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 17),)
+        return (torch.randn(2, 4, 8, 17),), {}
 
 
-class AvgPoolNonSquareWindow(torch.nn.Module):
+class AvgPoolNonSquareWindow(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AvgPool2d(kernel_size=(3, 2), stride=(2, 1))
@@ -131,10 +133,10 @@ class AvgPoolNonSquareWindow(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 8, 16),)
+        return (torch.randn(2, 4, 8, 16),), {}
 
 
-class AvgPoolWithSamePaddingNoCountIncludePad(torch.nn.Module):
+class AvgPoolWithSamePaddingNoCountIncludePad(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AvgPool2d(
@@ -146,10 +148,10 @@ class AvgPoolWithSamePaddingNoCountIncludePad(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 56, 56),)
+        return (torch.randn(1, 3, 56, 56),), {}
 
 
-class AvgPoolWithNoPaddingNoCountIncludePad(torch.nn.Module):
+class AvgPoolWithNoPaddingNoCountIncludePad(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AvgPool2d(
@@ -161,11 +163,11 @@ class AvgPoolWithNoPaddingNoCountIncludePad(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 56, 56),)
+        return (torch.randn(1, 3, 56, 56),), {}
 
 
 @skip(reason="Not supported yet")
-class AvgPoolWithNoSamePaddingNoCountIncludePad(torch.nn.Module):
+class AvgPoolWithNoSamePaddingNoCountIncludePad(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.avgpool = torch.nn.AvgPool2d(
@@ -177,4 +179,4 @@ class AvgPoolWithNoSamePaddingNoCountIncludePad(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 56, 56),)
+        return (torch.randn(1, 3, 56, 56),), {}

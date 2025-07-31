@@ -29,7 +29,7 @@ class CastClampFloatInputIntMin(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(5, 3) * 20,)
+        return (torch.randn(5, 3) * 20,), {}
 
 
 class CastClampFloatInputIntMinTest(SinglePassValueTest):
@@ -51,7 +51,7 @@ class CastClampFloatInputIntMax(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(5, 3) * 20,)
+        return (torch.randn(5, 3) * 20,), {}
 
 
 class CastClampFloatInputIntMaxTest(SinglePassValueTest):
@@ -73,7 +73,7 @@ class CastClampIntInputFloatMin(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randint(-20, 20, (5, 3)),)
+        return (torch.randint(-20, 20, (5, 3)),), {}
 
 
 class CastClampIntInputFloatMinTest(SinglePassValueTest):
@@ -95,7 +95,7 @@ class CastClampIntInputFloatMax(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randint(-20, 20, (5, 3)),)
+        return (torch.randint(-20, 20, (5, 3)),), {}
 
 
 class CastClampIntInputFloatMaxTest(SinglePassValueTest):

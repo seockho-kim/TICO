@@ -15,13 +15,15 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 
 B = 4
 SEQ_LEN = 8
 DIM = 16
 
 
-class LlamaRMSNorm(torch.nn.Module):
+class LlamaRMSNorm(TestModuleBase):
     def __init__(self, hidden_size=DIM, eps=1e-6):
         """
         LlamaRMSNorm is equivalent to T5LayerNorm
@@ -39,4 +41,4 @@ class LlamaRMSNorm(torch.nn.Module):
 
     def get_example_inputs(self):
         # (B, Seq_Len, Dim)
-        return (torch.randn(B, SEQ_LEN, DIM),)
+        return (torch.randn(B, SEQ_LEN, DIM),), {}

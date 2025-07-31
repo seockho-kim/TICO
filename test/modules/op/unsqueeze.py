@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleUnsqueeze(torch.nn.Module):
+
+class SimpleUnsqueeze(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,4 +26,4 @@ class SimpleUnsqueeze(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(4, 4, 3),)
+        return (torch.randn(4, 4, 3),), {}

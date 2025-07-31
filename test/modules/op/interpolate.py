@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class InterpolateDouble(torch.nn.Module):
+
+class InterpolateDouble(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -23,10 +25,10 @@ class InterpolateDouble(torch.nn.Module):
         return torch.nn.functional.interpolate(x, scale_factor=2.0, mode="nearest")
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 4),)
+        return (torch.randn(1, 2, 3, 4),), {}
 
 
-class InterpolateThreeTimes(torch.nn.Module):
+class InterpolateThreeTimes(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -34,10 +36,10 @@ class InterpolateThreeTimes(torch.nn.Module):
         return torch.nn.functional.interpolate(x, scale_factor=3.0, mode="nearest")
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 4),)
+        return (torch.randn(1, 2, 3, 4),), {}
 
 
-class InterpolateOnePointFive(torch.nn.Module):
+class InterpolateOnePointFive(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -45,4 +47,4 @@ class InterpolateOnePointFive(torch.nn.Module):
         return torch.nn.functional.interpolate(x, scale_factor=1.5, mode="nearest")
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 6, 6),)
+        return (torch.randn(1, 3, 6, 6),), {}

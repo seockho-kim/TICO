@@ -33,7 +33,7 @@ class SimpleMXINT8(torch.nn.Module):
         return quantize_mx(x, "int8", axis=self.axis)
 
     def get_example_inputs(self):
-        return (torch.ones(1, 2, 3),)
+        return (torch.ones(1, 2, 3),), {}
 
 
 class QuantizeMXTest(unittest.TestCase):
@@ -74,9 +74,10 @@ class QuantizeMXTest(unittest.TestCase):
     # Check if exported program includes circle_custom::quantize_mx Op
     def test_export(self):
         m = SimpleMXINT8(axis=2)
+        args, kwargs = m.get_example_inputs()
 
         with torch.no_grad():
-            ep = export(m.eval(), m.get_example_inputs())
+            ep = export(m.eval(), args, kwargs)
 
         self.assertEqual(
             1, num_of_ops(ep, [torch.ops.circle_custom.quantize_mx.default])

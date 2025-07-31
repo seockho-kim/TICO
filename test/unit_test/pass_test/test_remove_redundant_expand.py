@@ -29,7 +29,7 @@ class RedundantExpandNet(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 4),)
+        return (torch.randn(3, 4),), {}
 
 
 class RemoveRedundantExpandTest(SinglePassValueTest):

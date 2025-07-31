@@ -31,7 +31,7 @@ class ConsecutiveCatNet(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3),)
+        return (torch.randn(1, 2, 3),), {}
 
 
 class MergeConsecutiveCatTest(SinglePassValueTest):
@@ -57,7 +57,7 @@ class NotMergedConsecutiveCatNet1(torch.nn.Module):
         return xyz
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3),)
+        return (torch.randn(1, 2, 3),), {}
 
 
 class NotMergedConsecutiveCatTest1(SinglePassValueTest):
@@ -80,7 +80,7 @@ class NotMergedConsecutiveCatNet2(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3),)
+        return (torch.randn(1, 2, 3),), {}
 
 
 class NotMergedConsecutiveCatTest2(SinglePassValueTest):

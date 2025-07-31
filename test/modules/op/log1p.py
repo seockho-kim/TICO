@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleLog1p(torch.nn.Module):
+
+class SimpleLog1p(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -23,4 +25,4 @@ class SimpleLog1p(torch.nn.Module):
         return torch.log1p(input)
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}

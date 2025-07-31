@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleAddmmWith1DInput(torch.nn.Module):
+
+class SimpleAddmmWith1DInput(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -28,10 +30,10 @@ class SimpleAddmmWith1DInput(torch.nn.Module):
             torch.randn(5),
             torch.randn(3, 4),
             torch.randn(4, 5),
-        )
+        ), {}
 
 
-class SimpleAddmmWith2DInput(torch.nn.Module):
+class SimpleAddmmWith2DInput(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -44,10 +46,10 @@ class SimpleAddmmWith2DInput(torch.nn.Module):
             torch.randn(3, 5),
             torch.randn(3, 4),
             torch.randn(4, 5),
-        )
+        ), {}
 
 
-class SimpleAddmmWithZeroBeta(torch.nn.Module):
+class SimpleAddmmWithZeroBeta(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -60,10 +62,10 @@ class SimpleAddmmWithZeroBeta(torch.nn.Module):
             torch.randn(3, 5),
             torch.randn(3, 4),
             torch.randn(4, 5),
-        )
+        ), {}
 
 
-class SimpleAddmmWithZeroAlpha(torch.nn.Module):
+class SimpleAddmmWithZeroAlpha(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -76,10 +78,10 @@ class SimpleAddmmWithZeroAlpha(torch.nn.Module):
             torch.randn(3, 5),
             torch.randn(3, 4),
             torch.randn(4, 5),
-        )
+        ), {}
 
 
-class SimpleAddmmWithZeroAlphaAndBeta(torch.nn.Module):
+class SimpleAddmmWithZeroAlphaAndBeta(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -92,10 +94,10 @@ class SimpleAddmmWithZeroAlphaAndBeta(torch.nn.Module):
             torch.randn(3, 5),
             torch.randn(3, 4),
             torch.randn(4, 5),
-        )
+        ), {}
 
 
-class SimpleAddmmWithNanInputZeroBeta(torch.nn.Module):
+class SimpleAddmmWithNanInputZeroBeta(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -108,4 +110,4 @@ class SimpleAddmmWithNanInputZeroBeta(torch.nn.Module):
             torch.tensor([1, float("nan")]),
             torch.randn(1, 4),
             torch.randn(4, 2),
-        )
+        ), {}

@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleMatmul(torch.nn.Module):
+
+class SimpleMatmul(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,4 +26,4 @@ class SimpleMatmul(torch.nn.Module):
         return out
 
     def get_example_inputs(self):
-        return (torch.randn(3, 4), torch.randn(4, 5))
+        return (torch.randn(3, 4), torch.randn(4, 5)), {}

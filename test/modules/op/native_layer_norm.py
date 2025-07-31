@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleNativeLayerNorm(torch.nn.Module):
+
+class SimpleNativeLayerNorm(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -40,10 +42,10 @@ class SimpleNativeLayerNorm(torch.nn.Module):
             weight,
             bias,
             eps,
-        )
+        ), {}
 
 
-class SimpleNativeLayerNormWithoutWeightBias(torch.nn.Module):
+class SimpleNativeLayerNormWithoutWeightBias(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -64,10 +66,10 @@ class SimpleNativeLayerNormWithoutWeightBias(torch.nn.Module):
             tensor,
             normalized_shape,
             eps,
-        )
+        ), {}
 
 
-class SimpleNativeLayerNormRedundantReshape(torch.nn.Module):
+class SimpleNativeLayerNormRedundantReshape(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -88,10 +90,10 @@ class SimpleNativeLayerNormRedundantReshape(torch.nn.Module):
             tensor,
             normalized_shape,
             eps,
-        )
+        ), {}
 
 
-class NativeLayerNormChannelLastInput(torch.nn.Module):
+class NativeLayerNormChannelLastInput(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -116,10 +118,10 @@ class NativeLayerNormChannelLastInput(torch.nn.Module):
             weight,
             bias,
             eps,
-        )
+        ), {}
 
 
-class SimpleNativeLayerNormForMultiDimensionLayer(torch.nn.Module):
+class SimpleNativeLayerNormForMultiDimensionLayer(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -145,10 +147,10 @@ class SimpleNativeLayerNormForMultiDimensionLayer(torch.nn.Module):
             weight,
             bias,
             eps,
-        )
+        ), {}
 
 
-class SimpleNativeLayerNormWithLayerNormClass(torch.nn.Module):
+class SimpleNativeLayerNormWithLayerNormClass(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 4
@@ -166,10 +168,10 @@ class SimpleNativeLayerNormWithLayerNormClass(torch.nn.Module):
     def get_example_inputs(self):
 
         tensor = torch.randn(self.N, self.H, self.W, self.C)
-        return (tensor,)
+        return (tensor,), {}
 
 
-class SimpleNativeLayerNormNonAffine(torch.nn.Module):
+class SimpleNativeLayerNormNonAffine(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 4
@@ -188,4 +190,4 @@ class SimpleNativeLayerNormNonAffine(torch.nn.Module):
 
     def get_example_inputs(self):
         tensor = torch.randn(self.N, self.H, self.W, self.C)
-        return (tensor,)
+        return (tensor,), {}

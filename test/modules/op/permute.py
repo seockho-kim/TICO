@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimplePermute(torch.nn.Module):
+
+class SimplePermute(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimplePermute(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 3, 4),)
+        return (torch.randn(2, 3, 4),), {}
 
 
-class PermuteWithView(torch.nn.Module):
+class PermuteWithView(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -42,10 +44,10 @@ class PermuteWithView(torch.nn.Module):
     def get_example_inputs(self):
         torch.manual_seed(1234)
         # stride = (12, 4, 1)
-        return (torch.randn(2, 3, 4),)
+        return (torch.randn(2, 3, 4),), {}
 
 
-class PermuteWithViewContiguous(torch.nn.Module):
+class PermuteWithViewContiguous(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -62,4 +64,4 @@ class PermuteWithViewContiguous(torch.nn.Module):
     def get_example_inputs(self):
         torch.manual_seed(1234)
         # stride = (12, 4, 1)
-        return (torch.randn(2, 3, 4),)
+        return (torch.randn(2, 3, 4),), {}

@@ -17,8 +17,10 @@ import torch
 from PIL import Image
 from transformers import AutoModelForCausalLM, AutoProcessor
 
+from test.modules.base import TestModuleBase
 
-class Florence2(torch.nn.Module):
+
+class Florence2(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model = AutoModelForCausalLM.from_pretrained(
@@ -64,4 +66,4 @@ class Florence2(torch.nn.Module):
             pixel_values,
             attention_mask,
             decoder_input_ids,
-        )
+        ), {}

@@ -59,14 +59,14 @@ class InsertQuantizeOnDtypeMismatchTest(unittest.TestCase):
         desired_dtype="uint8",
     ):
         assert hasattr(mod, "get_example_inputs")
-        self.inputs = mod.get_example_inputs()  # type: ignore[operator]
+        self.args, self.kwargs = mod.get_example_inputs()  # type: ignore[operator]
         self.scale = scale
         self.zp = zp
         self.input_dtype = input_dtype
         self.desired_dtype = desired_dtype
 
         with torch.no_grad():
-            self.ep = torch.export.export(mod.eval(), self.inputs)
+            self.ep = torch.export.export(mod.eval(), self.args, self.kwargs)
 
         # This is necessary for testing Reshape on torch 2.5
         ConvertLayoutOpToReshape().call(self.ep)

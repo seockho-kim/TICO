@@ -15,10 +15,12 @@
 import torch
 from torch.export import Dim
 
+from test.modules.base import TestModuleBase
+
 from test.utils.tag import skip, use_onert
 
 
-class SimpleConvTranspose(torch.nn.Module):
+class SimpleConvTranspose(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.tconv2d = torch.nn.ConvTranspose2d(16, 33, 3, stride=2)
@@ -27,14 +29,14 @@ class SimpleConvTranspose(torch.nn.Module):
         return self.tconv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 16, 50, 100),)
+        return (torch.randn(1, 16, 50, 100),), {}
 
 
 @skip(
     reason="luci-interpreter does not support dynamic shape yet && onert does not support TransposeConv yet"
 )
 @use_onert
-class SimpleConvTransposeDynamicShape(torch.nn.Module):
+class SimpleConvTransposeDynamicShape(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.tconv2d = torch.nn.ConvTranspose2d(16, 33, 3, stride=2)
@@ -43,7 +45,7 @@ class SimpleConvTransposeDynamicShape(torch.nn.Module):
         return self.tconv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(4, 16, 50, 100),)
+        return (torch.randn(4, 16, 50, 100),), {}
 
     def get_dynamic_shapes(self):
         batch = Dim("batch", min=1, max=128)
@@ -53,7 +55,7 @@ class SimpleConvTransposeDynamicShape(torch.nn.Module):
         return dynamic_shapes
 
 
-class ConvTSamePad(torch.nn.Module):
+class ConvTSamePad(TestModuleBase):
     """
     Basic Transposed-Conv: output spatial size == input size.
     """
@@ -73,10 +75,10 @@ class ConvTSamePad(torch.nn.Module):
         return self.tconv2d(x)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 16, 32, 32),)
+        return (torch.randn(1, 16, 32, 32),), {}
 
 
-class ConvTUpsample2x(torch.nn.Module):
+class ConvTUpsample2x(TestModuleBase):
     """
     Doubles height/width with a kernel 4 x 4 and stride 2.
     """
@@ -97,10 +99,10 @@ class ConvTUpsample2x(torch.nn.Module):
 
     def get_example_inputs(self):
         # (1, 8, 16, 16) → (1, 8, 32, 32)
-        return (torch.randn(1, 8, 16, 16),)
+        return (torch.randn(1, 8, 16, 16),), {}
 
 
-class ConvTStride2OutPad1(torch.nn.Module):
+class ConvTStride2OutPad1(TestModuleBase):
     """
     Produces an odd output size: H_out = H_in*2 + 1.
     """
@@ -121,4 +123,4 @@ class ConvTStride2OutPad1(torch.nn.Module):
 
     def get_example_inputs(self):
         # (1, 12, 15, 15) → (1, 20, 31, 31)
-        return (torch.randn(1, 12, 15, 15),)
+        return (torch.randn(1, 12, 15, 15),), {}

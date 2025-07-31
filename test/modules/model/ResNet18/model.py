@@ -15,8 +15,10 @@
 import torch
 from torchvision.models.resnet import resnet18, ResNet18_Weights
 
+from test.modules.base import TestModuleBase
 
-class ResNet18(torch.nn.Module):
+
+class ResNet18(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model = resnet18(weights=ResNet18_Weights.DEFAULT).to("cpu")
@@ -26,4 +28,4 @@ class ResNet18(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 3, 16, 16),)
+        return (torch.randn(1, 3, 16, 16),), {}

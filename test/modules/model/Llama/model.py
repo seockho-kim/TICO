@@ -15,8 +15,10 @@
 import torch
 from transformers import LlamaConfig, LlamaModel
 
+from test.modules.base import TestModuleBase
 
-class Llama(torch.nn.Module):
+
+class Llama(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model = LlamaModel(
@@ -36,4 +38,4 @@ class Llama(torch.nn.Module):
         # >>> tokenizer = LlamaTokenizerFast.from_pretrained("huggyllama/llama-7b", legacy=True, from_slow=True)
         # >>> tokenizer.encode("Hello <s>.") # 869 is '▁.'
         # [1, 15043, 29871, 1, 869]
-        return (torch.Tensor([[1, 15043, 29871, 1, 869]]).to(dtype=torch.int32),)
+        return (torch.Tensor([[1, 15043, 29871, 1, 869]]).to(dtype=torch.int32),), {}

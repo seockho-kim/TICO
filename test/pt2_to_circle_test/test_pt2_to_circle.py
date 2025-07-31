@@ -30,7 +30,6 @@ from tico.utils.utils import SuppressWarning
 from torch.export import export
 from torch.utils import _pytree as pytree
 
-import test.utils.helper as helper
 from test.utils.infer import infer_with_circle_interpreter, infer_with_onert
 from test.utils.runtime import Runtime
 
@@ -63,7 +62,8 @@ def print_name_on_exception(function):
 @print_name_on_exception
 def convert_nnmodule_to_pt2(
     model: torch.nn.Module,
-    example_inputs: tuple,
+    forward_args: tuple,
+    forward_kwargs: dict,
     pt2_model_path: str,
     dynamic_shapes: dict | None = None,
 ):
@@ -78,9 +78,11 @@ def convert_nnmodule_to_pt2(
         #   ...site-packages/torch/_subclasses/functional_tensor.py:364
         #   UserWarning: At pre-dispatch tracing, we assume that any custom op marked with
         #     CompositeImplicitAutograd and have functional schema are safe to not decompose.
-        _args, _kwargs = helper.get_args_kwargs(example_inputs)
         exported = export(
-            model.eval(), args=_args, kwargs=_kwargs, dynamic_shapes=dynamic_shapes
+            model.eval(),
+            args=forward_args,
+            kwargs=forward_kwargs,
+            dynamic_shapes=dynamic_shapes,
         )
     torch.export.save(exported, pt2_model_path)
 
@@ -97,15 +99,18 @@ def convert_pt2_to_circle(
 @print_name_on_exception
 def convert_nnmodule_to_circle(
     nnmodule: torch.nn.Module,
-    example_inputs: tuple,
+    forward_args: tuple,
+    forward_kwargs: dict,
     circle_model_path: str,
     dynamic_shapes: Optional[dict] = None,
     config: Optional[CompileConfigBase] = None,
 ):
     with torch.no_grad():
-        _args, _kwargs = helper.get_args_kwargs(example_inputs)
         exported_program = export(
-            nnmodule.eval(), args=_args, kwargs=_kwargs, dynamic_shapes=dynamic_shapes
+            nnmodule.eval(),
+            args=forward_args,
+            kwargs=forward_kwargs,
+            dynamic_shapes=dynamic_shapes,
         )
     circle_program = convert_exported_module_to_circle(exported_program, config)
     circle_binary = circle_program
@@ -143,14 +148,17 @@ def verify_circle(circle_model_path: str, opt_circle_model_str: str):
 
 
 @print_name_on_exception
-def infer_nnmodule(model: torch.nn.Module, example_inputs: tuple):
+def infer_nnmodule(
+    model: torch.nn.Module,
+    forward_args: tuple,
+    forward_kwargs: dict,
+):
     with torch.no_grad():
         # Model should be frozen to compare the result with others.
         # e.g. BatchNorm running_mean/running_var will be updated during training mode, thus changing the model behavior.
         model.eval()
 
-        _args, _kwargs = helper.get_args_kwargs(example_inputs)
-        expected_result = model.forward(*_args, **_kwargs)
+        expected_result = model.forward(*forward_args, **forward_kwargs)
 
         # Let's flatten torch output result.
         # The output of torch module can be a dictionary or a multi-dimensional tuple of tensors.
@@ -166,7 +174,10 @@ def infer_nnmodule(model: torch.nn.Module, example_inputs: tuple):
 
 @print_name_on_exception
 def infer_circle(
-    circle_path: str, example_inputs: tuple, runtime: Runtime = "circle-interpreter"
+    circle_path: str,
+    forward_args: tuple,
+    forward_kwargs: dict,
+    runtime: Runtime = "circle-interpreter",
 ) -> Any:
     """
     Run inference on a Circle model using the specified runtime.
@@ -175,8 +186,10 @@ def infer_circle(
     -----------
     circle_path
         Path to the .circle file.
-    example_inputs
-        Tuple of example inputs for the model.
+    forward_args
+        Tuple of arguments for the model's forward function.
+    forward_kwargs
+        Dictionary of keyword arguments for the model's forward function.
     runtime
         Which runtime to use for execution.
         - 'circle-interpreter' (default)
@@ -188,9 +201,9 @@ def infer_circle(
         The output produced by the chosen runtime.
     """
     if runtime == "circle-interpreter":
-        return infer_with_circle_interpreter(circle_path, example_inputs)
+        return infer_with_circle_interpreter(circle_path, forward_args, forward_kwargs)
     elif runtime == "onert":
-        return infer_with_onert(circle_path, example_inputs)
+        return infer_with_onert(circle_path, forward_args, forward_kwargs)
     else:
         raise ValueError(f"Unknown runtime: {runtime!r}")
 

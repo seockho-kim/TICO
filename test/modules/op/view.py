@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleView(torch.nn.Module):
+
+class SimpleView(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleView(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 5),)
+        return (torch.randn(2, 4, 5),), {}
 
 
-class SimpleViewFirstDimMinus(torch.nn.Module):
+class SimpleViewFirstDimMinus(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SimpleViewFirstDimMinus(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 5),)
+        return (torch.randn(2, 4, 5),), {}
 
 
-class SimpleViewLastDimMinus(torch.nn.Module):
+class SimpleViewLastDimMinus(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -48,4 +50,4 @@ class SimpleViewLastDimMinus(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 4, 5),)
+        return (torch.randn(2, 4, 5),), {}

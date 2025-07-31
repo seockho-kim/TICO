@@ -43,13 +43,17 @@ class SingleOpPropagateQParamBackwardTest(unittest.TestCase):
 
     def setup(self, mod: torch.nn.Module, target_op, scale=1.0, zp=0, dtype="uint8"):
         assert hasattr(mod, "get_example_inputs")
-        self.inputs = mod.get_example_inputs()  # type: ignore[operator]
+        self.args, self.kwargs = mod.get_example_inputs()  # type: ignore[operator]
         self.scale = scale
         self.zp = zp
         self.dtype = dtype
 
         with torch.no_grad():
-            self.ep = torch.export.export(mod.eval(), self.inputs)
+            self.ep = torch.export.export(
+                mod.eval(),
+                self.args,
+                self.kwargs,
+            )
 
         # This is necessary for testing Reshape on torch 2.5
         ConvertLayoutOpToReshape().call(self.ep)
@@ -102,7 +106,7 @@ class ReshapeModule(torch.nn.Module):
         return torch.ops.aten.reshape.default(x, (3, 2))
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
 class ReshapeTest(SingleOpPropagateQParamBackwardTest):
@@ -127,7 +131,7 @@ class CatModule(torch.nn.Module):
         return torch.cat([x, y])
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (torch.randn(2, 3), torch.randn(2, 3)), {}
 
 
 class CatTest(SingleOpPropagateQParamBackwardTest):
@@ -152,7 +156,7 @@ class PermuteModule(torch.nn.Module):
         return torch.ops.aten.permute.default(x, (0, 1))
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
 class PermuteTest(SingleOpPropagateQParamBackwardTest):

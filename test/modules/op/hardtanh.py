@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleHardtanhFrom0to6(torch.nn.Module):
+
+class SimpleHardtanhFrom0to6(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,4 +26,4 @@ class SimpleHardtanhFrom0to6(torch.nn.Module):
         return x
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3),)
+        return (torch.randn(1, 3),), {}

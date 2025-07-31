@@ -33,7 +33,7 @@ class RedundantPermuteNet(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 4, 5),)
+        return (torch.randn(3, 4, 5),), {}
 
 
 class RemoveRedundantPermuteTest(SinglePassValueTest):
@@ -57,7 +57,7 @@ class RedundantPermuteFusedNet(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 2, 2),)
+        return (torch.randn(2, 2, 2),), {}
 
 
 class RemoveRedundantPermuteFusedTest(MultiPassValueTest):

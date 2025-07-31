@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleAtenIndexTensorAxis1(torch.nn.Module):
+
+class SimpleAtenIndexTensorAxis1(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.register_buffer("idx", torch.tensor([1, 2, 3, 4, 5]))
@@ -25,10 +27,10 @@ class SimpleAtenIndexTensorAxis1(torch.nn.Module):
         return y
 
     def get_example_inputs(self):
-        return (torch.randn(3, 20, 4, 5),)
+        return (torch.randn(3, 20, 4, 5),), {}
 
 
-class SimpleAtenIndexTensorAxis2(torch.nn.Module):
+class SimpleAtenIndexTensorAxis2(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.register_buffer("idx", torch.tensor([1, 2, 3, 4, 5]))
@@ -38,10 +40,10 @@ class SimpleAtenIndexTensorAxis2(torch.nn.Module):
         return y
 
     def get_example_inputs(self):
-        return (torch.randn(3, 1, 2048, 5),)
+        return (torch.randn(3, 1, 2048, 5),), {}
 
 
-class SimpleIndexTensorBuffer(torch.nn.Module):
+class SimpleIndexTensorBuffer(TestModuleBase):
     def __init__(self):
         super().__init__()
         idx = torch.tensor([0, 1])
@@ -52,10 +54,13 @@ class SimpleIndexTensorBuffer(torch.nn.Module):
         return z[self.idx]
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (
+            torch.randn(2, 3),
+            torch.randn(2, 3),
+        ), {}
 
 
-class SimpleIndexTensor(torch.nn.Module):
+class SimpleIndexTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.register_buffer("idx", torch.tensor([0, 1]))
@@ -65,10 +70,13 @@ class SimpleIndexTensor(torch.nn.Module):
         return z[self.idx]
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (
+            torch.randn(2, 3),
+            torch.randn(2, 3),
+        ), {}
 
 
-class IndexTensor2x1(torch.nn.Module):
+class IndexTensor2x1(TestModuleBase):
     def __init__(self):
         super().__init__()
         idx = torch.tensor([[0], [0]])
@@ -79,10 +87,13 @@ class IndexTensor2x1(torch.nn.Module):
         return z[self.idx]
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (
+            torch.randn(2, 3),
+            torch.randn(2, 3),
+        ), {}
 
 
-class IndexTensorAxis1(torch.nn.Module):
+class IndexTensorAxis1(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.register_buffer("axis", torch.tensor([0, 0]))
@@ -92,10 +103,13 @@ class IndexTensorAxis1(torch.nn.Module):
         return z[1, self.axis]
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (
+            torch.randn(2, 3),
+            torch.randn(2, 3),
+        ), {}
 
 
-class IndexTensorAxis0And1(torch.nn.Module):
+class IndexTensorAxis0And1(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.register_buffer("axis", torch.tensor([2, 3]))
@@ -104,10 +118,10 @@ class IndexTensorAxis0And1(torch.nn.Module):
         return x[1, self.axis]
 
     def get_example_inputs(self):
-        return (torch.randn(5, 4),)
+        return (torch.randn(5, 4),), {}
 
 
-class IndexTensorWithSlice(torch.nn.Module):
+class IndexTensorWithSlice(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.register_buffer("axis", torch.tensor([0, 0]))
@@ -120,4 +134,4 @@ class IndexTensorWithSlice(torch.nn.Module):
         return (
             torch.randn(3, 3, 6, 6),
             torch.randn(3, 3, 6, 6),
-        )
+        ), {}

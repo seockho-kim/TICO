@@ -15,6 +15,8 @@
 import torch
 from torch.export import Dim
 
+from test.modules.base import TestModuleBase
+
 from test.utils.tag import use_onert
 
 B = 4
@@ -24,7 +26,7 @@ INTERMEDATE = 64
 
 
 @use_onert
-class MLP_DynamicShape(torch.nn.Module):
+class MLP_DynamicShape(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.gate_proj = torch.nn.Linear(DIM, INTERMEDATE, bias=False)
@@ -38,7 +40,7 @@ class MLP_DynamicShape(torch.nn.Module):
         return down_proj
 
     def get_example_inputs(self):
-        return (torch.randn(B, SEQ_LEN, DIM),)
+        return (torch.randn(B, SEQ_LEN, DIM),), {}
 
     def get_dynamic_shapes(self):
         batch = Dim("batch", min=1, max=128)

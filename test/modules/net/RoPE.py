@@ -17,6 +17,8 @@ from typing import Tuple
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 
 def rotate_half(x):
     """Rotates half the hidden dims of the input."""
@@ -52,7 +54,7 @@ def apply_rotary_pos_emb(q, k, cos, sin, position_ids=None, unsqueeze_dim=1):
     return q_embed, k_embed
 
 
-class RoPE(torch.nn.Module):
+class RoPE(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -82,4 +84,4 @@ class RoPE(torch.nn.Module):
             torch.randn(xk_shape),
             torch.rand(freqs_cos_shape),
             torch.rand(freqs_sin_shape),
-        )
+        ), {}

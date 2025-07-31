@@ -15,6 +15,8 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 
 bs = bsz = 4
 seq_len = slen = 16
@@ -40,7 +42,7 @@ def repeat_kv(hidden_states: torch.Tensor, n_rep: int) -> torch.Tensor:
     return hidden_states.reshape(batch, num_key_value_heads * n_rep, slen, head_dim)
 
 
-class RepeatKV(torch.nn.Module):
+class RepeatKV(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -51,10 +53,10 @@ class RepeatKV(torch.nn.Module):
         return (
             torch.randn(bs, seq_len, n_kv_heads, head_dim),
             2,
-        )
+        ), {}
 
 
-class KVCacheSlice(torch.nn.Module):
+class KVCacheSlice(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.n_rep = 1
@@ -81,10 +83,10 @@ class KVCacheSlice(torch.nn.Module):
 
     def get_example_inputs(self):
         start_pos = 8
-        return (start_pos, seq_len)
+        return (start_pos, seq_len), {}
 
 
-class KVCacheUpdate(torch.nn.Module):
+class KVCacheUpdate(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.n_rep = 1
@@ -118,4 +120,4 @@ class KVCacheUpdate(torch.nn.Module):
             torch.randn(bs, seq_len, n_local_kv_heads, head_dim),
             torch.randn(bs, seq_len, n_local_kv_heads, head_dim),
             start_pos,
-        )
+        ), {}

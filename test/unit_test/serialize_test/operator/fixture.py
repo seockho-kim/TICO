@@ -30,13 +30,10 @@ class SingleOpGraphFixture:
         self._circle_model.add_buffer(circle.Buffer.BufferT())
         self.circle_graph = CircleSubgraph(self._circle_model)
 
-        def get_exported_program_from_(torch_module):
-            exported_program = export(
-                torch_module.eval(), torch_module.get_example_inputs()
-            )
-            return exported_program
-
-        self.exported_program = get_exported_program_from_(torch_module)
+        self.forward_args, self.forward_kwargs = torch_module.get_example_inputs()  # type: ignore[operator]
+        self.exported_program = export(
+            torch_module.eval(), self.forward_args, self.forward_kwargs
+        )
 
         for node in self.exported_program.graph.nodes:
             if node.op == "placeholder":

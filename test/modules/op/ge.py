@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleGeWithScalarFloat(torch.nn.Module):
+
+class SimpleGeWithScalarFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleGeWithScalarFloat(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3), 2.0)
+        return (torch.randn(1, 3), 2.0), {}
 
 
-class SimpleGeWithScalarInt(torch.nn.Module):
+class SimpleGeWithScalarInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SimpleGeWithScalarInt(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3), 2)
+        return (torch.randn(1, 3), 2), {}
 
 
-class SimpleGeWithTensor(torch.nn.Module):
+class SimpleGeWithTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -48,10 +50,10 @@ class SimpleGeWithTensor(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (torch.randn(2, 3), torch.randn(2, 3)), {}
 
 
-class SimpleGeWithDifferentTypeTensor(torch.nn.Module):
+class SimpleGeWithDifferentTypeTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -60,4 +62,4 @@ class SimpleGeWithDifferentTypeTensor(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3).to(torch.int64))
+        return (torch.randn(2, 3), torch.randn(2, 3).to(torch.int64)), {}

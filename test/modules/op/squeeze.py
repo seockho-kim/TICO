@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleSqueeze(torch.nn.Module):
+
+class SimpleSqueeze(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimpleSqueeze(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 1, 2, 1, 2),)
+        return (torch.randn(2, 1, 2, 1, 2),), {}
 
 
-class SimpleSqueezeWithDims(torch.nn.Module):
+class SimpleSqueezeWithDims(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,10 +40,10 @@ class SimpleSqueezeWithDims(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 1, 2, 1, 2),)
+        return (torch.randn(2, 1, 2, 1, 2),), {}
 
 
-class SimpleSqueezeWithSingleDim(torch.nn.Module):
+class SimpleSqueezeWithSingleDim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -51,4 +53,4 @@ class SimpleSqueezeWithSingleDim(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(2, 1, 2, 1, 2),)
+        return (torch.randn(2, 1, 2, 1, 2),), {}

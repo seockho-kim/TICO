@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleAnyFloat(torch.nn.Module):
+
+class SimpleAnyFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimpleAnyFloat(torch.nn.Module):
 
     def get_example_inputs(self):
         x = torch.randn([10])
-        return (x,)
+        return (x,), {}
 
 
-class SimpleAnyFloat2D(torch.nn.Module):
+class SimpleAnyFloat2D(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,10 +40,10 @@ class SimpleAnyFloat2D(torch.nn.Module):
 
     def get_example_inputs(self):
         x = torch.randn([2, 3])
-        return (x,)
+        return (x,), {}
 
 
-class SimpleAnyFloat2DDim2(torch.nn.Module):
+class SimpleAnyFloat2DDim2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -51,10 +53,10 @@ class SimpleAnyFloat2DDim2(torch.nn.Module):
 
     def get_example_inputs(self):
         x = torch.randn([2, 3])
-        return (x,)
+        return (x,), {}
 
 
-class SimpleAnyBool(torch.nn.Module):
+class SimpleAnyBool(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -64,10 +66,10 @@ class SimpleAnyBool(torch.nn.Module):
 
     def get_example_inputs(self):
         x = torch.randn([10]) > 0.9
-        return (x,)
+        return (x,), {}
 
 
-class SimpleAnyBool2D(torch.nn.Module):
+class SimpleAnyBool2D(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -77,10 +79,10 @@ class SimpleAnyBool2D(torch.nn.Module):
 
     def get_example_inputs(self):
         x = torch.randn([2, 3]) > 0.9
-        return (x,)
+        return (x,), {}
 
 
-class SimpleAnyBool2DKeepDimTrue(torch.nn.Module):
+class SimpleAnyBool2DKeepDimTrue(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -90,10 +92,10 @@ class SimpleAnyBool2DKeepDimTrue(torch.nn.Module):
 
     def get_example_inputs(self):
         x = torch.randn([2, 3]) > 0.9
-        return (x,)
+        return (x,), {}
 
 
-class SimpleAnyInt(torch.nn.Module):
+class SimpleAnyInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -103,10 +105,10 @@ class SimpleAnyInt(torch.nn.Module):
 
     def get_example_inputs(self):
         x = torch.Tensor([[0, 0, 0, 0, 0, 0]]).to(torch.int32)
-        return (x,)
+        return (x,), {}
 
 
-class SimpleAnyIntMinus(torch.nn.Module):
+class SimpleAnyIntMinus(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -116,4 +118,4 @@ class SimpleAnyIntMinus(torch.nn.Module):
 
     def get_example_inputs(self):
         x = torch.Tensor([[0, 0, 0], [0, -1, 0]]).to(torch.int32)
-        return (x,)
+        return (x,), {}

@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleReciprocal2(torch.nn.Module):
+
+class SimpleReciprocal2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleReciprocal2(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}
 
 
-class SimpleReciprocalOperator(torch.nn.Module):
+class SimpleReciprocalOperator(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,4 +38,4 @@ class SimpleReciprocalOperator(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}

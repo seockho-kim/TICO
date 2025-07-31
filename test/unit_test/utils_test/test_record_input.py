@@ -17,7 +17,6 @@ import unittest
 import tico
 import torch
 from tico.utils.record_input import RecordingInput
-from torch.export import export, save
 
 from test.modules.op.add import SimpleAdd
 
@@ -25,49 +24,64 @@ from test.modules.op.add import SimpleAdd
 class RecordInputTest(unittest.TestCase):
     def test_args(self):
         m = SimpleAdd()
-        inputs = m.get_example_inputs()
-        with RecordingInput(m) as rec:
-            m.eval()
-            m(*inputs)
-            captured_input = rec.captured_input
-
-        self.assertIsNotNone(captured_input)
-        self.assertEqual(captured_input, inputs)
-        tico.convert(m, captured_input)
-
-    def test_kwargs(self):
-        m = SimpleAdd()
-        inputs = m.get_example_inputs()
-        kwargs = {"x": inputs[0], "y": inputs[1]}
-        with RecordingInput(m) as rec:
-            m.eval()
-            m(**kwargs)
-            captured_input = rec.captured_input
-
-        self.assertIsNotNone(captured_input)
-        self.assertEqual(captured_input, inputs)
-        tico.convert(m, captured_input)
-
-    def test_args_kwargs(self):
-        m = SimpleAdd()
-        inputs = m.get_example_inputs()
-        args = (inputs[0],)
-        kwargs = {"y": inputs[1]}
+        args, kwargs = m.get_example_inputs()
         with RecordingInput(m) as rec:
             m.eval()
             m(*args, **kwargs)
             captured_input = rec.captured_input
 
         self.assertIsNotNone(captured_input)
-        self.assertEqual(captured_input, inputs)
+        self.assertEqual(captured_input, args)
+        tico.convert(m, captured_input)
+
+    def test_args_kwargs(self):
+        m = SimpleAdd()
+        args, kwargs = (torch.ones(1),), {
+            "y": torch.ones(1),
+        }
+        with RecordingInput(m) as rec:
+            m.eval()
+            m(*args, **kwargs)
+            captured_input = rec.captured_input
+
+        self.assertIsNotNone(captured_input)
+        self.assertEqual(
+            captured_input,
+            (
+                torch.ones(1),
+                torch.ones(1),
+            ),
+        )
+        tico.convert(m, captured_input)
+
+    def test_kwargs(self):
+        m = SimpleAdd()
+        args, kwargs = (), {
+            "x": torch.ones(1),
+            "y": torch.ones(1),
+        }
+
+        with RecordingInput(m) as rec:
+            m.eval()
+            m(*args, **kwargs)
+            captured_input = rec.captured_input
+
+        self.assertIsNotNone(captured_input)
+        self.assertEqual(
+            captured_input,
+            (
+                torch.ones(1),
+                torch.ones(1),
+            ),
+        )
         tico.convert(m, captured_input)
 
     def test_input_to_remove(self):
         m = SimpleAdd()
-        inputs = m.get_example_inputs()
+        args, kwargs = m.get_example_inputs()
         with RecordingInput(m, input_to_remove=["x"]) as rec:
             m.eval()
-            m(*inputs)
+            m(*args, **kwargs)
             captured_input = rec.captured_input
 
         self.assertIsNotNone(captured_input)
@@ -75,11 +89,11 @@ class RecordInputTest(unittest.TestCase):
 
     def test_condition(self):
         m = SimpleAdd()
-        inputs = m.get_example_inputs()
+        args, kwargs = m.get_example_inputs()
         condition = lambda arg_dict: False
         with RecordingInput(m, condition) as rec:
             m.eval()
-            m(*inputs)
+            m(*args, **kwargs)
             captured_input = rec.captured_input
 
         self.assertEqual(captured_input, None)

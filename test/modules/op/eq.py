@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleEq(torch.nn.Module):
+
+class SimpleEq(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleEq(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3), torch.randn(3, 3))
+        return (torch.randn(3, 3), torch.randn(3, 3)), {}
 
 
-class SimpleEqWithEqualSign(torch.nn.Module):
+class SimpleEqWithEqualSign(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SimpleEqWithEqualSign(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3), torch.randn(3, 3))
+        return (torch.randn(3, 3), torch.randn(3, 3)), {}
 
 
-class SimpleEqWithScalarInt(torch.nn.Module):
+class SimpleEqWithScalarInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -48,10 +50,10 @@ class SimpleEqWithScalarInt(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3).to(torch.int64), 2)
+        return (torch.randn(3, 3).to(torch.int64), 2), {}
 
 
-class SimpleEqWithScalarFloat(torch.nn.Module):
+class SimpleEqWithScalarFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -60,10 +62,10 @@ class SimpleEqWithScalarFloat(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3), 2.0)
+        return (torch.randn(3, 3), 2.0), {}
 
 
-class SimpleEqWithDifferentTypeScalar(torch.nn.Module):
+class SimpleEqWithDifferentTypeScalar(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -72,4 +74,4 @@ class SimpleEqWithDifferentTypeScalar(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3), 2)
+        return (torch.randn(3, 3), 2), {}

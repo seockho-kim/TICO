@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimplePReLU(torch.nn.Module):
+
+class SimplePReLU(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.prelu = torch.nn.PReLU()
@@ -25,4 +27,4 @@ class SimplePReLU(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 2, 3, 3),)
+        return (torch.randn(1, 2, 3, 3),), {}

@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleSoftMax(torch.nn.Module):
+
+class SimpleSoftMax(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimpleSoftMax(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(4, 4, 3),)
+        return (torch.randn(4, 4, 3),), {}
 
 
-class SimpleSoftMaxDimMinus(torch.nn.Module):
+class SimpleSoftMaxDimMinus(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,10 +40,10 @@ class SimpleSoftMaxDimMinus(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(4, 4, 3),)
+        return (torch.randn(4, 4, 3),), {}
 
 
-class SimpleSafeSoftMax(torch.nn.Module):
+class SimpleSafeSoftMax(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -51,4 +53,4 @@ class SimpleSafeSoftMax(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(4, 4, 3),)
+        return (torch.randn(4, 4, 3),), {}

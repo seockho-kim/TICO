@@ -14,11 +14,13 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 from test.utils import tag
 
 
 @tag.use_onert
-class SimpleRound(torch.nn.Module):
+class SimpleRound(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -27,4 +29,4 @@ class SimpleRound(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(3, 5),)
+        return (torch.randn(3, 5),), {}

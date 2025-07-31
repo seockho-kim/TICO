@@ -1,8 +1,9 @@
 import timm
 import torch
+from test.modules.base import TestModuleBase
 
 
-class EfficientFormerL1(torch.nn.Module):
+class EfficientFormerL1(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model: timm.models.efficientformer.EfficientFormer = (
@@ -16,4 +17,4 @@ class EfficientFormerL1(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 3, 224, 224),)
+        return (torch.randn(1, 3, 224, 224),), {}

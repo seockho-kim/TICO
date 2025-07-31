@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleToF32I32(torch.nn.Module):
+
+class SimpleToF32I32(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleToF32I32(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3, dtype=torch.float32),)
+        return (torch.randn(2, 3, dtype=torch.float32),), {}
 
 
-class SimpleToI32F32(torch.nn.Module):
+class SimpleToI32F32(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,4 +38,4 @@ class SimpleToI32F32(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(2, 3, dtype=torch.int32),)
+        return (torch.ones(2, 3, dtype=torch.int32),), {}

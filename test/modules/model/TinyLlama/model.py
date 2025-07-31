@@ -15,8 +15,10 @@
 import torch
 from transformers import AutoModelForCausalLM
 
+from test.modules.base import TestModuleBase
 
-class TinyLlama(torch.nn.Module):
+
+class TinyLlama(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model = AutoModelForCausalLM.from_pretrained("Maykeye/TinyLLama-v0").to(
@@ -32,4 +34,4 @@ class TinyLlama(torch.nn.Module):
         # >>> tokenizer = LlamaTokenizerFast.from_pretrained("huggyllama/llama-7b", legacy=True, from_slow=True)
         # >>> tokenizer.encode("Hello <s>.") # 869 is '▁.'
         # [1, 15043, 29871, 1, 869]
-        return (torch.Tensor([[1, 15043, 29871, 1, 869]]).to(dtype=torch.int32),)
+        return (torch.Tensor([[1, 15043, 29871, 1, 869]]).to(dtype=torch.int32),), {}

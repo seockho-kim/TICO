@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleDiv(torch.nn.Module):
+
+class SimpleDiv(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -26,10 +28,10 @@ class SimpleDiv(torch.nn.Module):
     def get_example_inputs(self):
         # Set seed to control a random divisor to be non-zero.
         torch.manual_seed(1)
-        return (torch.randn(3, 3), torch.randn(3, 3))
+        return (torch.randn(3, 3), torch.randn(3, 3)), {}
 
 
-class DivWithDifferentDtypeInputs(torch.nn.Module):
+class DivWithDifferentDtypeInputs(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -40,10 +42,10 @@ class DivWithDifferentDtypeInputs(torch.nn.Module):
     def get_example_inputs(self):
         # Set seed to control a random divisor to be non-zero.
         torch.manual_seed(1)
-        return (torch.randn(3, 3), torch.tensor(1))
+        return (torch.randn(3, 3), torch.tensor(1)), {}
 
 
-class DivWithDifferentDtypeInputs2(torch.nn.Module):
+class DivWithDifferentDtypeInputs2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -54,10 +56,10 @@ class DivWithDifferentDtypeInputs2(torch.nn.Module):
     def get_example_inputs(self):
         # Set seed to control a random divisor to be non-zero.
         torch.manual_seed(1)
-        return (torch.randn(3, 3).to(torch.int32), torch.randn(3, 3))
+        return (torch.randn(3, 3).to(torch.int32), torch.randn(3, 3)), {}
 
 
-class DivWithDifferentDtypeInputs3(torch.nn.Module):
+class DivWithDifferentDtypeInputs3(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -68,4 +70,4 @@ class DivWithDifferentDtypeInputs3(torch.nn.Module):
     def get_example_inputs(self):
         # Set seed to control a random divisor to be non-zero.
         torch.manual_seed(1)
-        return (torch.randn(3, 3), 1)
+        return (torch.randn(3, 3), 1), {}

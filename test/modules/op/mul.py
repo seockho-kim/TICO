@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleMulWithTensor(torch.nn.Module):
+
+class SimpleMulWithTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleMulWithTensor(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3), torch.randn(3, 3))
+        return (torch.randn(3, 3), torch.randn(3, 3)), {}
 
 
-class SimpleMulWithScalar(torch.nn.Module):
+class SimpleMulWithScalar(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SimpleMulWithScalar(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3), 5)
+        return (torch.randn(3, 3), 5), {}
 
 
-class MulWithBuiltinFloat(torch.nn.Module):
+class MulWithBuiltinFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -48,10 +50,10 @@ class MulWithBuiltinFloat(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1), 2.0)
+        return (torch.ones(1), 2.0), {}
 
 
-class MulWithBuiltinInt(torch.nn.Module):
+class MulWithBuiltinInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -60,4 +62,4 @@ class MulWithBuiltinInt(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1).to(torch.int64), 2)
+        return (torch.ones(1).to(torch.int64), 2), {}

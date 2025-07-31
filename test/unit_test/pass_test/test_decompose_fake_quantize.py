@@ -38,7 +38,7 @@ class FakeQuantizePerChannel(torch.nn.Module):
         )
 
     def get_example_inputs(self):
-        return (torch.randn(1, self.channel, 64, 64),)
+        return (torch.randn(1, self.channel, 64, 64),), {}
 
 
 class DecomposeFakeQuantizePerChannel(SinglePassValueTest):

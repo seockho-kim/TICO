@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleNeWithScalarFloat(torch.nn.Module):
+
+class SimpleNeWithScalarFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleNeWithScalarFloat(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3), 2.0)
+        return (torch.randn(1, 3), 2.0), {}
 
 
-class SimpleNeWithTensorFloat(torch.nn.Module):
+class SimpleNeWithTensorFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class SimpleNeWithTensorFloat(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3))
+        return (torch.randn(2, 3), torch.randn(2, 3)), {}
 
 
-class SimpleNeWithScalarInt(torch.nn.Module):
+class SimpleNeWithScalarInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -48,10 +50,10 @@ class SimpleNeWithScalarInt(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3).to(torch.int64), 2)
+        return (torch.randn(1, 3).to(torch.int64), 2), {}
 
 
-class SimpleNeWithTensorInt(torch.nn.Module):
+class SimpleNeWithTensorInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -60,10 +62,13 @@ class SimpleNeWithTensorInt(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3).to(torch.int64), torch.randn(2, 3).to(torch.int64))
+        return (
+            torch.randn(2, 3).to(torch.int64),
+            torch.randn(2, 3).to(torch.int64),
+        ), {}
 
 
-class SimpleNeWithDifferentTypeScalar(torch.nn.Module):
+class SimpleNeWithDifferentTypeScalar(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -72,10 +77,10 @@ class SimpleNeWithDifferentTypeScalar(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), 2)
+        return (torch.randn(2, 3), 2), {}
 
 
-class SimpleNeWithDifferentTypeTensor(torch.nn.Module):
+class SimpleNeWithDifferentTypeTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -84,4 +89,4 @@ class SimpleNeWithDifferentTypeTensor(torch.nn.Module):
         return result
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3), torch.randn(2, 3).to(torch.int64))
+        return (torch.randn(2, 3), torch.randn(2, 3).to(torch.int64)), {}

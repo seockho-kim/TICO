@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleSigmoid(torch.nn.Module):
+
+class SimpleSigmoid(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,4 +27,4 @@ class SimpleSigmoid(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1234)
-        return (torch.randn(3, 3),)
+        return (torch.randn(3, 3),), {}

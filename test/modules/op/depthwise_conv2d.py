@@ -15,10 +15,12 @@
 import torch
 from torch.export import Dim
 
+from test.modules.base import TestModuleBase
+
 from test.utils import tag
 
 
-class SimpleDepthwiseConv(torch.nn.Module):
+class SimpleDepthwiseConv(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -29,11 +31,11 @@ class SimpleDepthwiseConv(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
 @tag.use_onert
-class SimpleDepthwiseConvDynamicShape(torch.nn.Module):
+class SimpleDepthwiseConvDynamicShape(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -44,7 +46,7 @@ class SimpleDepthwiseConvDynamicShape(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(4, 8, 64, 64),)
+        return (torch.randn(4, 8, 64, 64),), {}
 
     def get_dynamic_shapes(self):
         batch = Dim("batch", min=1, max=128)
@@ -54,7 +56,7 @@ class SimpleDepthwiseConvDynamicShape(torch.nn.Module):
         return dynamic_shapes
 
 
-class SimpleDepthwiseConvWithValidPaddingInStr(torch.nn.Module):
+class SimpleDepthwiseConvWithValidPaddingInStr(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -65,10 +67,10 @@ class SimpleDepthwiseConvWithValidPaddingInStr(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 5, 4, 4),)
+        return (torch.randn(1, 5, 4, 4),), {}
 
 
-class SimpleDepthwiseConvWithValidPaddingInList(torch.nn.Module):
+class SimpleDepthwiseConvWithValidPaddingInList(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -79,10 +81,10 @@ class SimpleDepthwiseConvWithValidPaddingInList(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 5, 4, 4),)
+        return (torch.randn(1, 5, 4, 4),), {}
 
 
-class SimpleDepthwiseConvWithSamePaddingInStr(torch.nn.Module):
+class SimpleDepthwiseConvWithSamePaddingInStr(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -93,10 +95,10 @@ class SimpleDepthwiseConvWithSamePaddingInStr(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
-class SimpleDepthwiseConvWithSamePaddingInList(torch.nn.Module):
+class SimpleDepthwiseConvWithSamePaddingInList(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -107,10 +109,10 @@ class SimpleDepthwiseConvWithSamePaddingInList(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
-class DepthwiseConvWithTensorWeightBias(torch.nn.Module):
+class DepthwiseConvWithTensorWeightBias(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -126,10 +128,10 @@ class DepthwiseConvWithTensorWeightBias(torch.nn.Module):
             torch.randn(4, IC, 3, 3),
             torch.randn(OC, IC // groups, 1, 1),
             torch.randn(OC),
-        )
+        ), {}
 
 
-class DepthwiseConvWithTensorWeightNoBias(torch.nn.Module):
+class DepthwiseConvWithTensorWeightNoBias(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -139,4 +141,4 @@ class DepthwiseConvWithTensorWeightNoBias(torch.nn.Module):
 
     def get_example_inputs(self):
         IC = OC = groups = 1536
-        return (torch.randn(4, IC, 3, 3), torch.randn(OC, IC // groups, 1, 1))
+        return (torch.randn(4, IC, 3, 3), torch.randn(OC, IC // groups, 1, 1)), {}

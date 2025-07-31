@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleArangeStartStepWithInt(torch.nn.Module):
+
+class SimpleArangeStartStepWithInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -30,10 +32,10 @@ class SimpleArangeStartStepWithInt(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(4),)
+        return (torch.randn(4),), {}
 
 
-class SimpleArangeStartStepWithFloat(torch.nn.Module):
+class SimpleArangeStartStepWithFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -49,10 +51,10 @@ class SimpleArangeStartStepWithFloat(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(4),)
+        return (torch.randn(4),), {}
 
 
-class SimpleArangeStartStepWithDifferentType(torch.nn.Module):
+class SimpleArangeStartStepWithDifferentType(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -67,4 +69,4 @@ class SimpleArangeStartStepWithDifferentType(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(4),)
+        return (torch.randn(4),), {}

@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleReLU6(torch.nn.Module):
+
+class SimpleReLU6(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,4 +26,4 @@ class SimpleReLU6(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3, 3) * 7,)
+        return (torch.randn(3, 3) * 7,), {}

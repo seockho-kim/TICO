@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleEmbedding(torch.nn.Module):
+
+class SimpleEmbedding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.embedding = torch.nn.Embedding(num_embeddings=10, embedding_dim=3)
@@ -24,10 +26,10 @@ class SimpleEmbedding(torch.nn.Module):
         return self.embedding(arg)
 
     def get_example_inputs(self):
-        return (torch.LongTensor([[1, 2, 4, 5], [4, 3, 2, 9]]),)
+        return (torch.LongTensor([[1, 2, 4, 5], [4, 3, 2, 9]]),), {}
 
 
-class PaddedEmbedding(torch.nn.Module):
+class PaddedEmbedding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.embedding = torch.nn.Embedding(
@@ -38,10 +40,10 @@ class PaddedEmbedding(torch.nn.Module):
         return self.embedding(arg)
 
     def get_example_inputs(self):
-        return (torch.LongTensor([[0, 2, 0, 5]]),)
+        return (torch.LongTensor([[0, 2, 0, 5]]),), {}
 
 
-class ScaleGradEmbedding(torch.nn.Module):
+class ScaleGradEmbedding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.embedding = torch.nn.Embedding(
@@ -52,10 +54,10 @@ class ScaleGradEmbedding(torch.nn.Module):
         return self.embedding(arg)
 
     def get_example_inputs(self):
-        return (torch.LongTensor([[0, 2, 0, 5]]),)
+        return (torch.LongTensor([[0, 2, 0, 5]]),), {}
 
 
-class SparseEmbedding(torch.nn.Module):
+class SparseEmbedding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.embedding = torch.nn.Embedding(
@@ -66,4 +68,4 @@ class SparseEmbedding(torch.nn.Module):
         return self.embedding(arg)
 
     def get_example_inputs(self):
-        return (torch.LongTensor([[1, 2, 4, 5], [4, 3, 2, 9]]),)
+        return (torch.LongTensor([[1, 2, 4, 5], [4, 3, 2, 9]]),), {}

@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleScalarTensor(torch.nn.Module):
+
+class SimpleScalarTensor(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimpleScalarTensor(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3),)
+        return (torch.randn(3),), {}
 
 
-class SimpleScalarTensorInt(torch.nn.Module):
+class SimpleScalarTensorInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,10 +40,10 @@ class SimpleScalarTensorInt(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3),)
+        return (torch.randn(3),), {}
 
 
-class SimpleScalarTensorBool(torch.nn.Module):
+class SimpleScalarTensorBool(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -51,4 +53,4 @@ class SimpleScalarTensorBool(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(3),)
+        return (torch.randn(3),), {}

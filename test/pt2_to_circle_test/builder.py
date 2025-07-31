@@ -20,8 +20,9 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Optional
 
-import torch
 from tico.config.base import CompileConfigBase
+
+from test.modules.base import TestModuleBase
 
 from test.pt2_to_circle_test.test_pt2_to_circle import (
     convert_nnmodule_to_circle,
@@ -37,7 +38,7 @@ from test.utils.tag import is_tagged
 
 
 class NNModuleTest(TestRunnerBase):
-    def __init__(self, test_name: str, nnmodule: torch.nn.Module):
+    def __init__(self, test_name: str, nnmodule: TestModuleBase):
         super().__init__(test_name, nnmodule)
         self.test_dir = Path(os.path.dirname(os.path.abspath(__file__))) / "artifacts"
 
@@ -94,11 +95,15 @@ class NNModuleTest(TestRunnerBase):
         with_golden=False,
     ):
         dynamic_shapes = None
+
+        assert hasattr(self.nnmodule, "get_example_inputs")
+        self.forward_args, self.forward_kwargs = self.nnmodule.get_example_inputs()
+
         if hasattr(self.nnmodule, "get_dynamic_shapes"):
-            dynamic_shapes = self.nnmodule.get_dynamic_shapes()  # type: ignore[operator]
-            assert (
-                self.use_onert
-            ), "Dynamic shapes are only supported with onert runtime. Please set 'use_onert' to True."
+            if self.nnmodule.get_dynamic_shapes() is not None:
+                assert (
+                    self.use_onert
+                ), "Dynamic shapes are only supported with onert runtime. Please set 'use_onert' to True."
 
         compile_config: Optional[CompileConfigBase] = None
         if hasattr(self.nnmodule, "get_compile_config"):
@@ -119,15 +124,20 @@ class NNModuleTest(TestRunnerBase):
         # WHY?
         #   Some model changes its state during export (e.g., EfficientFormerL1)
         #   See https://github.com/pytorch/pytorch/issues/155114
-        torch_result = infer_nnmodule(self.nnmodule, deepcopy(self.example_inputs))
+        torch_result = infer_nnmodule(
+            self.nnmodule,
+            forward_args=deepcopy(self.forward_args),
+            forward_kwargs=deepcopy(self.forward_kwargs),
+        )
 
         if without_pt2:
             # torch.nn.Module --> ExportedProgram --> pt2 ----- (ExportedProgram) ------- > circle
             #                                       (--> load_from_pt2_file -->)
             convert_nnmodule_to_circle(
                 self.nnmodule,
-                deepcopy(self.example_inputs),
-                circle_model_path,
+                forward_args=deepcopy(self.forward_args),
+                forward_kwargs=deepcopy(self.forward_kwargs),
+                circle_model_path=circle_model_path,
                 dynamic_shapes=dynamic_shapes,
                 config=compile_config,
             )
@@ -135,13 +145,14 @@ class NNModuleTest(TestRunnerBase):
             # torch.nn.Module --> ExportedProgram ----------------------------------------> circle
             convert_nnmodule_to_pt2(
                 self.nnmodule,
-                deepcopy(self.example_inputs),
-                pt2_model_path,
+                forward_args=deepcopy(self.forward_args),
+                forward_kwargs=deepcopy(self.forward_kwargs),
+                pt2_model_path=pt2_model_path,
                 dynamic_shapes=dynamic_shapes,
             )
             convert_pt2_to_circle(
-                pt2_model_path,
-                circle_model_path,
+                pt2_model_path=pt2_model_path,
+                circle_model_path=circle_model_path,
                 config=compile_config,
             )
 
@@ -153,13 +164,19 @@ class NNModuleTest(TestRunnerBase):
         USE_ONERT = os.environ.get("CCEX_RUNTIME") == "onert"
         if self.use_onert or USE_ONERT:
             circle_result = infer_circle(
-                circle_model_path, deepcopy(self.example_inputs), "onert"
+                circle_model_path,
+                forward_args=deepcopy(self.forward_args),
+                forward_kwargs=deepcopy(self.forward_kwargs),
+                runtime="onert",
             )
             torch_shape = torch_result[0].shape
             circle_result[0] = circle_result[0].reshape(torch_shape)
         else:
             circle_result = infer_circle(
-                circle_model_path, deepcopy(self.example_inputs), "circle-interpreter"
+                circle_model_path,
+                forward_args=deepcopy(self.forward_args),
+                forward_kwargs=deepcopy(self.forward_kwargs),
+                runtime="circle-interpreter",
             )
         if with_golden:
             assert hasattr(self.nnmodule, "get_golden_outputs")

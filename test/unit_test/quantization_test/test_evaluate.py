@@ -38,7 +38,7 @@ class TwoLinear(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 5),)
+        return (torch.randn(1, 5),), {}
 
 
 class EvaluateTest(unittest.TestCase):
@@ -48,19 +48,19 @@ class EvaluateTest(unittest.TestCase):
     )
     def test_evaluate_simple_linear(self):
         m: Any = TwoLinear().eval()
-        example_inputs = m.get_example_inputs()
+        args, kwargs = m.get_example_inputs()
 
-        q_m = prepare(m, PT2EConfig(), args=example_inputs)
+        q_m = prepare(m, PT2EConfig(), args=args, kwargs=kwargs)
 
         # 3. Calibration
         for i in range(100):
-            cal_in = m.get_example_inputs()
-            q_m(*cal_in)
+            cal_args, cal_kwargs = m.get_example_inputs()
+            q_m(*cal_args, **cal_kwargs)
 
         q_m = convert(q_m)
 
         # Export circle
-        ep = torch.export.export(q_m, example_inputs)
+        ep = torch.export.export(q_m, args, kwargs)
         cm = tico.convert_from_exported_program(ep)
         results = evaluate(m, cm, BACKEND.TRIV24, mode="return")
         assert results is not None

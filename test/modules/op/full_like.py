@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleFullLike(torch.nn.Module):
+
+class SimpleFullLike(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimpleFullLike(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
-class SimpleFullLikeWithDtypeIntToBool(torch.nn.Module):
+class SimpleFullLikeWithDtypeIntToBool(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,10 +40,10 @@ class SimpleFullLikeWithDtypeIntToBool(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.rand(2, 3).to(dtype=torch.int32), torch.rand(2, 3) > 0.5)
+        return (torch.rand(2, 3).to(dtype=torch.int32), torch.rand(2, 3) > 0.5), {}
 
 
-class SimpleFullLikeWithDtypeBoolToInt(torch.nn.Module):
+class SimpleFullLikeWithDtypeBoolToInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -51,10 +53,10 @@ class SimpleFullLikeWithDtypeBoolToInt(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.rand(2, 3) > 0.5, torch.rand(2, 3).to(dtype=torch.int32))
+        return (torch.rand(2, 3) > 0.5, torch.rand(2, 3).to(dtype=torch.int32)), {}
 
 
-class SimpleFullLikeWithDtypeIntToFloat(torch.nn.Module):
+class SimpleFullLikeWithDtypeIntToFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -64,10 +66,10 @@ class SimpleFullLikeWithDtypeIntToFloat(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.rand(2, 3).to(dtype=torch.int32), torch.rand(2, 3))
+        return (torch.rand(2, 3).to(dtype=torch.int32), torch.rand(2, 3)), {}
 
 
-class SimpleFullLikeBool(torch.nn.Module):
+class SimpleFullLikeBool(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -77,10 +79,10 @@ class SimpleFullLikeBool(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.rand(2, 3) > 0.5,)
+        return (torch.rand(2, 3) > 0.5,), {}
 
 
-class TrivialDtypeKwargsExample(torch.nn.Module):
+class TrivialDtypeKwargsExample(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -90,4 +92,4 @@ class TrivialDtypeKwargsExample(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.rand(2, 3) > 0.5, torch.rand(2, 3) > 0.5)
+        return (torch.rand(2, 3) > 0.5, torch.rand(2, 3) > 0.5), {}

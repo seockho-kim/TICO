@@ -15,8 +15,10 @@
 import torch
 from torchvision.models import mobilenet_v3_small
 
+from test.modules.base import TestModuleBase
 
-class MobileNetV3S(torch.nn.Module):
+
+class MobileNetV3S(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model = mobilenet_v3_small(pretrained=True).to("cpu")
@@ -26,4 +28,4 @@ class MobileNetV3S(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 3, 224, 224),)
+        return (torch.randn(1, 3, 224, 224),), {}

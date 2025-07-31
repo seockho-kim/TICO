@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class MinimumWithTwoInputs(torch.nn.Module):
+
+class MinimumWithTwoInputs(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -23,10 +25,10 @@ class MinimumWithTwoInputs(torch.nn.Module):
         return torch.minimum(x, y)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3), torch.randn(1, 3))
+        return (torch.randn(1, 3), torch.randn(1, 3)), {}
 
 
-class MinimumWithIntConstRight(torch.nn.Module):
+class MinimumWithIntConstRight(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class MinimumWithIntConstRight(torch.nn.Module):
         return torch.minimum(x, right)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
-class MinimumWithFloatConstRight(torch.nn.Module):
+class MinimumWithFloatConstRight(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -49,10 +51,10 @@ class MinimumWithFloatConstRight(torch.nn.Module):
         return torch.minimum(x, right)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
-class MinimumWithTensorLeftConstRight(torch.nn.Module):
+class MinimumWithTensorLeftConstRight(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -62,4 +64,4 @@ class MinimumWithTensorLeftConstRight(torch.nn.Module):
         return torch.minimum(left, right)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}

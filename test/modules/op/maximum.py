@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class MaximumWithTwoInputs(torch.nn.Module):
+
+class MaximumWithTwoInputs(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -23,10 +25,10 @@ class MaximumWithTwoInputs(torch.nn.Module):
         return torch.maximum(x, y)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3), torch.randn(1, 3))
+        return (torch.randn(1, 3), torch.randn(1, 3)), {}
 
 
-class MaximumWithIntConstRight(torch.nn.Module):
+class MaximumWithIntConstRight(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,10 +38,10 @@ class MaximumWithIntConstRight(torch.nn.Module):
         return torch.maximum(x, right)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
-class MaximumWithFloatConstRight(torch.nn.Module):
+class MaximumWithFloatConstRight(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -49,10 +51,10 @@ class MaximumWithFloatConstRight(torch.nn.Module):
         return torch.maximum(x, right)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}
 
 
-class MaximumWithTensorLeftConstRight(torch.nn.Module):
+class MaximumWithTensorLeftConstRight(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -62,4 +64,4 @@ class MaximumWithTensorLeftConstRight(torch.nn.Module):
         return torch.minimum(left, right)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 3),)
+        return (torch.randn(2, 3),), {}

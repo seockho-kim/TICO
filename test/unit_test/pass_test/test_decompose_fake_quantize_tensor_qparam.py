@@ -42,7 +42,7 @@ class FakeQuantizeTensorQParamPerTensor(torch.nn.Module):
         return torch.fake_quantize_per_tensor_affine(input, s, zp, qmin, qmax)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 3, 32, 32),)
+        return (torch.randn(1, 3, 32, 32),), {}
 
 
 class DecomposeFakeQuantizeTensorQParamPerTensor(SinglePassValueTest):
@@ -105,7 +105,7 @@ class FakeQuantizeTensorQParamUint4Dtype(torch.nn.Module):
         return q_linear
 
     def get_example_inputs(self):
-        return (torch.randn(1, 5),)
+        return (torch.randn(1, 5),), {}
 
 
 class DecomposeFakeQuantizeTensorQParamUint4Dtype(PassTest):

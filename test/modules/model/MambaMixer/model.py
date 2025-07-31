@@ -15,8 +15,10 @@
 import torch
 from transformers import MambaConfig, MambaForCausalLM
 
+from test.modules.base import TestModuleBase
 
-class MambaMixer(torch.nn.Module):
+
+class MambaMixer(TestModuleBase):
     def __init__(self):
         super().__init__()
         config = MambaConfig()
@@ -36,4 +38,4 @@ class MambaMixer(torch.nn.Module):
         # TODO Find way to increase accuracy
         torch.manual_seed(5)
         hidden_state = torch.randn(1, 6, 768)
-        return (hidden_state,)
+        return (hidden_state,), {}

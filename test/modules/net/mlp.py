@@ -14,6 +14,8 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 
 B = 4
 SEQ_LEN = 8
@@ -21,7 +23,7 @@ DIM = 16
 INTERMEDATE = 64
 
 
-class MLP(torch.nn.Module):
+class MLP(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.gate_proj = torch.nn.Linear(DIM, INTERMEDATE, bias=False)
@@ -36,4 +38,4 @@ class MLP(torch.nn.Module):
 
     def get_example_inputs(self):
         # (B, Seq_Len, Dim)
-        return (torch.randn(B, SEQ_LEN, DIM),)
+        return (torch.randn(B, SEQ_LEN, DIM),), {}

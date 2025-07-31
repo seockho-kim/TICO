@@ -15,10 +15,12 @@
 import torch
 from tico.config.v1 import CompileConfigV1
 
+from test.modules.base import TestModuleBase
+
 from test.utils import tag
 
 
-class SimpleAdd(torch.nn.Module):
+class SimpleAdd(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -32,7 +34,10 @@ class SimpleAdd(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1), torch.ones(1))
+        return (
+            torch.ones(1),
+            torch.ones(1),
+        ), {}
 
     def get_calibration_data(self):
         calibration_data = [
@@ -50,7 +55,7 @@ class SimpleAdd(torch.nn.Module):
 
 
 @tag.test_without_pt2
-class SimpleAddWithoutPt2(torch.nn.Module):
+class SimpleAddWithoutPt2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -62,10 +67,13 @@ class SimpleAddWithoutPt2(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1), torch.ones(1))
+        return (
+            torch.ones(1),
+            torch.ones(1),
+        ), {}
 
 
-class SimpleAddWithDifferentMemoryFormat(torch.nn.Module):
+class SimpleAddWithDifferentMemoryFormat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -80,10 +88,10 @@ class SimpleAddWithDifferentMemoryFormat(torch.nn.Module):
         return (
             torch.rand(1, 2, 3, 4).clone(memory_format=torch.contiguous_format),
             torch.rand(1, 2, 3, 4).clone(memory_format=torch.channels_last),
-        )
+        ), {}
 
 
-class AddWithNonPersistentBuffer(torch.nn.Module):
+class AddWithNonPersistentBuffer(TestModuleBase):
     def __init__(self):
         super().__init__()
         x = torch.Tensor([2.0])
@@ -95,10 +103,10 @@ class AddWithNonPersistentBuffer(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1),)
+        return (torch.ones(1),), {}
 
 
-class AddWithBuffer(torch.nn.Module):
+class AddWithBuffer(TestModuleBase):
     def __init__(self):
         super().__init__()
         x = torch.Tensor([2.0])
@@ -109,10 +117,10 @@ class AddWithBuffer(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1),)
+        return (torch.ones(1),), {}
 
 
-class AddWithBuiltinFloat(torch.nn.Module):
+class AddWithBuiltinFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -121,10 +129,13 @@ class AddWithBuiltinFloat(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1), 2.0)
+        return (
+            torch.ones(1),
+            2.0,
+        ), {}
 
 
-class AddWithBuiltinInt(torch.nn.Module):
+class AddWithBuiltinInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -133,10 +144,13 @@ class AddWithBuiltinInt(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.ones(1).to(torch.int64), 2)
+        return (
+            torch.ones(1).to(torch.int64),
+            2,
+        ), {}
 
 
-class ScalarAddFloat(torch.nn.Module):
+class ScalarAddFloat(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -144,10 +158,10 @@ class ScalarAddFloat(torch.nn.Module):
         return torch.ops.aten.add.Scalar(x, 2.0)
 
     def get_example_inputs(self):
-        return (torch.ones(1),)
+        return (torch.ones(1),), {}
 
 
-class ScalarAddInt(torch.nn.Module):
+class ScalarAddInt(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -155,10 +169,10 @@ class ScalarAddInt(torch.nn.Module):
         return torch.ops.aten.add.Scalar(x, 2)
 
     def get_example_inputs(self):
-        return (torch.ones(1).to(torch.int64),)
+        return (torch.ones(1).to(torch.int64),), {}
 
 
-class AddWithCausalMaskFolded(torch.nn.Module):
+class AddWithCausalMaskFolded(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -171,11 +185,11 @@ class AddWithCausalMaskFolded(torch.nn.Module):
         return causal_mask + x
 
     def get_example_inputs(self):
-        return (torch.ones(3, 3, dtype=torch.float32),)
+        return (torch.ones(3, 3, dtype=torch.float32),), {}
 
 
 @tag.with_golden
-class AddWithCausalMaskLegalized(torch.nn.Module):
+class AddWithCausalMaskLegalized(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -188,7 +202,7 @@ class AddWithCausalMaskLegalized(torch.nn.Module):
         return causal_mask + x
 
     def get_example_inputs(self):
-        return (torch.ones(3, 3, dtype=torch.float32),)
+        return (torch.ones(3, 3, dtype=torch.float32),), {}
 
     def get_compile_config(self):
         return CompileConfigV1(legalize_causal_mask_value=True)

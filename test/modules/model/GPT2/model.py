@@ -15,8 +15,10 @@
 import torch
 from transformers import GPT2Config, GPT2LMHeadModel
 
+from test.modules.base import TestModuleBase
 
-class GPT2(torch.nn.Module):
+
+class GPT2(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model = GPT2LMHeadModel(config=GPT2Config.from_pretrained("gpt2")).to(
@@ -31,4 +33,4 @@ class GPT2(torch.nn.Module):
         # >>> tokenizer("Hello world")["input_ids"]
         # [15496, 995]
         input_ids = torch.Tensor([15496, 995]).to(dtype=torch.int32)
-        return (input_ids,)
+        return (input_ids,), {}

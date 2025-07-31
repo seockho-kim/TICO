@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleCopy(torch.nn.Module):
+
+class SimpleCopy(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -24,10 +26,10 @@ class SimpleCopy(torch.nn.Module):
         return dst
 
     def get_example_inputs(self):
-        return (torch.randn(5, 5), torch.randn(5, 5))
+        return (torch.randn(5, 5), torch.randn(5, 5)), {}
 
 
-class SimpleCopyWithBroadcastTo(torch.nn.Module):
+class SimpleCopyWithBroadcastTo(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -36,4 +38,4 @@ class SimpleCopyWithBroadcastTo(torch.nn.Module):
         return dst
 
     def get_example_inputs(self):
-        return (torch.randn(5, 5), torch.randn(1, 5))
+        return (torch.randn(5, 5), torch.randn(1, 5)), {}

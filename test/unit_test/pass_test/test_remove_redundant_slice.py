@@ -32,7 +32,7 @@ class RedundantSliceNet(torch.nn.Module):
         return z
 
     def get_example_inputs(self):
-        return (torch.randn(1, 4),)
+        return (torch.randn(1, 4),), {}
 
 
 class RemoveRedundantSliceTest(SinglePassValueTest):

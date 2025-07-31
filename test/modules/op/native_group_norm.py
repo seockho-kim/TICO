@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleNativeGroupNorm(torch.nn.Module):
+
+class SimpleNativeGroupNorm(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 10
@@ -41,10 +43,10 @@ class SimpleNativeGroupNorm(torch.nn.Module):
             bias,
             group,
             eps,
-        )
+        ), {}
 
 
-class SimpleNativeGroupNormWithoutWeightBias(torch.nn.Module):
+class SimpleNativeGroupNormWithoutWeightBias(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 10
@@ -66,10 +68,10 @@ class SimpleNativeGroupNormWithoutWeightBias(torch.nn.Module):
             tensor,
             group,
             eps,
-        )
+        ), {}
 
 
-class SimpleNativeGroupNormRedundantReshape(torch.nn.Module):
+class SimpleNativeGroupNormRedundantReshape(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 20
@@ -90,10 +92,10 @@ class SimpleNativeGroupNormRedundantReshape(torch.nn.Module):
             tensor,
             group,
             eps,
-        )
+        ), {}
 
 
-class SimpleNativeGroupNormWithLayerNormClass(torch.nn.Module):
+class SimpleNativeGroupNormWithLayerNormClass(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 20
@@ -110,10 +112,10 @@ class SimpleNativeGroupNormWithLayerNormClass(torch.nn.Module):
 
     def get_example_inputs(self):
         tensor = torch.randn(self.N, self.C, self.H, self.W)
-        return (tensor,)
+        return (tensor,), {}
 
 
-class SimpleNativeGroupNormWithLayerNorm3DInput(torch.nn.Module):
+class SimpleNativeGroupNormWithLayerNorm3DInput(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 20
@@ -129,10 +131,10 @@ class SimpleNativeGroupNormWithLayerNorm3DInput(torch.nn.Module):
 
     def get_example_inputs(self):
         tensor = torch.randn(self.N, self.C, self.W)
-        return (tensor,)
+        return (tensor,), {}
 
 
-class SimpleNativeGroupNormNonAffine(torch.nn.Module):
+class SimpleNativeGroupNormNonAffine(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.N = 20
@@ -148,4 +150,4 @@ class SimpleNativeGroupNormNonAffine(torch.nn.Module):
 
     def get_example_inputs(self):
         tensor = torch.randn(self.N, self.C, self.W)
-        return (tensor,)
+        return (tensor,), {}

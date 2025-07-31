@@ -32,7 +32,7 @@ class LeadingUnsqueezeReshapeNet(torch.nn.Module):
         return k
 
     def get_example_inputs(self):
-        return (torch.randn(20, 1, 512),)
+        return (torch.randn(20, 1, 512),), {}
 
 
 class LeadingUnsqueezeReshapeNetTest(SinglePassValueTest):
@@ -58,7 +58,7 @@ class LeadingUnsqueezeReshapeNet2k(torch.nn.Module):
         return k
 
     def get_example_inputs(self):
-        return (torch.randn(20, 1, 512),)
+        return (torch.randn(20, 1, 512),), {}
 
 
 class LeadingUnsqueezeReshapeNet2kTest(SinglePassValueTest):

@@ -15,10 +15,12 @@
 import torch
 from torch.export import Dim
 
+from test.modules.base import TestModuleBase
+
 from test.utils import tag
 
 # With square kernels and equal stride
-class SimpleConv(torch.nn.Module):
+class SimpleConv(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -29,11 +31,11 @@ class SimpleConv(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(20, 16, 50, 100),)
+        return (torch.randn(20, 16, 50, 100),), {}
 
 
 @tag.use_onert
-class SimpleConvDynamicShape(torch.nn.Module):
+class SimpleConvDynamicShape(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -44,7 +46,7 @@ class SimpleConvDynamicShape(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(20, 16, 50, 100),)
+        return (torch.randn(20, 16, 50, 100),), {}
 
     def get_dynamic_shapes(self):
         batch = Dim("batch", min=1, max=128)
@@ -54,7 +56,7 @@ class SimpleConvDynamicShape(torch.nn.Module):
         return dynamic_shapes
 
 
-class SimpleQuantizedConv(torch.nn.Module):
+class SimpleQuantizedConv(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -65,14 +67,14 @@ class SimpleQuantizedConv(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 16, 50, 100),)
+        return (torch.randn(1, 16, 50, 100),), {}
 
     def get_calibration_data(self):
         calibration_data = [self.get_example_inputs() for _ in range(100)]
         return calibration_data
 
 
-class ConvWithNoBias(torch.nn.Module):
+class ConvWithNoBias(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -87,10 +89,10 @@ class ConvWithNoBias(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 16, 8, 8),)
+        return (torch.randn(2, 16, 8, 8),), {}
 
 
-class ConvWithNoStrideNoBias(torch.nn.Module):
+class ConvWithNoStrideNoBias(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -104,11 +106,11 @@ class ConvWithNoStrideNoBias(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(2, 16, 8, 8),)
+        return (torch.randn(2, 16, 8, 8),), {}
 
 
 # With non-square kernels, unequal stride and padding('valid')
-class ConvNonSquareKernelValidPadding(torch.nn.Module):
+class ConvNonSquareKernelValidPadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -123,10 +125,10 @@ class ConvNonSquareKernelValidPadding(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(20, 16, 50, 100),)
+        return (torch.randn(20, 16, 50, 100),), {}
 
 
-class ConvValidPaddingWithNoBias(torch.nn.Module):
+class ConvValidPaddingWithNoBias(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -142,11 +144,11 @@ class ConvValidPaddingWithNoBias(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(20, 16, 50, 100),)
+        return (torch.randn(20, 16, 50, 100),), {}
 
 
 # With non-square kernels, non-stride and padding('same')
-class ConvNonSquareKernelSamePadding(torch.nn.Module):
+class ConvNonSquareKernelSamePadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -160,11 +162,11 @@ class ConvNonSquareKernelSamePadding(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(20, 16, 50, 100),)
+        return (torch.randn(20, 16, 50, 100),), {}
 
 
 # With non-square kernels, stride and padding(padH, padW)
-class ConvStirdePadding(torch.nn.Module):
+class ConvStirdePadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -179,11 +181,11 @@ class ConvStirdePadding(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(20, 16, 50, 100),)
+        return (torch.randn(20, 16, 50, 100),), {}
 
 
 # With non-square kernels, unequal stride, padding(padH, padW) and dilation
-class ConvWithDilation(torch.nn.Module):
+class ConvWithDilation(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -199,10 +201,10 @@ class ConvWithDilation(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(20, 16, 50, 100),)
+        return (torch.randn(20, 16, 50, 100),), {}
 
 
-class TwoConvSameInput(torch.nn.Module):
+class TwoConvSameInput(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d_1 = torch.nn.Conv2d(
@@ -224,11 +226,11 @@ class TwoConvSameInput(torch.nn.Module):
         return self.conv2d_1(input) + self.conv2d_2(input)
 
     def get_example_inputs(self):
-        return (torch.randn(20, 16, 50, 100),)
+        return (torch.randn(20, 16, 50, 100),), {}
 
 
 # With square kernels, non-stride and padding('same')-> no_padding[0, 0])
-class ConvWithSamePadding(torch.nn.Module):
+class ConvWithSamePadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -242,10 +244,10 @@ class ConvWithSamePadding(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(20, 16, 50, 100),)
+        return (torch.randn(20, 16, 50, 100),), {}
 
 
-class ConvWithSamePadding2(torch.nn.Module):
+class ConvWithSamePadding2(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -260,10 +262,10 @@ class ConvWithSamePadding2(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 32, 32),)
+        return (torch.randn(1, 8, 32, 32),), {}
 
 
-class ConvWithPadding(torch.nn.Module):
+class ConvWithPadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -277,10 +279,10 @@ class ConvWithPadding(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 16, 5, 10),)
+        return (torch.randn(1, 16, 5, 10),), {}
 
 
-class ConvWithIntPadding(torch.nn.Module):
+class ConvWithIntPadding(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -291,10 +293,10 @@ class ConvWithIntPadding(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 16, 5, 10),)
+        return (torch.randn(1, 16, 5, 10),), {}
 
 
-class ConvWithTensorWeightAndBias(torch.nn.Module):
+class ConvWithTensorWeightAndBias(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -306,10 +308,10 @@ class ConvWithTensorWeightAndBias(torch.nn.Module):
             torch.randn(1, 16, 5, 10),
             torch.randn(3, 16, 1, 1),
             torch.randn(3),
-        )
+        ), {}
 
 
-class ConvWithTensorWeightNoBias(torch.nn.Module):
+class ConvWithTensorWeightNoBias(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -317,10 +319,13 @@ class ConvWithTensorWeightNoBias(torch.nn.Module):
         return torch.nn.functional.conv2d(input, weight)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 16, 5, 10), torch.randn(3, 16, 1, 1))
+        return (
+            torch.randn(1, 16, 5, 10),
+            torch.randn(3, 16, 1, 1),
+        ), {}
 
 
-class SimpleGroupedConv2d(torch.nn.Module):
+class SimpleGroupedConv2d(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -334,10 +339,10 @@ class SimpleGroupedConv2d(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
-class SimpleGroupedConv2dWithValidPaddingInStr(torch.nn.Module):
+class SimpleGroupedConv2dWithValidPaddingInStr(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -352,10 +357,10 @@ class SimpleGroupedConv2dWithValidPaddingInStr(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
-class SimpleGroupedConv2dWithValidPaddingInList(torch.nn.Module):
+class SimpleGroupedConv2dWithValidPaddingInList(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -370,10 +375,10 @@ class SimpleGroupedConv2dWithValidPaddingInList(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
-class SimpleGroupedConv2dWithSamePaddingInStr(torch.nn.Module):
+class SimpleGroupedConv2dWithSamePaddingInStr(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -388,10 +393,10 @@ class SimpleGroupedConv2dWithSamePaddingInStr(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
-class SimpleGroupedConv2dWithSamePaddingInList(torch.nn.Module):
+class SimpleGroupedConv2dWithSamePaddingInList(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.conv2d = torch.nn.Conv2d(
@@ -406,10 +411,10 @@ class SimpleGroupedConv2dWithSamePaddingInList(torch.nn.Module):
         return self.conv2d(input)
 
     def get_example_inputs(self):
-        return (torch.randn(1, 8, 64, 64),)
+        return (torch.randn(1, 8, 64, 64),), {}
 
 
-class GroupedConv2dWithTensorWeightBias(torch.nn.Module):
+class GroupedConv2dWithTensorWeightBias(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -426,10 +431,10 @@ class GroupedConv2dWithTensorWeightBias(torch.nn.Module):
             torch.randn(4, IC, 32, 32),
             torch.randn(OC, IC // groups, 3, 3),
             torch.randn(OC),
-        )
+        ), {}
 
 
-class GroupedConv2dWithTensorWeightNoBias(torch.nn.Module):
+class GroupedConv2dWithTensorWeightNoBias(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -443,10 +448,10 @@ class GroupedConv2dWithTensorWeightNoBias(torch.nn.Module):
         return (
             torch.randn(4, IC, 32, 32),
             torch.randn(OC, IC // groups, 3, 3),
-        )
+        ), {}
 
 
-class GroupedConv2dDifferentICAndOCWithTensorWeightBias(torch.nn.Module):
+class GroupedConv2dDifferentICAndOCWithTensorWeightBias(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -464,10 +469,10 @@ class GroupedConv2dDifferentICAndOCWithTensorWeightBias(torch.nn.Module):
             torch.randn(4, IC, 32, 32),
             torch.randn(OC, IC // groups, 3, 3),
             torch.randn(OC),
-        )
+        ), {}
 
 
-class GroupedConv2dDifferentICAndOCWithTensorWeightNoBias(torch.nn.Module):
+class GroupedConv2dDifferentICAndOCWithTensorWeightNoBias(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -482,4 +487,4 @@ class GroupedConv2dDifferentICAndOCWithTensorWeightNoBias(torch.nn.Module):
         return (
             torch.randn(4, IC, 32, 32),
             torch.randn(OC, IC // groups, 3, 3),
-        )
+        ), {}

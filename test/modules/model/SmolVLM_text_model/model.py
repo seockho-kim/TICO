@@ -15,8 +15,10 @@
 import torch
 from transformers import AutoModelForImageTextToText
 
+from test.modules.base import TestModuleBase
 
-class SmolVLM_text_model(torch.nn.Module):
+
+class SmolVLM_text_model(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.rtol = 1e-2
@@ -38,4 +40,4 @@ class SmolVLM_text_model(torch.nn.Module):
             "output_hidden_states": False,
             "return_dict": True,
         }
-        return (kwargs,)
+        return (kwargs,), {}

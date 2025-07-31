@@ -14,8 +14,10 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
 
-class SimpleExpandCopy(torch.nn.Module):
+
+class SimpleExpandCopy(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +27,10 @@ class SimpleExpandCopy(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 4),)
+        return (torch.randn(1, 4),), {}
 
 
-class SimpleExpandCopyMinusDim(torch.nn.Module):
+class SimpleExpandCopyMinusDim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -38,4 +40,4 @@ class SimpleExpandCopyMinusDim(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 4),)
+        return (torch.randn(1, 4),), {}

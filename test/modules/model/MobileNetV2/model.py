@@ -15,8 +15,10 @@
 import torch
 from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 
+from test.modules.base import TestModuleBase
 
-class MobileNetV2(torch.nn.Module):
+
+class MobileNetV2(TestModuleBase):
     def __init__(self):
         super().__init__()
         self.model = mobilenet_v2(weights=MobileNet_V2_Weights.DEFAULT).to("cpu")
@@ -26,4 +28,4 @@ class MobileNetV2(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(1, 3, 224, 224),)
+        return (torch.randn(1, 3, 224, 224),), {}

@@ -14,10 +14,12 @@
 
 import torch
 
+from test.modules.base import TestModuleBase
+
 # TODO Add a test for `aten.mean` when the operator is supported.
 
 
-class SimpleMean(torch.nn.Module):
+class SimpleMean(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -27,10 +29,10 @@ class SimpleMean(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(4, 4),)
+        return (torch.randn(4, 4),), {}
 
 
-class SimpleMeanKeepDim(torch.nn.Module):
+class SimpleMeanKeepDim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -40,10 +42,10 @@ class SimpleMeanKeepDim(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(5, 5),)
+        return (torch.randn(5, 5),), {}
 
 
-class SimpleMeanTwoDim(torch.nn.Module):
+class SimpleMeanTwoDim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -53,10 +55,10 @@ class SimpleMeanTwoDim(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(5, 5, 5),)
+        return (torch.randn(5, 5, 5),), {}
 
 
-class SimpleMeanTwoDim2(torch.nn.Module):
+class SimpleMeanTwoDim2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -66,10 +68,10 @@ class SimpleMeanTwoDim2(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(5, 5, 5),)
+        return (torch.randn(5, 5, 5),), {}
 
 
-class SimpleMeanNegativeTwoDim(torch.nn.Module):
+class SimpleMeanNegativeTwoDim(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -79,10 +81,10 @@ class SimpleMeanNegativeTwoDim(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(5, 5, 5),)
+        return (torch.randn(5, 5, 5),), {}
 
 
-class SimpleMeanNegativeTwoDim2(torch.nn.Module):
+class SimpleMeanNegativeTwoDim2(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -92,10 +94,10 @@ class SimpleMeanNegativeTwoDim2(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(5, 5, 5),)
+        return (torch.randn(5, 5, 5),), {}
 
 
-class MeanWithRedundantView(torch.nn.Module):
+class MeanWithRedundantView(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -106,10 +108,10 @@ class MeanWithRedundantView(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(5, 5),)
+        return (torch.randn(5, 5),), {}
 
 
-class MeanWithRedundantViewAndDtype(torch.nn.Module):
+class MeanWithRedundantViewAndDtype(TestModuleBase):
     def __init__(self):
         super().__init__()
 
@@ -120,4 +122,4 @@ class MeanWithRedundantViewAndDtype(torch.nn.Module):
 
     def get_example_inputs(self):
         torch.manual_seed(1)
-        return (torch.randn(5, 5),)
+        return (torch.randn(5, 5),), {}
