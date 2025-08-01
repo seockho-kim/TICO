@@ -100,7 +100,8 @@ class NNModuleTest(TestRunnerBase):
         self.forward_args, self.forward_kwargs = self.nnmodule.get_example_inputs()
 
         if hasattr(self.nnmodule, "get_dynamic_shapes"):
-            if self.nnmodule.get_dynamic_shapes() is not None:
+            dynamic_shapes = self.nnmodule.get_dynamic_shapes()
+            if dynamic_shapes is not None:
                 assert (
                     self.use_onert
                 ), "Dynamic shapes are only supported with onert runtime. Please set 'use_onert' to True."
