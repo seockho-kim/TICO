@@ -175,13 +175,12 @@ class CatArgs:
 @dataclass
 class CircleRMSNormArgs:
     """
-    This is not aten ops but custom op for RMSNorm.
-    circle_custom.rms_norm(Tensor input, Tensor? weight=None, float? eps=None) -> Tensor
+    For circle.BuiltinOperator.BuiltinOperator.RMS_NORM
     """
 
     input: torch.fx.Node
-    weight: Optional[torch.fx.Node]
-    eps: Optional[float]
+    weight: torch.fx.Node
+    eps: float
 
 
 @enforce_type
