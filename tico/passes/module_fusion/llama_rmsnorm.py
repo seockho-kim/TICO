@@ -15,12 +15,15 @@
 import torch
 
 from transformers.models.llama.modeling_llama import LlamaRMSNorm
+
 from .fusion_registry import register_fused_module
 
 
-class FusedLlamaRMSNorm(LlamaRMSNorm): 
+class FusedLlamaRMSNorm(LlamaRMSNorm):
     def __init__(self, original_rmsnorm: LlamaRMSNorm):
-        super().__init__(original_rmsnorm.weight.shape[0], original_rmsnorm.variance_epsilon)
+        super().__init__(
+            original_rmsnorm.weight.shape[0], original_rmsnorm.variance_epsilon
+        )
         with torch.no_grad():
             self.weight.copy_(original_rmsnorm.weight)
 
