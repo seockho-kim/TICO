@@ -21,6 +21,8 @@ from tico.config.base import CompileConfigBase
 class CompileConfigV1(CompileConfigBase):
     legalize_causal_mask_value: bool = False
     remove_constant_input: bool = False
+    convert_lhs_const_mm_to_fc: bool = False
+    convert_rhs_const_mm_to_fc: bool = True
 
     def get(self, name: str):
         return super().get(name)
