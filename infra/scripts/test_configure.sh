@@ -135,19 +135,14 @@ fi
 # 2) Install additional test-only requirements
 ###############################################################################
 if [[ -n "${REQUEST_IS_NIGHTLY}" ]]; then
-  EXTRA_REQ_FILES=(
-    "${TEST_DIR}/requirements_dev.txt"
-  )
+  EXTRA_REQ_FILE="${TEST_DIR}/requirements_dev.txt"
+  EXTRA_REQ_PRE_FILE="${TEST_DIR}/requirements_pre_dev.txt"
 else
-  TEST_FILE="${TEST_DIR}/requirements_${FAMILY/./_}.txt"
-  EXTRA_REQ_FILES=("${TEST_FILE}")
+  EXTRA_REQ_FILE="${TEST_DIR}/requirements_${FAMILY/./_}.txt"
+  EXTRA_REQ_PRE_FILE="${TEST_DIR}/requirements_pre_${FAMILY/./_}.txt"
 fi
 
-for req in "${EXTRA_REQ_FILES[@]}"; do
-  if [[ -f "${req}" ]]; then
-    echo "[INFO] Installing auxiliary test deps from ${req##*/}"
-    python3 -m pip install -r ${req}
-  fi
-done
+python3 -m pip install -r ${EXTRA_REQ_FILE}
+python3 -m pip install -r ${EXTRA_REQ_PRE_FILE} --pre
 
 echo "[SUCCESS] ./ccex configure test completed"
