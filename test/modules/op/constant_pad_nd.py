@@ -18,16 +18,69 @@ import torch.nn.functional as F
 from test.modules.base import TestModuleBase
 
 
-class SimpleConstantPadNd(TestModuleBase):
+class SimpleConstantPad1DInput4D(TestModuleBase):
     def __init__(self):
         super().__init__()
 
     def forward(self, tensor):
-        result = F.pad(tensor, [0, 1, 0, 1], mode="constant", value=0)
+        # Pad the last dimension (left/right)
+        result = F.pad(tensor, [2, 2], mode="constant", value=0)
         return result
 
     def get_example_inputs(self):
         return (torch.randn(1, 2, 3, 3),), {}
+
+
+class SimpleConstantPad2DInput4D(TestModuleBase):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, tensor):
+        # Pad the last two dimensions (left/right/top/bottom)
+        result = F.pad(tensor, [0, 1, 0, 1], mode="constant", value=0)
+        return result
+
+    def get_example_inputs(self):
+        return (torch.randn(2, 2, 3, 3),), {}
+
+
+class SimpleConstantPad3DInput4D(TestModuleBase):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, tensor):
+        # Pad the last three
+        result = F.pad(tensor, [1, 2, 3, 4, 5, 6], mode="constant", value=0)
+        return result
+
+    def get_example_inputs(self):
+        return (torch.randn(1, 2, 3, 3),), {}
+
+
+class SimpleConstantPad4DInput4D(TestModuleBase):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, tensor):
+        # Pad the last three
+        result = F.pad(tensor, [1, 2, 3, 4, 5, 6, 7, 8], mode="constant", value=0)
+        return result
+
+    def get_example_inputs(self):
+        return (torch.randn(1, 2, 3, 3),), {}
+
+
+class SimpleConstantPad3DInput3D(TestModuleBase):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, tensor):
+        # Pad the last three
+        result = F.pad(tensor, [1, 2, 3, 4, 5, 6], mode="constant", value=0)
+        return result
+
+    def get_example_inputs(self):
+        return (torch.randn(2, 3, 3),), {}
 
 
 class DifferentRightBottom(TestModuleBase):

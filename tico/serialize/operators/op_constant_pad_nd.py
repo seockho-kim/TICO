@@ -28,6 +28,42 @@ from tico.utils.errors import InvalidArgumentError
 from tico.utils.validate_args_kwargs import ConstantPadNdArgs
 
 
+def convert_to_circle_padding(pad, input_shape_len):
+    MAX_RANK = 4
+
+    if not (1 <= input_shape_len <= MAX_RANK):
+        raise InvalidArgumentError(
+            f"Input rank must be between 1 and {MAX_RANK}, got {input_shape_len}"
+        )
+
+    if len(pad) % 2 != 0 or len(pad) < 2 or len(pad) > 8:
+        raise InvalidArgumentError(
+            f"Pad length must be an even number between 2 and 8, got {len(pad)}"
+        )
+
+    if len(pad) == 2:
+        padding = [[pad[0], pad[1]]]
+    elif len(pad) == 4:
+        padding = [[pad[2], pad[3]], [pad[0], pad[1]]]
+    elif len(pad) == 6:
+        padding = [[pad[4], pad[5]], [pad[2], pad[3]], [pad[0], pad[1]]]
+    elif len(pad) == 8:
+        padding = [
+            [pad[6], pad[7]],
+            [pad[4], pad[5]],
+            [pad[2], pad[3]],
+            [pad[0], pad[1]],
+        ]
+    else:
+        assert False, "Cannot reach here"
+
+    # Fill [0, 0] padding for the rest of dimension
+    while len(padding) < input_shape_len:
+        padding.insert(0, [0, 0])
+
+    return padding
+
+
 @register_node_visitor
 class ConstantPadNdVisitor(NodeVisitor):
     target: List[torch._ops.OpOverload] = [torch.ops.aten.constant_pad_nd.default]
@@ -45,19 +81,13 @@ class ConstantPadNdVisitor(NodeVisitor):
         val = args.value
 
         if val != 0:
-            raise InvalidArgumentError("Only support 0 value padding.")
+            raise InvalidArgumentError(f"Only support 0 value padding. pad:{pad}")
 
         input_shape_len = len(extract_shape(input_))
-        padding_size = [[pad[2], pad[3]], [pad[0], pad[1]]]
-        if input_shape_len == 3:
-            padding_size = [[0, 0]] + padding_size
-        elif input_shape_len == 4:
-            padding_size = [[0, 0], [0, 0]] + padding_size
-        else:
-            raise InvalidArgumentError("Only support 3D/4D inputs.")
 
-        paddings = torch.tensor(padding_size, dtype=torch.int32)
-        inputs = [input_, paddings]
+        padding = convert_to_circle_padding(pad, input_shape_len)
+
+        inputs = [input_, torch.tensor(padding, dtype=torch.int32)]
         outputs = [node]
 
         op_index = get_op_index(
