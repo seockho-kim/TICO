@@ -35,7 +35,8 @@ class SimpleMatmul(TestModuleBase):
 class SimpleMatmulConstRhs(TestModuleBase):
     def __init__(self):
         super().__init__()
-        self.weight = torch.randn(4, 5)
+        weight = torch.randn(4, 5)
+        self.register_buffer("weight", weight)
 
     def forward(self, lhs):
         out = torch.mm(lhs, self.weight)
@@ -49,7 +50,8 @@ class SimpleMatmulConstRhs(TestModuleBase):
 class SimpleMatmulConstRhsOnert(TestModuleBase):
     def __init__(self):
         super().__init__()
-        self.weight = torch.randn(4, 5)
+        weight = torch.randn(4, 5)
+        self.register_buffer("weight", weight)
 
     def forward(self, lhs):
         out = torch.mm(lhs, self.weight)
@@ -80,7 +82,8 @@ class SimpleMatmulConstLhsOnert(TestModuleBase):
 class SimpleMatmulConstLhsOnertWithLinearConversion(TestModuleBase):
     def __init__(self):
         super().__init__()
-        self.weight = torch.randn(3, 4)
+        weight = torch.randn(3, 4)
+        self.register_buffer("weight", weight)
 
     def forward(self, rhs):
         out = torch.mm(self.weight, rhs)

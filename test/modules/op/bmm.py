@@ -35,7 +35,8 @@ class SimpleBatchMatMul(TestModuleBase):
 class SimpleSingleBatchLhsConstBmm(TestModuleBase):
     def __init__(self):
         super().__init__()
-        self.const_lhs = torch.randn(1, 4, 5)
+        const_lhs = torch.randn(1, 4, 5)
+        self.register_buffer("const_lhs", const_lhs)
 
     def forward(self, rhs):
         z = torch.bmm(self.const_lhs, rhs)
