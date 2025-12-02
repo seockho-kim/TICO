@@ -950,7 +950,7 @@ class RepeatArgs:
     """
 
     input: torch.fx.Node
-    repeats: List[int]
+    repeats: List[Union[int, torch.SymInt, torch.fx.Node]]
 
 
 @enforce_type
@@ -958,10 +958,14 @@ class RepeatArgs:
 class ReshapeArgs:
     """
     reshape(Tensor(a) self, SymInt[] shape) -> Tensor(a)
+
+    Note: After PrepareReshapeDynamicShape pass, shape can be either:
+    - A list of int/SymInt/Node (original or static)
+    - A single Node (dynamic shape tensor prepared by the pass)
     """
 
     input: torch.fx.Node
-    shape: List[int]
+    shape: Union[List[Union[int, torch.SymInt, torch.fx.Node]], torch.fx.Node]
 
 
 @enforce_type
@@ -1097,7 +1101,7 @@ class SplitWithSizesArgs:
     """
 
     input: torch.fx.Node
-    split_sizes: List[int]
+    split_sizes: List[Union[int, torch.SymInt, torch.fx.Node]]
     dim: int = 0
 
 
@@ -1238,7 +1242,7 @@ class ViewArgs:
     """
 
     input: torch.fx.Node
-    size: List[int]
+    size: List[Union[int, torch.SymInt, torch.fx.Node]]
 
 
 @enforce_type

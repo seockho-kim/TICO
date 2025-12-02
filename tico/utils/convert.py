@@ -29,6 +29,7 @@ from tico.passes.convert_expand_to_slice_cat import ConvertExpandToSliceCat
 from tico.passes.convert_layout_op_to_reshape import ConvertLayoutOpToReshape
 from tico.passes.convert_matmul_to_linear import ConvertMatmulToLinear
 from tico.passes.convert_repeat_to_expand_copy import ConvertRepeatToExpandCopy
+from tico.passes.convert_sym_size_to_circle_shape import ConvertSymSizeToCircleShape
 from tico.passes.convert_to_relu6 import ConvertToReLU6
 from tico.passes.decompose_addmm import DecomposeAddmm
 from tico.passes.decompose_batch_norm import DecomposeBatchNorm
@@ -226,6 +227,7 @@ def convert_exported_module_to_circle(
             ExtractDtypeKwargsPass(),
             RemoveNop(),
             LowerCopy(),
+            ConvertSymSizeToCircleShape(),
             ConvertLayoutOpToReshape(),
             RestoreLinear(),
             ConvertToReLU6(),

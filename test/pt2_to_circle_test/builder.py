@@ -20,6 +20,8 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Optional
 
+import torch
+
 from tico.config.base import CompileConfigBase
 from tico.utils.signature import ModelInputSpec
 
@@ -204,8 +206,11 @@ class NNModuleTest(TestRunnerBase):
                 forward_kwargs=deepcopy(self.forward_kwargs),
                 runtime="onert",
             )
-            torch_shape = torch_result[0].shape
-            circle_result[0] = circle_result[0].reshape(torch_shape)
+            for idx, (tr, cr) in enumerate(zip(torch_result, circle_result)):
+                if isinstance(tr, torch.Tensor):
+                    circle_result[idx] = circle_result[idx].reshape(tr.shape)
+                else:  # if torch result is scalar
+                    torch_result[idx] = torch.tensor([tr], dtype=torch.int32)
         else:
             circle_result = infer_circle(
                 circle_model_path,

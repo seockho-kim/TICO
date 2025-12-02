@@ -761,6 +761,33 @@ def CircleAttention():
         return hidden_states
 
 
+def CircleShape():
+    """
+    Custom operator to extract the shape of a tensor.
+    This is similar to TensorFlow's shape operator and is used to preserve
+    dynamic shape information in the Circle model.
+
+    Args:
+        input_: Input tensor
+
+    Returns:
+        A 1D tensor containing the shape of the input tensor
+    """
+
+    @custom_op("circle_custom::shape", mutates_args=())
+    def shape(input_: torch.Tensor) -> torch.Tensor:
+        # Return the shape of the input tensor as a 1D tensor
+        shape_val = list(input_.size())
+        return torch.tensor(shape_val, dtype=torch.int32)
+
+    @register_fake("circle_custom::shape")
+    def _(input_: torch.Tensor) -> torch.Tensor:
+        # Return a 1D tensor with symbolic shape
+        # The actual value will be determined at runtime
+        rank = len(input_.size())
+        return torch.empty([rank], dtype=torch.int32)
+
+
 # Add custom ops to the torch namespace
 def RegisterOps():
     CircleResizeNearestNeighbor()
@@ -775,3 +802,4 @@ def RegisterOps():
     CircleQuantizeMX()
     CircleRMSNorm()
     CircleAttention()
+    CircleShape()
