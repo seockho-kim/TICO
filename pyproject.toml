@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61.0", "versioningit"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tico"
+dynamic = ["version"] # To use 'versioningit' to obtain version details
+description = "Convert Exported Torch Module To Circle"
+readme = "README.md"
+requires-python = ">=3.10.0"
+license = {file = "LICENSE"}
+dependencies = [
+    "circle-schema",
+    "packaging",
+    "cffi",
+    "torch",
+    "pyyaml",
+    "tqdm",
+]
+
+[project.scripts]
+pt2-to-circle = "tico.pt2_to_circle:main"
+
+[tool.setuptools]
+# Automatic package discovery (replaces the old find_packages role)
+packages = {find = {include = ["tico*"]}}
+
+# ==========================================
+# versioningit
+# ==========================================
+[tool.versioningit]
+default-version = "0.1.0"
+
+[tool.versioningit.vcs]
+method = "git"
+match = ["v*"] # Only recognize tags starting with 'v' (e.g., v0.1.0)
+
+[tool.versioningit.next-version]
+# If there's commit after release, increase minor version (0.1.0 -> 0.2.0)
+method = "minor"
+
+[tool.versioningit.format]
+# In case there's a new commit after official tag, mark 'dev' + date
+distance = "{next_version}.dev{committer_date:%y%m%d}"
+# In case there's local change, mark 'dirty'
+dirty = "{next_version}.dev{committer_date:%y%m%d}+dirty"
+distance-dirty = "{next_version}.dev{committer_date:%y%m%d}+dirty"
+
+[tool.versioningit.write]
+# Version will be written on this file, created during build process.
+file = "tico/_version.py"
