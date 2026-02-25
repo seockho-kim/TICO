@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import importlib.util
 import pathlib
 import tempfile
 import unittest
@@ -24,6 +23,7 @@ import torch
 from tico.quantization.config.ptq import PTQConfig
 from tico.quantization.wrapq.dtypes import DType
 from tico.quantization.wrapq.mode import Mode
+from tico.quantization.wrapq.utils.version import has_transformers_for
 from tico.quantization.wrapq.wrappers.nn.quant_layernorm import QuantLayerNorm
 from tico.quantization.wrapq.wrappers.nn.quant_linear import QuantLinear
 from tico.quantization.wrapq.wrappers.qwen_vl.quant_vision_patch_merger import (
@@ -31,11 +31,12 @@ from tico.quantization.wrapq.wrappers.qwen_vl.quant_vision_patch_merger import (
 )
 
 
-trans_spec = importlib.util.find_spec("transformers")
-skip_msg = "transformers not installed — skipping Qwen3VLVisionPatchMerger tests"
+skip_msg = (
+    "required transformers not installed — skipping Qwen3VLVisionPatchMerger tests"
+)
 
 
-@unittest.skipUnless(trans_spec, skip_msg)
+@unittest.skipUnless(has_transformers_for("qwen3-vl"), skip_msg)
 class TestQuantQwen3VLVisionPatchMerger(unittest.TestCase):
     fp_merger: torch.nn.Module
     hidden_size: int

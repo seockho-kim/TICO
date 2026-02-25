@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import copy
-import importlib.util
 import sys
 
 import torch
@@ -25,12 +24,13 @@ import tico.quantization
 import tico.quantization.config.ptq
 from tico.quantization.evaluation.metric import compute_peir
 from tico.quantization.evaluation.utils import plot_two_outputs
+from tico.quantization.wrapq.utils.version import has_transformers_for
 
 # Check if transformers is available
-trans_spec = importlib.util.find_spec("transformers")
-if trans_spec is None:
+
+if not has_transformers_for("qwen3-vl"):
     print(
-        "Error: transformers package not installed. Cannot test Qwen3VLVisionPatchEmbed."
+        "Error: Required transformers package not installed. Cannot test Qwen3VLVisionPatchEmbed."
     )
     sys.exit(1)
 

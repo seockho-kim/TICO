@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import importlib.util
 import unittest
 
 import torch
@@ -20,15 +19,16 @@ from tico.quantization.config.ptq import PTQConfig
 
 from tico.quantization.wrapq.dtypes import DType
 from tico.quantization.wrapq.mode import Mode
+from tico.quantization.wrapq.utils.version import has_transformers_for
 from tico.quantization.wrapq.wrappers.llama.quant_decoder_layer import (
     QuantLlamaDecoderLayer,
 )
 
-trans_spec = importlib.util.find_spec("transformers")
-skip_msg = "transformers not installed — skipping LlamaDecoderLayer tests"
+
+skip_msg = "required transformers not installed — skipping LlamaDecoderLayer tests"
 
 
-@unittest.skipUnless(trans_spec, skip_msg)
+@unittest.skipUnless(has_transformers_for("llama"), skip_msg)
 class TestQuantLlamaDecoderLayer(unittest.TestCase):
     fp_layer: torch.nn.Module
 

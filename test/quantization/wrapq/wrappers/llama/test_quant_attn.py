@@ -17,7 +17,6 @@ The tests run only if *transformers* is available (they depend on the genuine
 `transformers.models.llama.modeling_llama.LlamaAttention`).
 """
 
-import importlib.util
 import unittest
 
 import torch
@@ -25,15 +24,15 @@ from tico.quantization.config.ptq import PTQConfig
 
 from tico.quantization.wrapq.dtypes import DType
 from tico.quantization.wrapq.mode import Mode
+from tico.quantization.wrapq.utils.version import has_transformers_for
 from tico.quantization.wrapq.wrappers.llama.quant_attn import QuantLlamaAttention
 from tico.quantization.wrapq.wrappers.nn.quant_linear import QuantLinear
 
 
-trans_spec = importlib.util.find_spec("transformers")
-skip_msg = "transformers not installed — skipping LlamaAttention tests"
+skip_msg = "required transformers not installed — skipping LlamaAttention tests"
 
 
-@unittest.skipUnless(trans_spec, skip_msg)
+@unittest.skipUnless(has_transformers_for("llama"), skip_msg)
 class TestQuantLlamaAttention(unittest.TestCase):
     fp_attn: torch.nn.Module
     head_dim: int
