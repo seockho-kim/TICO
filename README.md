@@ -294,6 +294,13 @@ TICO_LOG=4 ./ccex test -k add
 ./ccex test -v -k add
 ```
 
+To dump intermediate torch graph ir as `.png`, add `TICO_GRAPH_DUMP=1`
+
+```bash
+TICO_GRAPH_DUMP=1 ./ccex test -k add
+# Images are dumped into `$(pwd)/.tico_temp`
+```
+
 #### Test Model
 
 If you want to test them locally, you can do so by navigating to each model directory, 

@@ -21,3 +21,6 @@ infra/style/.venv
 # Reports for test results
 test/reports
 .coverage
+
+# Dump files
+.tico_tmp/

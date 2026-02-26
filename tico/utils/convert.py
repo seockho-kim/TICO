@@ -75,6 +75,7 @@ from tico.serialize.circle_serializer import build_circle
 from tico.serialize.operators.node_visitor import get_support_targets
 from tico.utils import logging
 from tico.utils.errors import NotYetSupportedError
+from tico.utils.graph import save_fx_graph_as_png
 from tico.utils.model import CircleModel
 from tico.utils.passes import PassManager
 from tico.utils.trace_decorators import (
@@ -227,6 +228,9 @@ def convert_exported_module_to_circle(
         #     CompositeImplicitAutograd and have functional schema are safe to not decompose.
         exported_program = traced_run_decompositions(exported_program)
 
+    if os.environ.get("TICO_GRAPH_DUMP"):
+        save_fx_graph_as_png(exported_program, file_name="1_after_decompose")
+
     # TODO Distinguish legalize and optimize
     circle_legalize = PassManager(
         passes=[
@@ -287,6 +291,9 @@ def convert_exported_module_to_circle(
     )
     circle_legalize.run(exported_program)
 
+    if os.environ.get("TICO_GRAPH_DUMP"):
+        save_fx_graph_as_png(exported_program, file_name="2_after_legalize")
+
     # TODO Give an option to enable quantiztion to user
     enable_quantization = has_quantization_ops(exported_program.graph)
     if enable_quantization:
@@ -301,6 +308,9 @@ def convert_exported_module_to_circle(
             ]
         )
         quantize_graph.run(exported_program)
+
+    if os.environ.get("TICO_GRAPH_DUMP"):
+        save_fx_graph_as_png(exported_program, file_name="3_after_quantfold")
 
     check_unsupported_target(exported_program)
     check_training_ops(exported_program)

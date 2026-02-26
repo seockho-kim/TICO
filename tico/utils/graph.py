@@ -16,6 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import importlib.util
+import os
+import tempfile
+from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -23,6 +28,7 @@ if TYPE_CHECKING:
 import torch
 from torch.export import ExportedProgram
 from torch.export.exported_program import InputKind, InputSpec, TensorArgument
+from torch.fx.passes.graph_drawer import FxGraphDrawer
 
 from tico.utils.utils import get_fake_mode
 
@@ -280,3 +286,44 @@ def create_node(
             new_node.meta["nn_module_stack"] = origin.meta["nn_module_stack"]
 
     return new_node
+
+
+_SESSION_DIR = None
+
+
+def get_tico_temp_dir():
+    global _SESSION_DIR
+    if _SESSION_DIR is None:
+        base_dir = Path.cwd() / ".tico_tmp"
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+        _SESSION_DIR = base_dir / f"session_{timestamp}"
+        _SESSION_DIR.mkdir(parents=True, exist_ok=True)
+        print(f"Visualizations will be saved to: {_SESSION_DIR}")
+
+    return _SESSION_DIR
+
+
+def save_fx_graph_as_png(exported_program, file_name="fx_graph"):
+    """
+    Visualize FX Graph and save in temporary folder as png.
+
+    Args:
+        exported_program: graph module to draw
+        postfix (str): user-defined image file postfix
+    """
+
+    if importlib.util.find_spec("pydot") is None:
+        raise ImportError("'pydot' package is required. Try: 'pip install pydot'")
+
+    try:
+        graph_module = getattr(exported_program, "graph_module", exported_program)
+        drawer = FxGraphDrawer(graph_module, "torch_ir_graph")
+
+        save_path = os.path.join(get_tico_temp_dir(), f"{file_name}.png")
+        dot_graph = drawer.get_dot_graph()
+        dot_graph.write_png(save_path)
+
+        print(f"Graph image is saved: {save_path}")
+
+    except Exception as e:
+        raise RuntimeError(f"Error occured while saving graph image: {e}")
