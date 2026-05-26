@@ -582,40 +582,39 @@ def evaluate_model(
     return results
 
 
-def evaluate_model_coco(
+def evaluate_model_with_coco_score(
     model,
     processor,
     device: str,
+    dataset_name: str,
     nsamples: int = 50,
     max_seq_len: Optional[int] = None,
 ):
     """
-    Evaluate a model on the mini COCO captioning benchmark.
+    Evaluate a model on the provided dataset with COCO score
 
     Args:
         model: Model to evaluate.
         processor: Hugging Face processor.
         device: Target device string.
+        dataset_name: Dataset name for evaluation
         nsamples: Number of evaluation samples. -1 means full dataset.
         max_seq_len: Optional maximum text sequence length.
 
     Returns:
         COCO metric dictionary.
     """
-    with (
-        io.StringIO() as buffer,
-        contextlib.redirect_stdout(buffer),
-        contextlib.redirect_stderr(buffer),
-    ):
-        ds, _ = get_dataset("coco", n=nsamples)
-        result = get_coco_scores_on_dataset(
-            model=model,
-            processor=processor,
-            ds=ds,
-            device=device,
-            max_seq_len=max_seq_len,
-        )
-        return result
+
+    ds, _ = get_dataset(dataset_name, n=nsamples)
+    result = get_coco_scores_on_dataset(
+        model=model,
+        processor=processor,
+        dataset_name=dataset_name,
+        ds=ds,
+        device=device,
+        max_seq_len=max_seq_len,
+    )
+    return result
 
 
 def move_batch_to_device(
@@ -1171,10 +1170,24 @@ def evaluate_original_model(model, processor, args):
 
         if "coco" in args.eval_tasks:
             print("\n=== COCO Evaluation (Original Model) ===")
-            results = evaluate_model_coco(
+            results = evaluate_model_with_coco_score(
                 model=model,
                 processor=processor,
                 device=args.device,
+                dataset_name="coco",
+                nsamples=args.nsamples_for_evaluation,
+                max_seq_len=args.max_seq_len,
+            )
+            for metric, value in results.items():
+                print(f"{metric:<10} {value:.3f}")
+
+        if "llava_bench" in args.eval_tasks:
+            print("\n=== Llava Bench Evaluation (Original Model) ===")
+            results = evaluate_model_with_coco_score(
+                model=model,
+                processor=processor,
+                device=args.device,
+                dataset_name="llava_bench",
                 nsamples=args.nsamples_for_evaluation,
                 max_seq_len=args.max_seq_len,
             )
@@ -1265,10 +1278,24 @@ def evaluate_quantized_model(model, processor, args, original_results=None) -> N
 
         if "coco" in args.eval_tasks:
             print("\n=== COCO Evaluation (Quantized Model) ===")
-            results = evaluate_model_coco(
+            results = evaluate_model_with_coco_score(
                 model=model,
                 processor=processor,
                 device=args.device,
+                dataset_name="coco",
+                nsamples=args.nsamples_for_evaluation,
+                max_seq_len=args.max_seq_len,
+            )
+            for metric, value in results.items():
+                print(f"{metric:<10} {value:.3f}")
+
+        if "llava_bench" in args.eval_tasks:
+            print("\n=== Llava Bench Evaluation (Quantized Model) ===")
+            results = evaluate_model_with_coco_score(
+                model=model,
+                processor=processor,
+                device=args.device,
+                dataset_name="llava_bench",
                 nsamples=args.nsamples_for_evaluation,
                 max_seq_len=args.max_seq_len,
             )
