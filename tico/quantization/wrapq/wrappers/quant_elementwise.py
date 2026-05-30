@@ -123,6 +123,10 @@ def _gelu(x: torch.Tensor, approximate="none") -> torch.Tensor:
     return torch.nn.functional.gelu(x, approximate=approximate)
 
 
+def _elu(x: torch.Tensor, alpha: float = 1.0) -> torch.Tensor:
+    return torch.nn.functional.elu(x, alpha=alpha)
+
+
 @register(nn.Sigmoid)
 class QuantSigmoid(QuantElementwise):
     @staticmethod
@@ -163,6 +167,23 @@ class QuantGELU(QuantElementwise):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x_q = self._fq(x, self.act_in_obs)
         y = _gelu(x_q, approximate=self.approximate)
+        y_q = self._fq(y, self.act_out_obs)
+        return y_q
+
+
+@register(nn.ELU)
+class QuantELU(QuantElementwise):
+    def __init__(self, fp_module: nn.Module, *, qcfg=None, fp_name=None):
+        super().__init__(fp_module, qcfg=qcfg, fp_name=fp_name)
+        self.alpha = getattr(fp_module, "alpha", 1.0)
+
+    @staticmethod
+    def FUNC(x: torch.Tensor) -> torch.Tensor:
+        return _elu(x)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x_q = self._fq(x, self.act_in_obs)
+        y = _elu(x_q, alpha=self.alpha)
         y_q = self._fq(y, self.act_out_obs)
         return y_q
 

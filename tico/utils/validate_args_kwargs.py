@@ -416,6 +416,19 @@ class DivTensorArgs:
 
 @enforce_type
 @dataclass
+class EluArgs:
+    """
+    elu(Tensor self, Scalar alpha=1, Scalar scale=1, Scalar input_scale=1) -> Tensor
+    """
+
+    input: torch.fx.Node
+    alpha: Union[int, float] = 1
+    scale: Union[int, float] = 1
+    input_scale: Union[int, float] = 1
+
+
+@enforce_type
+@dataclass
 class EmbeddingArgs:
     """
     embedding(Tensor weight, Tensor indices, SymInt padding_idx=-1, bool scale_grad_by_freq=False, bool sparse=False) -> Tensor
