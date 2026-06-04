@@ -13,9 +13,11 @@
 # limitations under the License.
 
 from pathlib import Path
+from typing import ClassVar
 
 import numpy as np
 import torch
+
 from cffi import FFI
 
 
@@ -33,6 +35,12 @@ class Interpreter:
     library do not cause undefined behavior in Python.
     """
 
+    LIB_PATH: ClassVar[Path] = Path("/usr/share/one/lib/libcircle_interpreter_cffi.so")
+
+    @classmethod
+    def is_available(cls) -> bool:
+        return cls.LIB_PATH.is_file()
+
     def __init__(self, circle_binary: bytes):
         self.ffi = FFI()
         self.ffi.cdef(
@@ -49,18 +57,20 @@ class Interpreter:
         """
         )
         # TODO Check if one-compiler version is compatible. Whether it has .so file or not for CFFI.
-        intp_lib_path = Path("/usr/share/one/lib/libcircle_interpreter_cffi.so")
-        if not intp_lib_path.is_file():
+        if not self.is_available():
             raise RuntimeError("Please install one-compiler for circle inference.")
-        self.C = self.ffi.dlopen(str(intp_lib_path))
+        self.C = self.ffi.dlopen(str(self.LIB_PATH))
 
         # Initialize interpreter
         self.intp = self.C.Interpreter_new(circle_binary, len(circle_binary))
         self.check_for_errors()
 
     def delete(self):
+        if not hasattr(self, "C") or not hasattr(self, "intp"):
+            return
         self.C.Interpreter_delete(self.intp)
         self.check_for_errors()
+        del self.intp
 
     def interpret(self):
         self.C.Interpreter_interpret(self.intp)
