@@ -86,7 +86,36 @@ evaluation:
     - vqav2
     - textvqa
   coco: true
-  llava_bench: true
+  # LLaVA-Bench is open-ended natural QA. The legacy CIDEr/BLEU path is not
+  # enabled by default here. Use mode=judge for benchmark-style scoring.
+  llava_bench:
+    enabled: false
+    mode: judge
+    dataset: lmms-lab/llava-bench-in-the-wild
+    split: train
+    n_samples: 50
+    start_index: 0
+    max_seq_len: 2048
+    max_new_tokens: 512
+    temperature: 0.0
+    candidate_label: Qwen/Qwen3-VL-2B-Instruct
+    baseline_label: reference
+    candidate_answers: null
+    baseline_answers: null
+    regenerate: false
+    output:
+      dir: ./out/llava_bench
+      answers: ./out/llava_bench/qwen3_vl_2b.answers.jsonl
+      reviews: ./out/llava_bench/qwen3_vl_2b.llama3_2_3b.reviews.jsonl
+      summary: ./out/llava_bench/qwen3_vl_2b.llama3_2_3b.summary.json
+    judge:
+      enabled: true
+      model_id: meta-llama/Llama-3.2-3B-Instruct
+      device: cuda
+      dtype: float16
+      max_new_tokens: 256
+      temperature: 0.0
+      swap_order: true
   mmlu:
     enabled: true
     subjects: null
