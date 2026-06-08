@@ -47,10 +47,10 @@ def to_circle_dtype(
     return circle_type
 
 
-# Convert str dtype used in QuantParam to circle dtype
 def str_to_circle_dtype(
     str_dtype: str,
 ) -> int:
+    """Convert a QuantParam dtype string to a Circle tensor dtype."""
     dmap = {
         "float32": circle.TensorType.TensorType.FLOAT32,
         "float": circle.TensorType.TensorType.FLOAT32,
@@ -63,12 +63,11 @@ def str_to_circle_dtype(
         "int64": circle.TensorType.TensorType.INT64,
         "bool": circle.TensorType.TensorType.BOOL,
         "uint4": circle.TensorType.TensorType.UINT4,
-        # TODO Add more dtypes
+        "mxint8": circle.TensorType.TensorType.MXINT8,
+        "mxfp4": circle.TensorType.TensorType.MXFP4,
     }
-
     if str_dtype not in dmap:
         raise RuntimeError(f"Unsupported dtype {str_dtype}")
-
     circle_type = dmap[str_dtype]
     assert circle_type is not None
     return circle_type
@@ -94,38 +93,31 @@ def np_dtype_from_circle_dtype(circle_dtype: int):
     return np_dtype
 
 
-# Return dtype of node
 def extract_torch_dtype(node: torch.fx.Node) -> torch.dtype:
+    """Return the torch dtype encoded in a node's meta value."""
     assert node.meta is not None
     assert node.meta.get("val") is not None
 
     val = node.meta.get("val")
-    val_dtype = None
     if isinstance(val, torch.Tensor):
         assert isinstance(val.dtype, torch.dtype)
-        val_dtype = val.dtype
-    else:
-        val_dtype = torch.tensor(val).dtype
-    return val_dtype
+        return val.dtype
+    return torch.tensor(val).dtype
 
 
 def extract_circle_dtype(node: torch.fx.Node) -> int:
     return to_circle_dtype(extract_torch_dtype(node))
 
 
-# Return shape of node
 def extract_shape(node: torch.fx.Node) -> torch.Size:
+    """Return the shape encoded in a node's meta value."""
     assert node.meta is not None
     assert node.meta.get("val") is not None
 
     val = node.meta.get("val")
-    val_shape = None
     if isinstance(val, torch.Tensor):
-        val_shape = val.size()
-    else:
-        val_shape = torch.tensor(val).shape
-
-    return val_shape
+        return val.size()
+    return torch.tensor(val).shape
 
 
 def extract_circle_shape(node: torch.fx.Node) -> Tuple[List[int], Optional[List[int]]]:
