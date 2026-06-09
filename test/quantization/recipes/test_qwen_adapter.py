@@ -25,6 +25,7 @@ import contextlib
 import io
 import unittest
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import patch
 
 import tico.quantization.recipes.adapters.qwen3_vl as qwen_mod
@@ -61,7 +62,7 @@ def _fake_qwen_model():
 class TestQwen3VLAdapter(unittest.TestCase):
     def test_build_ptq_config_uses_architecture_counts_and_model_args(self):
         """Qwen3VLAdapter should infer architecture counts before building PTQ config."""
-        captured = {}
+        captured: dict[str, Any] = {}
 
         def fake_build_qwen3_vl_ptq_config(**kwargs):
             captured.update(kwargs)
@@ -92,6 +93,7 @@ class TestQwen3VLAdapter(unittest.TestCase):
                     "vision_patch_embed_weight": 8,
                     "embedding_weight": 8,
                     "lm_head_weight": 4,
+                    "spin_rotation_weight": "int16",
                     "norm": "int16",
                     "norm_weight": "int16",
                     "quantize_vision": True,
@@ -109,7 +111,69 @@ class TestQwen3VLAdapter(unittest.TestCase):
         self.assertEqual(captured["linear_weight"].dtype, DType.uint(4))
         self.assertEqual(captured["vision_patch_embed_weight"].dtype, DType.uint(8))
         self.assertEqual(captured["lm_head_weight"].dtype, DType.uint(4))
+        self.assertEqual(captured["spin_rotation_weight"].dtype, DType.int(16))
         self.assertFalse(captured["strict_wrap"])
+
+    def test_apply_spinquant_passes_enable_vision_options_to_config(self):
+        """Qwen3VLAdapter should pass enable-based SpinQuant options to the config."""
+        captured: dict[str, Any] = {}
+        adapter = Qwen3VLAdapter()
+        model = TinyModule()
+        ctx = RecipeContext(
+            cfg={"runtime": {"show_progress": False}},
+            adapter=adapter,
+            model=model,
+        )
+
+        class FakeSpinQuantConfig:
+            """Fake SpinQuant config that records constructor keyword arguments."""
+
+            def __init__(self, **kwargs):
+                captured["config_kwargs"] = kwargs
+
+        def fake_prepare(model_arg, config, inplace=False):
+            captured["prepare"] = (model_arg, config, inplace)
+            return model_arg
+
+        def fake_convert(model_arg, inplace=False):
+            captured["convert"] = (model_arg, inplace)
+            return model_arg
+
+        stage_cfg = {
+            "init_method": "hadamard",
+            "enable_r1": False,
+            "enable_r2": False,
+            "fuse_deepstack_visual_outputs": False,
+            "enable_vision_r1": True,
+            "enable_vision_r2": True,
+            "vision_init_method": "random",
+            "require_vision_r1_layernorm_compatible": False,
+            "vision_rotation_tolerance": 1e-3,
+            "show_progress": False,
+        }
+
+        with patch.object(
+            qwen_mod, "Qwen3VLSpinQuantConfig", FakeSpinQuantConfig
+        ), patch.object(qwen_mod, "prepare", fake_prepare), patch.object(
+            qwen_mod, "convert", fake_convert
+        ):
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = adapter.apply_spinquant(ctx, stage_cfg)
+
+        self.assertIs(result, model)
+        kwargs = captured["config_kwargs"]
+        self.assertEqual(kwargs["init_method"], "hadamard")
+        self.assertFalse(kwargs["enable_r1"])
+        self.assertFalse(kwargs["enable_r2"])
+        self.assertFalse(kwargs["fuse_deepstack_visual_outputs"])
+        self.assertTrue(kwargs["enable_vision_r1"])
+        self.assertTrue(kwargs["enable_vision_r2"])
+        self.assertTrue(kwargs["fuse_vision_layer_norms"])
+        self.assertEqual(kwargs["vision_init_method"], "random")
+        self.assertFalse(kwargs["require_vision_r1_layernorm_compatible"])
+        self.assertEqual(kwargs["vision_rotation_tolerance"], 1e-3)
+        self.assertEqual(captured["prepare"][2], True)
+        self.assertEqual(captured["convert"][1], True)
 
     def test_build_calibration_inputs_routes_mixed_dataset_config(self):
         """Qwen3VLAdapter should route mixed calibration datasets to the data helper."""
