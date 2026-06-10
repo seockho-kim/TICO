@@ -57,7 +57,14 @@ def main() -> None:
     ctx = adapter.load_model(ctx)
 
     if args.checkpoint:
-        ctx.model = torch.load(args.checkpoint, weights_only=False).eval()
+        checkpoint = torch.load(
+            args.checkpoint,
+            map_location=ctx.device,
+            weights_only=False,
+        )
+        if hasattr(checkpoint, "to"):
+            checkpoint = checkpoint.to(ctx.device)
+        ctx.model = checkpoint.eval()
 
     if args.tasks:
         if adapter.family == "llama":
